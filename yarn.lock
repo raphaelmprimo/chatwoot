@@ -3156,6 +3156,23 @@
     "@braid/vue-formulate-i18n" "^1.16.0"
     is-plain-object "^3.0.1"
 
+"@bryntum/taskboard-lib@1.0.0":
+  version "1.0.0"
+  resolved "https://npm.bryntum.com/@bryntum%2ftaskboard-lib/-/taskboard-lib-1.0.0.tgz#f6a820b928a09a17deeb55cbc0f639f3fb9b8f43"
+  integrity sha512-TuK7BLE2zAGWHQUZnhbhmL4JBcUQHdDkA1YKHvN+QAf+yDLyeBRQOygfbKelrI3BlsSK7NaXbUzv1nL7+fhIfQ==
+
+"@bryntum/taskboard-vue@^5.6.10":
+  version "5.6.10"
+  resolved "https://npm.bryntum.com/@bryntum%2ftaskboard-vue/-/taskboard-vue-5.6.10.tgz#b9e69d5a76c30eef111ee2870780abf216bdbf49"
+  integrity sha512-XyiPYjFfp/fWcdKvbcqhHa4KvD+wAJJmqwN7mmSBL7ik5EvmVS4IiqmojTnWZi/As/TQ69qS8nCDTFu1Rd8mHw==
+
+"@bryntum/taskboard@5.6.10":
+  version "5.6.10"
+  resolved "https://npm.bryntum.com/@bryntum%2ftaskboard/-/taskboard-5.6.10.tgz#5fbf80456ddca719c82812790c09e35d0608cf9b"
+  integrity sha512-c9gjFAuVXZqo6jwiJ5p2dHMoq+7bMkgSNvNxQQ5ZPoLs0NoLzZ+sli6XD5uWPdfSY91PN+WJOJsPEVmlP3h7zA==
+  optionalDependencies:
+    "@bryntum/taskboard-lib" "1.0.0"
+
 "@chatwoot/prosemirror-schema@1.0.5":
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/@chatwoot/prosemirror-schema/-/prosemirror-schema-1.0.5.tgz#d6053692beae59d466ac0b04128fa157f59eb176"

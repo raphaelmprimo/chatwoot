@@ -1,6 +1,7 @@
 /* eslint arrow-body-style: 0 */
 import { frontendURL } from '../../../helper/URLHelper';
 const ConversationView = () => import('./ConversationView');
+const ConversationStatusView = () => import('./ConversationStatusView');
 
 export default {
   routes: [
@@ -108,6 +109,12 @@ export default {
       roles: ['administrator', 'agent'],
       component: ConversationView,
       props: () => ({ conversationType: 'mention' }),
+    },
+    {
+      path: frontendURL('accounts/:accountId/status/conversations'),
+      name: 'conversations_status',
+      roles: ['administrator', 'agent'],
+      component: ConversationStatusView,
     },
     {
       path: frontendURL(

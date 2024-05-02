@@ -31,6 +31,8 @@
   ],
   "dependencies": {
     "@braid/vue-formulate": "^2.5.2",
+    "@bryntum/taskboard": "5.6.10",
+    "@bryntum/taskboard-vue": "^5.6.10",
     "@chatwoot/prosemirror-schema": "1.0.5",
     "@chatwoot/utils": "^0.0.23",
     "@hcaptcha/vue-hcaptcha": "^0.3.2",
