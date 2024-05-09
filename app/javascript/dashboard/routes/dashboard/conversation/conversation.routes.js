@@ -2,6 +2,7 @@
 import { frontendURL } from '../../../helper/URLHelper';
 const ConversationView = () => import('./ConversationView');
 const ConversationStatusView = () => import('./ConversationStatusView');
+const ConversationStatusEj2View = () => import('./ConversationStatusEj2View');
 
 export default {
   routes: [
@@ -115,6 +116,12 @@ export default {
       name: 'conversations_status',
       roles: ['administrator', 'agent'],
       component: ConversationStatusView,
+    },
+    {
+      path: frontendURL('accounts/:accountId/status/ej2/conversations'),
+      name: 'conversations_status_ej2',
+      roles: ['administrator', 'agent'],
+      component: ConversationStatusEj2View,
     },
     {
       path: frontendURL(

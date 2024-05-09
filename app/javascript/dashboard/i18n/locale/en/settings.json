@@ -206,6 +206,7 @@
     "INBOX": "Inbox",
     "ALL_CONVERSATIONS": "All Conversations",
     "STATUS_CONVERSATIONS": "Kanban",
+    "STATUS_CONVERSATIONS_EJ2": "Kanban-EJ2",
     "MENTIONED_CONVERSATIONS": "Mentions",
     "PARTICIPATING_CONVERSATIONS": "Participating",
     "UNATTENDED_CONVERSATIONS": "Unattended",
