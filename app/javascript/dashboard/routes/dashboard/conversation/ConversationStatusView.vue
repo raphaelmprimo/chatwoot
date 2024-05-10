@@ -1,6 +1,31 @@
 <template>
   <div class="col-md-12 control-section" id="container">
     <div class="content-wrapper" id="container-kanban">
+      <div class="container-button-visualization">
+        <label>
+          Visualização:
+        </label>
+        <woot-button
+          type="button"
+          :disabled="true"
+          class="button-visualization"
+        >
+          <span class="flex items-center gap-0.5">
+            <fluent-icon icon="arrow-trending-lines" size="16" />
+            Kanban
+          </span>
+        </woot-button>
+        <woot-button
+          type="button"
+          @click="redirectToDashboard"
+          class="button-visualization"
+        > 
+          <span class="flex items-center gap-0.5">
+            <fluent-icon icon="chat" size="16" />
+            Conversas
+          </span>
+        </woot-button>
+      </div>
       <ejs-kanban cssClass="kanban-card-default" id="kanban" keyField="Status" :dataSource="kanbanData"
       :cardSettings="cardSettings" :cardClick="onCardClick">
         <e-columns>
@@ -68,7 +93,6 @@
 }
 .e-kanban.kanban-card-default .e-nancy-davloio {
   background-image: url(https://ej2.syncfusion.com/demos/src/kanban/images/Nancy%20Davloio.png);
-  
 }
 .e-kanban.kanban-card-default .e-andrew-fuller {
   background-image: url(https://ej2.syncfusion.com/demos/src/kanban/images/Andrew%20Fuller.png);
@@ -99,10 +123,10 @@
 #container {
   height: 100%;
   background: #FFF;
+  margin-top: 30px;
 }
 
 #container-kanban {
-  /* margin-top: 100px; */
   padding: 20px;
 }
 
@@ -132,6 +156,23 @@
 
 .e-kanban .e-kanban-content .e-content-row .e-content-cells .e-card-wrapper .e-card:hover {
   background-color: rgb(216, 216, 216);
+}
+
+.e-kanban .e-kanban-content .e-content-row .e-content-cells.e-collapsed .e-collapse-header-text {
+  rotate: 180deg;
+}
+
+.e-kanban .e-kanban-header .e-header-cells {
+  border-radius: 15px;
+}
+
+.button-visualization {
+  border-radius: 15px;
+  background-color: #00BDD1 !important;
+}
+
+.container-button-visualization {
+  margin: 10px 10px 40px 10px;
 }
 
 </style>
@@ -166,11 +207,13 @@ export default {
     kanban: []
   },
   methods: {
-    onCardClick: function(args) {
-      console.log("Card clicado:", args.data);
+    onCardClick: function(_args) {
       const id = 1; // Substituir pelo id da conversa
       const conversationUrl = `/app/accounts/1/conversations/${id}`;
       window.open(conversationUrl, '_blank');
+    },
+    redirectToDashboard() {
+      this.$router.push('/app/accounts/1/dashboard');
     }
   }
 }
