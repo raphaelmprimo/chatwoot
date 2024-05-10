@@ -2,7 +2,6 @@
 import { frontendURL } from '../../../helper/URLHelper';
 const ConversationView = () => import('./ConversationView');
 const ConversationStatusView = () => import('./ConversationStatusView');
-const ConversationStatusEj2View = () => import('./ConversationStatusEj2View');
 const ScheduleView = () => import("./ScheduleView");
 
 export default {
