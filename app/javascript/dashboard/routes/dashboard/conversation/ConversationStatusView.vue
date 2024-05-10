@@ -2,7 +2,7 @@
   <div class="col-md-12 control-section" id="container">
     <div class="content-wrapper" id="container-kanban">
       <ejs-kanban cssClass="kanban-card-default" id="kanban" keyField="Status" :dataSource="kanbanData"
-      :cardSettings="cardSettings">
+      :cardSettings="cardSettings" :cardClick="onCardClick">
         <e-columns>
           <e-column headerText="Agendados" keyField="Open" :allowToggle="allowToggle"></e-column>
           <e-column headerText="Reagendados" keyField="InProgress" :allowToggle="allowToggle"></e-column>
@@ -68,6 +68,7 @@
 }
 .e-kanban.kanban-card-default .e-nancy-davloio {
   background-image: url(https://ej2.syncfusion.com/demos/src/kanban/images/Nancy%20Davloio.png);
+  
 }
 .e-kanban.kanban-card-default .e-andrew-fuller {
   background-image: url(https://ej2.syncfusion.com/demos/src/kanban/images/Andrew%20Fuller.png);
@@ -91,8 +92,8 @@
 .e-kanban.kanban-card-default .e-nancy-davloio, .e-kanban.kanban-card-default .e-andrew-fuller, .e-kanban.kanban-card-default .e-janet-leverling,
 .e-kanban.kanban-card-default .e-steven-walker, .e-kanban.kanban-card-default .e-michael-suyama, .e-kanban.kanban-card-default .e-robert-king, .e-kanban.kanban-card-default .e-margaret-hamilt  {
   border-radius: 72px;
-  height: 24px;
-  width: 24px;
+  height: 40px;
+  width: 40px;
 }
 
 #container {
@@ -108,6 +109,7 @@
 .e-kanban .e-kanban-table.e-content-table .e-content-row:not(.e-swimlane-row) td {
   background: #f5f5f5;
   height: 800px;
+  border-radius: 15px;
 }
 
 .e-kanban .e-card-wrapper::-webkit-scrollbar {
@@ -122,6 +124,14 @@
 .e-kanban .e-card-wrapper::-webkit-scrollbar-track {
   background-color: #ebebeb;
   border-radius: 10px;
+}
+
+.e-kanban .e-kanban-content .e-content-row .e-content-cells .e-card-wrapper .e-card {
+  border-radius: 15px;
+}
+
+.e-kanban .e-kanban-content .e-content-row .e-content-cells .e-card-wrapper .e-card:hover {
+  background-color: rgb(216, 216, 216);
 }
 
 </style>
@@ -154,6 +164,14 @@ export default {
   },
   provide: {
     kanban: []
+  },
+  methods: {
+    onCardClick: function(args) {
+      console.log("Card clicado:", args.data);
+      const id = 1; // Substituir pelo id da conversa
+      const conversationUrl = `/app/accounts/1/conversations/${id}`;
+      window.open(conversationUrl, '_blank');
+    }
   }
 }
 </script>
