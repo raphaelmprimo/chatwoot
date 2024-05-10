@@ -3,6 +3,7 @@ import { frontendURL } from '../../../helper/URLHelper';
 const ConversationView = () => import('./ConversationView');
 const ConversationStatusView = () => import('./ConversationStatusView');
 const ConversationStatusEj2View = () => import('./ConversationStatusEj2View');
+const ScheduleView = () => import("./ScheduleView");
 
 export default {
   routes: [
@@ -116,6 +117,12 @@ export default {
       name: 'conversations_status',
       roles: ['administrator', 'agent'],
       component: ConversationStatusView,
+    },
+    {
+      path: frontendURL('accounts/:accountId/schedule'),
+      name: 'schedule',
+      roles: ['administrator', 'agent'],
+      component: ScheduleView,
     },
     {
       path: frontendURL('accounts/:accountId/status/ej2/conversations'),

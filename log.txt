@@ -1,0 +1,163 @@
+08:19:05 backend.1  | started with pid 162179
+08:19:05 frontend.1 | started with pid 162180
+08:19:05 worker.1   | started with pid 162181
+08:19:09 frontend.1 | [34mℹ[39m [90m｢wds｣[39m: Project is running at http://0.0.0.0:3039/
+08:19:09 frontend.1 | [34mℹ[39m [90m｢wds｣[39m: webpack output is served from /packs/
+08:19:09 frontend.1 | [34mℹ[39m [90m｢wds｣[39m: Content not from webpack is served from /root/zapClickChatWoot/public/packs
+08:19:09 frontend.1 | [34mℹ[39m [90m｢wds｣[39m: 404s will fallback to /index.html
+08:19:09 backend.1  | => Booting Puma
+08:19:09 backend.1  | => Rails 7.0.8.1 application starting in development 
+08:19:09 backend.1  | => Run `bin/rails server --help` for more startup options
+08:19:09 frontend.1 | Browserslist: caniuse-lite is outdated. Please run:
+08:19:09 frontend.1 | npx browserslist@latest --update-db
+08:19:09 frontend.1 | 
+08:19:09 frontend.1 | Why you should do it regularly:
+08:19:09 frontend.1 | https://github.com/browserslist/browserslist#browsers-data-updating
+08:19:09 worker.1   | {"ts":"2024-05-10T11:19:09.955Z","pid":162181,"tid":"3au1","lvl":"INFO","msg":"Sidekiq 7.2.1 connecting to Redis with options {:size=>10, :pool_name=>\"internal\", :url=>\"redis://127.0.0.1:6379\", :password=>nil, :reconnect_attempts=>2, :timeout=>1}"}
+08:19:09 worker.1   | {"ts":"2024-05-10T11:19:09.966Z","pid":162181,"tid":"3au1","lvl":"INFO","msg":"Cron Jobs - added job with name: internal_check_new_versions_job"}
+08:19:09 worker.1   | {"ts":"2024-05-10T11:19:09.969Z","pid":162181,"tid":"3au1","lvl":"INFO","msg":"Cron Jobs - added job with name: trigger_scheduled_items_job"}
+08:19:09 worker.1   | {"ts":"2024-05-10T11:19:09.972Z","pid":162181,"tid":"3au1","lvl":"INFO","msg":"Cron Jobs - added job with name: trigger_imap_email_inboxes_job"}
+08:19:09 worker.1   | {"ts":"2024-05-10T11:19:09.974Z","pid":162181,"tid":"3au1","lvl":"INFO","msg":"Cron Jobs - added job with name: remove_stale_contact_inboxes_job.rb"}
+08:19:10 worker.1   | Booted Rails 7.0.8.1 application in development environment
+08:19:10 worker.1   | Running in ruby 3.2.2 (2023-03-30 revision e51014f9c0) [x86_64-linux]
+08:19:10 worker.1   | See LICENSE and the LGPL-3.0 for licensing details.
+08:19:10 worker.1   | Upgrade to Sidekiq Pro for more features and support: https://sidekiq.org
+08:19:10 worker.1   | Sidekiq 7.2.1 connecting to Redis with options {:size=>10, :pool_name=>"default", :url=>"redis://127.0.0.1:6379", :password=>nil, :reconnect_attempts=>2, :timeout=>1}
+08:19:10 worker.1   | Cron Jobs - added job with name: internal_check_new_versions_job
+08:19:10 worker.1   | Cron Jobs - added job with name: trigger_scheduled_items_job
+08:19:10 worker.1   | Cron Jobs - added job with name: trigger_imap_email_inboxes_job
+08:19:10 worker.1   | Cron Jobs - added job with name: remove_stale_contact_inboxes_job.rb
+08:19:10 backend.1  | Puma starting in single mode...
+08:19:10 backend.1  | * Puma version: 6.4.2 (ruby 3.2.2-p53) ("The Eagle of Durango")
+08:19:10 backend.1  | *  Min threads: 5
+08:19:10 backend.1  | *  Max threads: 5
+08:19:10 backend.1  | *  Environment: development
+08:19:10 backend.1  | *          PID: 162179
+08:19:10 backend.1  | * Listening on http://127.0.0.1:3000
+08:19:10 backend.1  | * Listening on http://[::1]:3000
+08:19:10 backend.1  | Use Ctrl-C to stop
+08:19:18 frontend.1 | Browserslist: caniuse-lite is outdated. Please run:
+08:19:18 frontend.1 |   npx update-browserslist-db@latest
+08:19:18 frontend.1 |   Why you should do it regularly: https://github.com/browserslist/update-db#readme
+08:19:18 frontend.1 | Browserslist: caniuse-lite is outdated. Please run:
+08:19:18 frontend.1 |   npx update-browserslist-db@latest
+08:19:18 frontend.1 |   Why you should do it regularly: https://github.com/browserslist/update-db#readme
+08:19:22 worker.1   | start
+08:19:22 worker.1   | Performing Inboxes::FetchImapEmailInboxesJob (Job ID: 87c9394a-bc37-475c-8ff7-ed6a1e83b5e5) from Sidekiq(scheduled_jobs) enqueued at 2024-05-10T11:19:22Z
+08:19:22 worker.1   | Enqueued Inboxes::FetchImapEmailInboxesJob (Job ID: 87c9394a-bc37-475c-8ff7-ed6a1e83b5e5) to Sidekiq(scheduled_jobs)
+08:19:23 system     | SIGINT received, starting shutdown
+08:19:23 backend.1  | - Gracefully stopping, waiting for requests to finish
+08:19:23 backend.1  | === puma shutdown: 2024-05-10 08:19:23 -0300 ===
+08:19:23 backend.1  | - Goodbye!
+08:19:23 backend.1  | Exiting
+08:19:23 worker.1   | Shutting down
+08:19:23 worker.1   | Scheduler exiting...
+08:19:23 worker.1   | Terminating quiet threads for default capsule
+08:19:23 worker.1   | Scheduler exiting...
+08:19:23 worker.1   | Performed Inboxes::FetchImapEmailInboxesJob (Job ID: 87c9394a-bc37-475c-8ff7-ed6a1e83b5e5) from Sidekiq(scheduled_jobs) in 550.75ms
+08:19:23 worker.1   | done
+08:19:23 worker.1   | Pausing to allow jobs to finish...
+08:19:24 system     | sending SIGTERM to all processes
+08:19:24 backend.1  | exited with code 0
+08:19:24 frontend.1 | terminated by SIGTERM
+08:19:25 worker.1   | Bye!
+08:19:25 worker.1   | exited with code 0
+08:19:53 backend.1  | started with pid 162331
+08:19:53 frontend.1 | started with pid 162332
+08:19:53 worker.1   | started with pid 162334
+08:19:56 backend.1  | => Booting Puma
+08:19:56 backend.1  | => Rails 7.0.8.1 application starting in development 
+08:19:56 backend.1  | => Run `bin/rails server --help` for more startup options
+08:19:57 frontend.1 | [34mℹ[39m [90m｢wds｣[39m: Project is running at http://0.0.0.0:3039/
+08:19:57 frontend.1 | [34mℹ[39m [90m｢wds｣[39m: webpack output is served from /packs/
+08:19:57 frontend.1 | [34mℹ[39m [90m｢wds｣[39m: Content not from webpack is served from /root/zapClickChatWoot/public/packs
+08:19:57 frontend.1 | [34mℹ[39m [90m｢wds｣[39m: 404s will fallback to /index.html
+08:19:57 frontend.1 | Browserslist: caniuse-lite is outdated. Please run:
+08:19:57 frontend.1 | npx browserslist@latest --update-db
+08:19:57 frontend.1 | 
+08:19:57 frontend.1 | Why you should do it regularly:
+08:19:57 frontend.1 | https://github.com/browserslist/browserslist#browsers-data-updating
+08:19:58 backend.1  | Puma starting in single mode...
+08:19:58 backend.1  | * Puma version: 6.4.2 (ruby 3.2.2-p53) ("The Eagle of Durango")
+08:19:58 backend.1  | *  Min threads: 5
+08:19:58 backend.1  | *  Max threads: 5
+08:19:58 backend.1  | *  Environment: development
+08:19:58 backend.1  | *          PID: 162331
+08:19:58 backend.1  | * Listening on http://127.0.0.1:3000
+08:19:58 backend.1  | * Listening on http://[::1]:3000
+08:19:58 backend.1  | Use Ctrl-C to stop
+08:19:59 worker.1   | {"ts":"2024-05-10T11:19:59.231Z","pid":162334,"tid":"3awy","lvl":"INFO","msg":"Sidekiq 7.2.1 connecting to Redis with options {:size=>10, :pool_name=>\"internal\", :url=>\"redis://127.0.0.1:6379\", :password=>nil, :reconnect_attempts=>2, :timeout=>1}"}
+08:19:59 worker.1   | {"ts":"2024-05-10T11:19:59.240Z","pid":162334,"tid":"3awy","lvl":"INFO","msg":"Cron Jobs - added job with name: internal_check_new_versions_job"}
+08:19:59 worker.1   | {"ts":"2024-05-10T11:19:59.243Z","pid":162334,"tid":"3awy","lvl":"INFO","msg":"Cron Jobs - added job with name: trigger_scheduled_items_job"}
+08:19:59 worker.1   | {"ts":"2024-05-10T11:19:59.247Z","pid":162334,"tid":"3awy","lvl":"INFO","msg":"Cron Jobs - added job with name: trigger_imap_email_inboxes_job"}
+08:19:59 worker.1   | {"ts":"2024-05-10T11:19:59.249Z","pid":162334,"tid":"3awy","lvl":"INFO","msg":"Cron Jobs - added job with name: remove_stale_contact_inboxes_job.rb"}
+08:20:00 worker.1   | Booted Rails 7.0.8.1 application in development environment
+08:20:00 worker.1   | Running in ruby 3.2.2 (2023-03-30 revision e51014f9c0) [x86_64-linux]
+08:20:00 worker.1   | See LICENSE and the LGPL-3.0 for licensing details.
+08:20:00 worker.1   | Upgrade to Sidekiq Pro for more features and support: https://sidekiq.org
+08:20:00 worker.1   | Sidekiq 7.2.1 connecting to Redis with options {:size=>10, :pool_name=>"default", :url=>"redis://127.0.0.1:6379", :password=>nil, :reconnect_attempts=>2, :timeout=>1}
+08:20:00 worker.1   | Cron Jobs - added job with name: internal_check_new_versions_job
+08:20:00 worker.1   | Cron Jobs - added job with name: trigger_scheduled_items_job
+08:20:00 worker.1   | Cron Jobs - added job with name: trigger_imap_email_inboxes_job
+08:20:00 worker.1   | Cron Jobs - added job with name: remove_stale_contact_inboxes_job.rb
+08:20:01 frontend.1 | Browserslist: caniuse-lite is outdated. Please run:
+08:20:01 frontend.1 |   npx update-browserslist-db@latest
+08:20:01 frontend.1 |   Why you should do it regularly: https://github.com/browserslist/update-db#readme
+08:20:01 frontend.1 | Browserslist: caniuse-lite is outdated. Please run:
+08:20:01 frontend.1 |   npx update-browserslist-db@latest
+08:20:01 frontend.1 |   Why you should do it regularly: https://github.com/browserslist/update-db#readme
+08:20:12 worker.1   | start
+08:20:12 worker.1   | Enqueued Inboxes::FetchImapEmailInboxesJob (Job ID: 73648766-4ba9-422a-a1af-2e335880d1fb) to Sidekiq(scheduled_jobs)
+08:20:12 worker.1   | start
+08:20:12 worker.1   | Enqueued TriggerScheduledItemsJob (Job ID: 4bd9c2e4-98e4-4e2d-9038-c4c17584d212) to Sidekiq(scheduled_jobs)
+08:20:12 worker.1   | Performing TriggerScheduledItemsJob (Job ID: 4bd9c2e4-98e4-4e2d-9038-c4c17584d212) from Sidekiq(scheduled_jobs) enqueued at 2024-05-10T11:20:12Z
+08:20:12 worker.1   | Performing Inboxes::FetchImapEmailInboxesJob (Job ID: 73648766-4ba9-422a-a1af-2e335880d1fb) from Sidekiq(scheduled_jobs) enqueued at 2024-05-10T11:20:12Z
+08:20:13 worker.1   | Enqueued Conversations::ReopenSnoozedConversationsJob (Job ID: d5460798-bf19-4988-9e3c-3563bda213b8) to Sidekiq(low)
+08:20:13 worker.1   | start
+08:20:13 worker.1   | Performing Conversations::ReopenSnoozedConversationsJob (Job ID: d5460798-bf19-4988-9e3c-3563bda213b8) from Sidekiq(low) enqueued at 2024-05-10T11:20:13Z
+08:20:13 worker.1   | Enqueued Notification::ReopenSnoozedNotificationsJob (Job ID: 882a1082-3153-45d5-98e0-dbc41d652eab) to Sidekiq(low)
+08:20:13 worker.1   | start
+08:20:13 worker.1   | Performing Notification::ReopenSnoozedNotificationsJob (Job ID: 882a1082-3153-45d5-98e0-dbc41d652eab) from Sidekiq(low) enqueued at 2024-05-10T11:20:13Z
+08:20:13 worker.1   | Performed Notification::ReopenSnoozedNotificationsJob (Job ID: 882a1082-3153-45d5-98e0-dbc41d652eab) from Sidekiq(low) in 266.08ms
+08:20:13 worker.1   | done
+08:20:13 worker.1   | Performed Conversations::ReopenSnoozedConversationsJob (Job ID: d5460798-bf19-4988-9e3c-3563bda213b8) from Sidekiq(low) in 653.0ms
+08:20:13 worker.1   | done
+08:20:13 worker.1   | Performed Inboxes::FetchImapEmailInboxesJob (Job ID: 73648766-4ba9-422a-a1af-2e335880d1fb) from Sidekiq(scheduled_jobs) in 984.63ms
+08:20:13 worker.1   | done
+08:20:13 worker.1   | Enqueued Account::ConversationsResolutionSchedulerJob (Job ID: 0db0c2d5-ae62-4447-b4a2-713a8ef90002) to Sidekiq(scheduled_jobs)
+08:20:13 worker.1   | start
+08:20:13 worker.1   | Performing Account::ConversationsResolutionSchedulerJob (Job ID: 0db0c2d5-ae62-4447-b4a2-713a8ef90002) from Sidekiq(scheduled_jobs) enqueued at 2024-05-10T11:20:13Z
+08:20:13 worker.1   | start
+08:20:13 worker.1   | Performing Channels::Whatsapp::TemplatesSyncSchedulerJob (Job ID: a177d454-3840-40c4-996a-a1f72e3fa9f8) from Sidekiq(low) enqueued at 2024-05-10T11:20:13Z
+08:20:14 worker.1   | Enqueued Channels::Whatsapp::TemplatesSyncSchedulerJob (Job ID: a177d454-3840-40c4-996a-a1f72e3fa9f8) to Sidekiq(low)
+08:20:14 worker.1   | Enqueued Notification::RemoveOldNotificationJob (Job ID: e1c8c9b9-65d7-4018-aeff-db9a91f907b0) to Sidekiq(low)
+08:20:14 worker.1   | start
+08:20:14 worker.1   | Performing Notification::RemoveOldNotificationJob (Job ID: e1c8c9b9-65d7-4018-aeff-db9a91f907b0) from Sidekiq(low) enqueued at 2024-05-10T11:20:14Z
+08:20:14 worker.1   | start
+08:20:14 worker.1   | Performing Sla::TriggerSlasForAccountsJob (Job ID: 6efa591e-e6c1-46a4-8e03-712258fe13c9) from Sidekiq(scheduled_jobs) enqueued at 2024-05-10T11:20:14Z
+08:20:14 worker.1   | Enqueued Sla::TriggerSlasForAccountsJob (Job ID: 6efa591e-e6c1-46a4-8e03-712258fe13c9) to Sidekiq(scheduled_jobs)
+08:20:14 worker.1   | Performed TriggerScheduledItemsJob (Job ID: 4bd9c2e4-98e4-4e2d-9038-c4c17584d212) from Sidekiq(scheduled_jobs) in 1247.25ms
+08:20:14 worker.1   | done
+08:20:14 worker.1   | Performed Account::ConversationsResolutionSchedulerJob (Job ID: 0db0c2d5-ae62-4447-b4a2-713a8ef90002) from Sidekiq(scheduled_jobs) in 35.77ms
+08:20:14 worker.1   | done
+08:20:14 worker.1   | Performed Sla::TriggerSlasForAccountsJob (Job ID: 6efa591e-e6c1-46a4-8e03-712258fe13c9) from Sidekiq(scheduled_jobs) in 44.01ms
+08:20:14 worker.1   | done
+08:20:14 worker.1   | Performed Channels::Whatsapp::TemplatesSyncSchedulerJob (Job ID: a177d454-3840-40c4-996a-a1f72e3fa9f8) from Sidekiq(low) in 64.75ms
+08:20:14 worker.1   | done
+08:20:14 worker.1   | Performed Notification::RemoveOldNotificationJob (Job ID: e1c8c9b9-65d7-4018-aeff-db9a91f907b0) from Sidekiq(low) in 66.95ms
+08:20:14 worker.1   | done
+08:20:21 system     | SIGINT received, starting shutdown
+08:20:21 worker.1   | Shutting down
+08:20:21 worker.1   | Scheduler exiting...
+08:20:21 worker.1   | Terminating quiet threads for default capsule
+08:20:21 worker.1   | Scheduler exiting...
+08:20:21 backend.1  | - Gracefully stopping, waiting for requests to finish
+08:20:21 backend.1  | === puma shutdown: 2024-05-10 08:20:21 -0300 ===
+08:20:21 backend.1  | - Goodbye!
+08:20:21 backend.1  | Exiting
+08:20:22 worker.1   | Pausing to allow jobs to finish...
+08:20:22 system     | sending SIGTERM to all processes
+08:20:22 backend.1  | exited with code 0
+08:20:22 frontend.1 | terminated by SIGTERM
+08:20:23 worker.1   | Bye!
+08:20:24 worker.1   | exited with code 0

@@ -53,6 +53,13 @@ const conversations = accountId => ({
       toState: frontendURL(`accounts/${accountId}/status/conversations`),
       toStateName: 'conversations_status',
     },
+    {
+      icon: 'arrow-trending-lines',
+      label: 'SCHEDULE',
+      key: 'schedule',
+      toState: frontendURL(`accounts/${accountId}/schedule`),
+      toStateName: 'schedule',
+    },
 /*     {
       icon: 'arrow-trending-lines',
       label: 'STATUS_CONVERSATIONS_EJ2',
