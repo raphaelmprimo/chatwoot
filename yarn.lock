@@ -3156,6 +3156,23 @@
     "@braid/vue-formulate-i18n" "^1.16.0"
     is-plain-object "^3.0.1"
 
+"@bryntum/taskboard-lib@1.0.0":
+  version "1.0.0"
+  resolved "https://npm.bryntum.com/@bryntum%2ftaskboard-lib/-/taskboard-lib-1.0.0.tgz#f6a820b928a09a17deeb55cbc0f639f3fb9b8f43"
+  integrity sha512-TuK7BLE2zAGWHQUZnhbhmL4JBcUQHdDkA1YKHvN+QAf+yDLyeBRQOygfbKelrI3BlsSK7NaXbUzv1nL7+fhIfQ==
+
+"@bryntum/taskboard-vue@^5.6.10":
+  version "5.6.10"
+  resolved "https://npm.bryntum.com/@bryntum%2ftaskboard-vue/-/taskboard-vue-5.6.10.tgz#b9e69d5a76c30eef111ee2870780abf216bdbf49"
+  integrity sha512-XyiPYjFfp/fWcdKvbcqhHa4KvD+wAJJmqwN7mmSBL7ik5EvmVS4IiqmojTnWZi/As/TQ69qS8nCDTFu1Rd8mHw==
+
+"@bryntum/taskboard@5.6.10":
+  version "5.6.10"
+  resolved "https://npm.bryntum.com/@bryntum%2ftaskboard/-/taskboard-5.6.10.tgz#5fbf80456ddca719c82812790c09e35d0608cf9b"
+  integrity sha512-c9gjFAuVXZqo6jwiJ5p2dHMoq+7bMkgSNvNxQQ5ZPoLs0NoLzZ+sli6XD5uWPdfSY91PN+WJOJsPEVmlP3h7zA==
+  optionalDependencies:
+    "@bryntum/taskboard-lib" "1.0.0"
+
 "@chatwoot/prosemirror-schema@1.0.5":
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/@chatwoot/prosemirror-schema/-/prosemirror-schema-1.0.5.tgz#d6053692beae59d466ac0b04128fa157f59eb176"
@@ -6193,13 +6210,6 @@
   dependencies:
     "@syncfusion/ej2-icons" "~25.2.3"
 
-"@syncfusion/ej2-buttons@25.2.3":
-  version "25.2.3"
-  resolved "https://registry.yarnpkg.com/@syncfusion/ej2-buttons/-/ej2-buttons-25.2.3.tgz#ed67fd9a5e931d4fd6c81e9125a77f4413c856dc"
-  integrity sha512-MyfQy6N/XhugBuodrsNy2HjeaA777wwPXjsjo4dtFjHSIGpm0DoCmTE6DDMaajuXMJKyS89WvXgUiWhADGHRsA==
-  dependencies:
-    "@syncfusion/ej2-base" "~25.2.3"
-
 "@syncfusion/ej2-buttons@~25.1.35", "@syncfusion/ej2-buttons@~25.1.39":
   version "25.1.39"
   resolved "https://registry.yarnpkg.com/@syncfusion/ej2-buttons/-/ej2-buttons-25.1.39.tgz#b7436107a77f6687a3cbce76c97e5141935d7528"
@@ -6453,6 +6463,13 @@
   integrity sha512-S42jts0X4E3IsrndtUY7yjziF2hSeLodTa7kOQiypLxP1yRkjLpFggzZzfqModz6BTBYoS5kTu4wWT29flqKkQ==
   dependencies:
     "@syncfusion/ej2-base" "~25.1.35"
+
+"@syncfusion/ej2-vue-base@~25.2.3":
+  version "25.2.3"
+  resolved "https://registry.yarnpkg.com/@syncfusion/ej2-vue-base/-/ej2-vue-base-25.2.3.tgz#7d1f91c7bc4d0031cad49d574d453e47763f3337"
+  integrity sha512-3/vXruIoOehoZfz7ca1Nq+I+gljSuv0+ahOb2k6DuTFw/aXx54pj915837hTGJIzmKgQUlqvZDIGBtf3yk/OrA==
+  dependencies:
+    "@syncfusion/ej2-base" "~25.2.3"
 
 "@syncfusion/ej2-vue-kanban@^25.1.42":
   version "25.1.42"
@@ -7048,11 +7065,6 @@
     vue-template-es2015-compiler "^1.9.0"
   optionalDependencies:
     prettier "^1.18.2"
-
-"@vue/composition-api@1.7.2":
-  version "1.7.2"
-  resolved "https://registry.yarnpkg.com/@vue/composition-api/-/composition-api-1.7.2.tgz#0b656f3ec39fefc2cf40aaa8c12426bcfeae1b44"
-  integrity sha512-M8jm9J/laYrYT02665HkZ5l2fWTK4dcVg3BsDHm/pfz+MjDYwX+9FUaZyGwEyXEDonQYRCo0H7aLgdklcIELjw==
 
 "@vue/reactivity-transform@3.3.4":
   version "3.3.4"
