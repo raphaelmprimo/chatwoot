@@ -6193,7 +6193,7 @@
   dependencies:
     "@syncfusion/ej2-icons" "~25.2.3"
 
-"@syncfusion/ej2-buttons@25.2.3":
+"@syncfusion/ej2-buttons@25.2.3", "@syncfusion/ej2-buttons@~25.2.3":
   version "25.2.3"
   resolved "https://registry.yarnpkg.com/@syncfusion/ej2-buttons/-/ej2-buttons-25.2.3.tgz#ed67fd9a5e931d4fd6c81e9125a77f4413c856dc"
   integrity sha512-MyfQy6N/XhugBuodrsNy2HjeaA777wwPXjsjo4dtFjHSIGpm0DoCmTE6DDMaajuXMJKyS89WvXgUiWhADGHRsA==
@@ -6206,13 +6206,6 @@
   integrity sha512-QUAiHhswM3hP0pGjantmc785yntT3JBx0UEZtL3cG9bZLjRQLi2cAGmWDdA1U6cBmsEvf0vzvRS7uhAnfRN0JQ==
   dependencies:
     "@syncfusion/ej2-base" "~25.1.35"
-
-"@syncfusion/ej2-buttons@~25.2.3":
-  version "25.2.3"
-  resolved "https://registry.yarnpkg.com/@syncfusion/ej2-buttons/-/ej2-buttons-25.2.3.tgz#ed67fd9a5e931d4fd6c81e9125a77f4413c856dc"
-  integrity sha512-MyfQy6N/XhugBuodrsNy2HjeaA777wwPXjsjo4dtFjHSIGpm0DoCmTE6DDMaajuXMJKyS89WvXgUiWhADGHRsA==
-  dependencies:
-    "@syncfusion/ej2-base" "~25.2.3"
 
 "@syncfusion/ej2-calendars@~25.2.3":
   version "25.2.3"
@@ -6453,6 +6446,22 @@
   integrity sha512-S42jts0X4E3IsrndtUY7yjziF2hSeLodTa7kOQiypLxP1yRkjLpFggzZzfqModz6BTBYoS5kTu4wWT29flqKkQ==
   dependencies:
     "@syncfusion/ej2-base" "~25.1.35"
+
+"@syncfusion/ej2-vue-base@~25.2.3":
+  version "25.2.3"
+  resolved "https://registry.yarnpkg.com/@syncfusion/ej2-vue-base/-/ej2-vue-base-25.2.3.tgz#7d1f91c7bc4d0031cad49d574d453e47763f3337"
+  integrity sha512-3/vXruIoOehoZfz7ca1Nq+I+gljSuv0+ahOb2k6DuTFw/aXx54pj915837hTGJIzmKgQUlqvZDIGBtf3yk/OrA==
+  dependencies:
+    "@syncfusion/ej2-base" "~25.2.3"
+
+"@syncfusion/ej2-vue-buttons@^25.2.3":
+  version "25.2.3"
+  resolved "https://registry.yarnpkg.com/@syncfusion/ej2-vue-buttons/-/ej2-vue-buttons-25.2.3.tgz#1ec5007bd73b44222d5904842d35f61ede8e7c07"
+  integrity sha512-nHIEkhLrmD1pND1E8gUVbtUkTgvlB0zUXoZqTUfC9n+dapq1WZU3Ot32JpZO51F3jW53OMai1ZJ5l0KNPA0PMg==
+  dependencies:
+    "@syncfusion/ej2-base" "~25.2.3"
+    "@syncfusion/ej2-buttons" "25.2.3"
+    "@syncfusion/ej2-vue-base" "~25.2.3"
 
 "@syncfusion/ej2-vue-kanban@^25.1.42":
   version "25.1.42"

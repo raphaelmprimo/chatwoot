@@ -124,12 +124,6 @@ export default {
       component: ScheduleView,
     },
     {
-      path: frontendURL('accounts/:accountId/status/ej2/conversations'),
-      name: 'conversations_status_ej2',
-      roles: ['administrator', 'agent'],
-      component: ConversationStatusEj2View,
-    },
-    {
       path: frontendURL(
         'accounts/:accountId/mentions/conversations/:conversationId'
       ),
