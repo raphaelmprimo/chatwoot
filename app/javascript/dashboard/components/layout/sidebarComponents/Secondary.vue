@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="hasSecondaryMenu && !isConversationsPage"
+    v-if="hasSecondaryMenu"
     class="h-full overflow-auto w-48 flex flex-col bg-white dark:bg-slate-900 border-r dark:border-slate-800/50 rtl:border-r-0 rtl:border-l border-slate-50 text-sm px-2 pb-8"
   >
     <account-context @toggle-accounts="toggleAccountModal" />
@@ -73,9 +73,6 @@ export default {
     ...mapGetters({
       isFeatureEnabledonAccount: 'accounts/isFeatureEnabledonAccount',
     }),
-    isConversationsPage() {
-      return this.$route.path === '/app/accounts/1/status/conversations';
-    },
     hasSecondaryMenu() {
       return this.menuConfig.menuItems && this.menuConfig.menuItems.length;
     },

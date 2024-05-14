@@ -1,33 +1,50 @@
 <template>
   <div class="col-md-12 control-section" id="container">
     <div class="content-wrapper" id="container-kanban">
-      <div class="container-button-visualization">
-        <label>
-          Visualização:
-        </label>
-        <woot-button
-          type="button"
-          :disabled="true"
-          class="button-visualization"
-        >
+      <div class="container-actions">
+        <div class="container-button-visualization">
+          <label>
+            Visualização:
+          </label>
+          <woot-button
+            type="button"
+            :disabled="true"
+            class="button-visualization"
+          >
+            <span class="flex items-center gap-0.5">
+              <fluent-icon icon="arrow-trending-lines" size="16" />
+              Kanban
+            </span>
+          </woot-button>
+          <woot-button
+            type="button"
+            @click="redirectToDashboard"
+            class="button-visualization"
+          > 
+            <span class="flex items-center gap-0.5">
+              <fluent-icon icon="chat" size="16" />
+              Conversas
+            </span>
+          </woot-button>
+        </div>
+        <div class="container-search">
           <span class="flex items-center gap-0.5">
-            <fluent-icon icon="arrow-trending-lines" size="16" />
-            Kanban
+            <fluent-icon icon="filter" size="30" class="icon-filter"/>
           </span>
-        </woot-button>
-        <woot-button
-          type="button"
-          @click="redirectToDashboard"
-          class="button-visualization"
-        > 
-          <span class="flex items-center gap-0.5">
-            <fluent-icon icon="chat" size="16" />
-            Conversas
-          </span>
-        </woot-button>
+          <ejs-textbox width="250px" class="e-large" placeholder="Pesquisar" ref="SearchText" id="search_text"></ejs-textbox>
+          <woot-button
+            type="button"
+            class="button-search"
+          >
+            <span class="flex items-center gap-0.5">
+              <fluent-icon icon="search" size="16" />
+            </span>
+          </woot-button>
+        </div>
       </div>
+      
       <ejs-kanban cssClass="kanban-card-default" id="kanban" keyField="Status" :dataSource="kanbanData"
-      :cardSettings="cardSettings" :cardClick="onCardClick">
+      :cardSettings="cardSettings" :cardClick="onCardClick" ref="KanbanObj" :allowToggle="allowToggle" >
         <e-columns>
           <e-column headerText="Agendados" keyField="Open" :allowToggle="allowToggle"></e-column>
           <e-column headerText="Reagendados" keyField="InProgress" :allowToggle="allowToggle"></e-column>
@@ -43,10 +60,10 @@
 @import '../../../../../../node_modules/@syncfusion/ej2-buttons/styles/material.css';
 @import '../../../../../../node_modules/@syncfusion/ej2-layouts/styles/material.css';
 @import '../../../../../../node_modules/@syncfusion/ej2-dropdowns/styles/material.css';
-@import '../../../../../../node_modules/@syncfusion/ej2-inputs/styles/material.css';
 @import '../../../../../../node_modules/@syncfusion/ej2-navigations/styles/material.css';
 @import '../../../../../../node_modules/@syncfusion/ej2-popups/styles/material.css';
 @import '../../../../../../node_modules/@syncfusion/ej2-vue-kanban/styles/material.css';
+@import '../../../../../../node_modules/@syncfusion/ej2-vue-inputs/styles/bootstrap.css';
 
 .e-kanban.kanban-card-default .e-card-footer-css {
   align-self: center;
@@ -175,20 +192,58 @@
   margin: 10px 10px 40px 10px;
 }
 
+.container-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.container-search {
+  margin: 10px 10px 10px 10px;
+  display: flex;
+  justify-content: center;
+}
+
+.e-input:not(:valid), .e-input:valid, .e-float-input.e-control-wrapper input:not(:valid), .e-float-input.e-control-wrapper input:valid, .e-float-input input:not(:valid), .e-float-input input:valid, .e-input-group input:not(:valid), .e-input-group input:valid, .e-input-group.e-control-wrapper input:not(:valid), .e-input-group.e-control-wrapper input:valid, .e-float-input.e-control-wrapper textarea:not(:valid), .e-float-input.e-control-wrapper textarea:valid, .e-float-input textarea:not(:valid), .e-float-input textarea:valid, .e-input-group.e-control-wrapper textarea:not(:valid), .e-input-group.e-control-wrapper textarea:valid, .e-input-group textarea:not(:valid), .e-input-group textarea:valid {
+  height: 2.5rem;
+}
+
+.e-input-group:not(.e-success):not(.e-warning):not(.e-error):not(.e-float-icon-left),
+.e-input-group:hover:not(.e-success):not(.e-warning):not(.e-error):not(.e-float-icon-left) { /* csslint allow: adjoining-classes */
+  border-radius: 15px;
+}
+
+.button-search {
+  margin-left: 15px;
+  border-radius: 15px;
+  background-color: #00BDD1 !important;
+}
+
+.icon-filter {
+  color: #00BDD1 !important;
+  margin-right: 15px;
+}
+
 </style>
 <script>
-import { extend } from "@syncfusion/ej2-base";
 import Vue from "vue";
-import { KanbanComponent, ColumnDirective, ColumnsDirective, KanbanPlugin } from "@syncfusion/ej2-vue-kanban";
+import { extend } from "@syncfusion/ej2-base";
+import { KanbanComponent, ColumnDirective, ColumnsDirective, KanbanPlugin, } from "@syncfusion/ej2-vue-kanban";
+import { ButtonPlugin } from "@syncfusion/ej2-vue-buttons";
+import { TextBoxPlugin } from "@syncfusion/ej2-vue-inputs";
 import { kanbanData } from "./datasource";
+import { TextBoxComponent } from "@syncfusion/ej2-vue-inputs";
 
 Vue.use(KanbanPlugin);
+Vue.use(TextBoxPlugin);
+Vue.use(ButtonPlugin);
 
 export default {
   components: {
     'ejs-kanban': KanbanComponent,
     'e-column': ColumnDirective,
-    'e-columns': ColumnsDirective
+    'e-columns': ColumnsDirective,
+    'ejs-textbox': TextBoxComponent,
   },  
   data: function() {
     return {
@@ -215,6 +270,6 @@ export default {
     redirectToDashboard() {
       this.$router.push('/app/accounts/1/dashboard');
     }
-  }
+  },
 }
 </script>
