@@ -14,12 +14,13 @@ export const login = async ({
   try {
     const response = await wootAPI.post('auth/sign_in', credentials);
     setAuthCredentials(response);
+    console.log(response, '@@@ response');
     clearLocalStorageOnLogout();
-    window.location = getLoginRedirectURL({
+    /*  window.location = getLoginRedirectURL({
       ssoAccountId,
       ssoConversationId,
       user: response.data.data,
-    });
+    }); */
   } catch (error) {
     throwErrorMessage(error);
   }

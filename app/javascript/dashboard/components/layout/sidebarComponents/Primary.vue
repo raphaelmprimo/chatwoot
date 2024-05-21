@@ -9,6 +9,9 @@
         :account-id="accountId"
         class="m-4 mb-10"
       />
+      <button>
+        <a :href="getUrlTypebot" target="_blank">BOT</a>
+      </button>
       <primary-nav-item
         v-for="menuItem in menuItems"
         :key="menuItem.toState"
@@ -47,6 +50,8 @@ import NotificationBell from './NotificationBell.vue';
 import wootConstants from 'dashboard/constants/globals';
 import { frontendURL } from 'dashboard/helper/URLHelper';
 import { ACCOUNT_EVENTS } from '../../../helper/AnalyticsHelper/events';
+import { mapGetters } from 'vuex';
+import axios from 'axios';
 
 export default {
   components: {
@@ -86,7 +91,26 @@ export default {
     return {
       helpDocsURL: wootConstants.DOCS_URL,
       showOptionsMenu: false,
+      typebotToken: null,
+      typebotEmail: '',
+      isLoading: false,
     };
+  },
+  computed: {
+    ...mapGetters({
+      currentUser: 'getCurrentUser',
+    }),
+    getUrlTypebot() {
+      if (!this.typebotToken || !this.typebotEmail) return '';
+
+      const url = `http://botdev.zapclick.digital:3000/api/auth/callback/email?callbackUrl=http%3A%2F%2Fbotdev.zapclick.digital%3A3000%2Fpt-BR%2Fregister&amp;token=${
+        this.typebotToken
+      }&amp;email=${this.typebotEmail.replace('@', '%40')}`;
+      return url;
+    },
+  },
+  async mounted() {
+    this.fetchTypebotToken();
   },
   methods: {
     frontendURL,
@@ -102,6 +126,23 @@ export default {
     openNotificationPanel() {
       this.$track(ACCOUNT_EVENTS.OPENED_NOTIFICATIONS);
       this.$emit('open-notification-panel');
+    },
+    async fetchTypebotToken() {
+      this.isLoading = true;
+      try {
+        const { id, email } = this.currentUser;
+        const response = await axios.get(
+          `https://dev.zapclick.digital/users/typebot/${id}}`
+        );
+        this.typebotToken = response.data.token_typebot;
+        this.typebotEmail = email;
+        console.log(response.data.token_typebot, "@@@ token")
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('Failed to fetch Typebot token:', error);
+      } finally {
+        this.isLoading = false;
+      }
     },
   },
 };

@@ -100,6 +100,8 @@ import GoogleOAuthButton from '../../components/GoogleOauth/Button.vue';
 import FormInput from '../../components/Form/Input.vue';
 import { login } from '../../api/auth';
 import Spinner from 'shared/components/Spinner.vue';
+import axios from 'axios';
+
 const ERROR_MESSAGES = {
   'no-account-found': 'LOGIN.OAUTH.NO_ACCOUNT_FOUND',
   'business-account-only': 'LOGIN.OAUTH.BUSINESS_ACCOUNTS_ONLY',
@@ -188,7 +190,7 @@ export default {
       this.loginApi.hasErrored = false;
       this.loginApi.showLoading = true;
 
-      const credentials = {
+      let credentials = {
         email: this.email
           ? decodeURIComponent(this.email)
           : this.credentials.email,
@@ -200,6 +202,33 @@ export default {
 
       login(credentials)
         .then(() => {
+          const formData = new FormData();
+
+          formData.append('email', credentials.email);
+          formData.append('redirect', false);
+          formData.append('json', true);
+          formData.append(
+            'csrfToken',
+            '5ec1bda5d877891c0f1fa007af26c30972824f41b388cf2efffe4b968f633cd2'
+          );
+
+          axios.post(
+            'https://botdev.zapclick.digital/api/auth/signin/email',
+            formData,
+            {
+              headers: {
+                Accept: '*/*',
+                'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
+                Connection: 'keep-alive',
+                'Content-Type': 'application/x-www-form-urlencoded',
+                Origin: 'https://botdev.zapclick.digital',
+                Referer: 'https://botdev.zapclick.digital/pt-BR/signin',
+                'Sec-Fetch-Dest': 'empty',
+                'Sec-Fetch-Mode': 'cors',
+                'Sec-Fetch-Site': 'same-origin',
+              },
+            }
+          );
           this.showAlert(this.$t('LOGIN.API.SUCCESS_MESSAGE'));
         })
         .catch(response => {

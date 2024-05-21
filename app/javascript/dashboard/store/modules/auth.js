@@ -11,6 +11,7 @@ const initialState = {
     accounts: [],
     email: null,
     name: null,
+    token_typebot: null,
   },
   uiFlags: {
     isFetching: true,
@@ -96,6 +97,8 @@ export const actions = {
     try {
       const response = await authAPI.validityCheck();
       const currentUser = response.data.payload.data;
+      // eslint-disable-next-line no-console
+      console.log(currentUser, '@@@ currentUser');
       setUser(currentUser);
       context.commit(types.SET_CURRENT_USER, currentUser);
     } catch (error) {
