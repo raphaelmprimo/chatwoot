@@ -10,10 +10,23 @@
       :is-on-expanded-layout="isOnExpandedLayout"
       @conversation-load="onConversationLoad"
     >
+
+      <woot-button
+        type="button"
+        @click="redirectToKanban"
+        class="button-visualization"
+      > 
+        <span class="flex items-center gap-0.5">
+          <fluent-icon icon="arrow-trending-lines" size="16" />
+          Kanban
+        </span>
+      </woot-button>
+
       <pop-over-search
         :is-on-expanded-layout="isOnExpandedLayout"
         @toggle-conversation-layout="toggleConversationLayout"
       />
+
     </chat-list>
     <conversation-box
       v-if="showMessageView"
@@ -185,6 +198,9 @@ export default {
     },
     closeSearch() {
       this.showSearchModal = false;
+    },
+    redirectToKanban() {
+      this.$router.push('/app/accounts/1/status/conversations');
     },
   },
 };
