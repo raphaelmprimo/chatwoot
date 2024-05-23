@@ -26,6 +26,42 @@
               Conversas
             </span>
           </woot-button>
+          <div class="mt-4" v-on:click="() => toggleModal('open')">
+              <ejs-button cssClass="e-flat" :isPrimary="false" d='dlgbtn' v-on:click="() => toggleModal('open')">
+                Configurar funil
+              </ejs-button>
+            </div>
+            <Modal :show="show" :onClose="() => toggleModal('close')" :w60="true">
+              <div class="h-[82vh] w-full px-4 pt-16">
+                <h2 class="text-xl font-semibold mb-8">Configurar Etapas</h2>
+                <ejs-grid :dataSource="data" :editSettings='editSettings' :cell-edit="rowSelected">
+                    <e-columns>
+                        <e-column field='id' headerText='ID' textAlign='center'></e-column>
+                        <e-column field='nomeEtapa' headerText='Etapas do Funil' textAlign='center'></e-column>
+                        <e-column field='camposObrigatorios' headerText='Campos Obrigatórios' textAlign='center' editType='booleanedit' displayAsCheckBox='true' type='boolean' ></e-column>
+                        <e-column field='campoValor' headerText='Campo de Valor' textAlign='center' editType='booleanedit' displayAsCheckBox='true' type='boolean' ></e-column>
+                        <e-column headerText='Etapa Final' textAlign='center' field="etapaFinal" editType='booleanedit' displayAsCheckBox='true' type='boolean' ></e-column>
+                    </e-columns>
+                </ejs-grid>
+                <woot-button
+                  type="button"
+                  class="button-visualization mt-4"
+                  v-on:click="() => pushTable()"
+                >
+                  Adicionar etapa
+                </woot-button>
+                <hr>
+                <h2 class="text-xl font-semibold my-8">Campos que vão aparecer no card</h2>
+                <div class="w-[350px]">
+                  <ejs-grid :dataSource="[{nomeCampo: 'Campo 1', campoSelecionado: false}]" :editSettings='editSettings'>
+                      <e-columns>
+                          <e-column field='nomeCampo' headerText='Nome do campo' textAlign='center'></e-column>
+                          <e-column field='campoSelecionado' headerText='' textAlign='center' editType='booleanedit' displayAsCheckBox='true' type='boolean' ></e-column>
+                      </e-columns>
+                  </ejs-grid>
+                </div>
+              </div>
+            </Modal>
         </div>
         <div class="container-search">
           <span class="flex items-center gap-0.5">
@@ -64,6 +100,7 @@
 @import '../../../../../../node_modules/@syncfusion/ej2-popups/styles/material.css';
 @import '../../../../../../node_modules/@syncfusion/ej2-vue-kanban/styles/material.css';
 @import '../../../../../../node_modules/@syncfusion/ej2-vue-inputs/styles/bootstrap.css';
+@import "../../../../../../node_modules/@syncfusion/ej2-vue-grids/styles/tailwind.css";
 
 .e-kanban.kanban-card-default .e-card-footer-css {
   align-self: center;
@@ -232,11 +269,14 @@ import { KanbanComponent, ColumnDirective, ColumnsDirective, KanbanPlugin, } fro
 import { ButtonPlugin } from "@syncfusion/ej2-vue-buttons";
 import { TextBoxPlugin } from "@syncfusion/ej2-vue-inputs";
 import { kanbanData } from "./datasource";
+import { GridComponent, Edit, GridPlugin } from '@syncfusion/ej2-vue-grids';
 import { TextBoxComponent } from "@syncfusion/ej2-vue-inputs";
+import Modal from '../../../components/Modal.vue'
 
 Vue.use(KanbanPlugin);
 Vue.use(TextBoxPlugin);
 Vue.use(ButtonPlugin);
+Vue.use(GridPlugin);
 
 export default {
   components: {
@@ -244,6 +284,8 @@ export default {
     'e-column': ColumnDirective,
     'e-columns': ColumnsDirective,
     'ejs-textbox': TextBoxComponent,
+    'ejs-grid': GridComponent,
+    'Modal': Modal,
   },  
   data: function() {
     return {
@@ -256,10 +298,14 @@ export default {
         footerCssField: 'ClassName'
       },
       allowToggle: true,
+      show: false,
+      editSettings: { allowEditing: true, mode: 'Batch'},
+      data: []
     };
   },
   provide: {
-    kanban: []
+    kanban: [],
+    grid: [Edit]
   },
   methods: {
     onCardClick: function(_args) {
@@ -269,6 +315,21 @@ export default {
     },
     redirectToDashboard() {
       this.$router.push('/app/accounts/1/dashboard');
+    },
+    toggleModal(action) {
+      if (action == 'open') {
+        this.show = true
+      } else {
+        this.show = false
+      }
+    },
+    rowSelected(e) {
+      console.log(e, this.data[0])
+    },
+    pushTable() {
+      const hasId = this.data.at(-1)?.id
+      const newId = hasId >= 0 ? hasId + 1 : 0 
+      this.data.push({id: newId, nomeEtapa: `Etapa ${newId}`, camposObrigatorios: false, campoValor: false, etapaFinal: false})
     }
   },
 }

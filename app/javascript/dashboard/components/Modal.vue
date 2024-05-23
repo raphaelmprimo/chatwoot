@@ -13,6 +13,7 @@
           'items-center rounded-none flex h-full justify-center w-full':
             fullWidth,
           [size]: true,
+          'w-[60vw]': w60,
         }"
         @mouse.stop
         @mousedown="event => event.stopPropagation()"
@@ -48,6 +49,10 @@ export default {
       required: true,
     },
     fullWidth: {
+      type: Boolean,
+      default: false,
+    },
+    w60: {
       type: Boolean,
       default: false,
     },
