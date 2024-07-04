@@ -16,11 +16,11 @@ export const login = async ({
     setAuthCredentials(response);
     console.log(response, '@@@ response');
     clearLocalStorageOnLogout();
-    /*  window.location = getLoginRedirectURL({
+     window.location = getLoginRedirectURL({
       ssoAccountId,
       ssoConversationId,
       user: response.data.data,
-    }); */
+    });
   } catch (error) {
     throwErrorMessage(error);
   }

@@ -3,6 +3,7 @@
 # Table name: users
 #
 #  id                     :integer          not null, primary key
+#  api_token_typebot      :string
 #  availability           :integer          default("online")
 #  confirmation_sent_at   :datetime
 #  confirmation_token     :string
@@ -13,6 +14,7 @@
 #  display_name           :string
 #  email                  :string
 #  encrypted_password     :string           default(""), not null
+#  expiration_token       :string
 #  last_sign_in_at        :datetime
 #  last_sign_in_ip        :string
 #  message_signature      :text
@@ -29,6 +31,7 @@
 #  ui_settings            :jsonb
 #  uid                    :string           default(""), not null
 #  unconfirmed_email      :string
+#  user_id_typebot        :string
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
 #

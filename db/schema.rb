@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_05_17_105931) do
+ActiveRecord::Schema[7.0].define(version: 2024_06_19_200204) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -958,6 +958,9 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_17_105931) do
     t.string "type"
     t.text "message_signature"
     t.string "token_typebot"
+    t.string "expiration_token"
+    t.string "api_token_typebot"
+    t.string "user_id_typebot"
     t.index ["email"], name: "index_users_on_email"
     t.index ["pubsub_token"], name: "index_users_on_pubsub_token", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true

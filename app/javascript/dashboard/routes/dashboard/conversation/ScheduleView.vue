@@ -1,17 +1,18 @@
 <template>
-  <div class="h-full schedule-vue-sample">
+  <div class="h-full schedule-vue-sample bg-white">
     <section class="flex flex-col w-full h-full">
       <section
         class="min-h-[64px] flex w-full justify-between items-center py-[8px] px-8 border-custom"
+        id="scheduleHeader"
       >
         <div class="h-full flex gap-4 items-center">
           <div id="btnsChevron">
-            <woot-button type="button" class="chevron-button">
+            <woot-button type="button" class="chevron-button" @click="prevMonthDate">
               <span class="flex items-center gap-0.5">
                 <fluent-icon icon="chevron-left" size="24" />
               </span>
             </woot-button>
-            <woot-button type="button" class="chevron-button">
+            <woot-button type="button" class="chevron-button" @click="nextMonthDate">
               <span class="flex items-center gap-0.5">
                 <fluent-icon icon="chevron-right" size="24" />
               </span>
@@ -50,7 +51,7 @@
       <div class="h-full col-md-12 control-section">
         <div class="h-full content-wrapper flex">
           <section class="w-[300px] py-4 px-8 flex flex-col items-center gap-8">
-            <ejs-menu :items="menuItems" />
+            <ejs-menu :items="menuItems" :select="insertActivityOrEvent"/>
 
             <ejs-calendar id="calendar" :change="onDateChange" />
 
@@ -88,6 +89,7 @@
             :resource-header-template="'resourceHeaderTemplate'"
             :timezone="timezone"
             :show-header-bar="false"
+            ref="scheduleObj"
           >
             <template #resourceHeaderTemplate="{ data }">
               <div class="template-wrap">
@@ -203,7 +205,7 @@ export default {
       menuItems: [
         {
           text: 'Adicionar',
-          items: [{ text: 'Evento' }, { text: 'Atividade' }],
+          items: [{ text: 'Evento', id: 0 }, { text: 'Atividade', id: 1 }],
         },
       ],
       timezone: 'America/Sao_Paulo',
@@ -227,6 +229,38 @@ export default {
     });
   },
   methods: {
+    insertActivityOrEvent(event) {
+      if (event?.item.text === 'Evento') { 
+        let scheduleObj = this.$refs.scheduleObj.ej2Instances;
+        let endDate = new Date(this.selectedDate.getTime());
+        endDate.setMinutes(this.selectedDate.getMinutes() + 30);
+
+        let eventData = {
+            Id: 4,
+            Subject: '',
+            StartTime: this.selectedDate,
+            EndTime: endDate
+        };
+
+        scheduleObj.openEditor(eventData, 'Save');
+      }
+    },
+    nextMonthDate() {
+      let scheduleObj = this.$refs.scheduleObj.ej2Instances;
+      let nextDate = new Date(this.selectedDate.getTime());
+      nextDate.setMonth(nextDate.getMonth() + 1);
+      this.selectedDate = nextDate;
+
+      scheduleObj.refresh();
+    },
+    prevMonthDate() {
+      let scheduleObj = this.$refs.scheduleObj.ej2Instances;
+      let prevDate = new Date(this.selectedDate.getTime());
+      prevDate.setMonth(prevDate.getMonth() - 1);
+      this.selectedDate = prevDate;
+
+      scheduleObj.refresh();
+    },
     getEmployeeName(data) {
       let value = JSON.parse(JSON.stringify(data));
       return value.resourceData

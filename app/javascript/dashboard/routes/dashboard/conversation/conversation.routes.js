@@ -4,6 +4,7 @@ const ConversationView = () => import('./ConversationView');
 const ConversationStatusView = () => import('./ConversationStatusView');
 const ConversationStatusViewToggle = () => import('./ConversationStatusViewToggle')
 const ScheduleView = () => import('./ScheduleView');
+const FlowView = () => import('./FlowView');
 
 export default {
   routes: [
@@ -126,6 +127,12 @@ export default {
       name: 'schedule',
       roles: ['administrator', 'agent'],
       component: ScheduleView,
+    },
+    {
+      path: frontendURL('accounts/:accountId/flows/conversations'),
+      name: 'conversations_flows',
+      roles: ['administrator', 'agent'],
+      component: FlowView,
     },
     {
       path: frontendURL(

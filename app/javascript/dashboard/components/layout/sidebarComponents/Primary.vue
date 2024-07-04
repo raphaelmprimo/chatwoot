@@ -9,8 +9,8 @@
         :account-id="accountId"
         class="m-4 mb-10"
       />
-      <button>
-        <a :href="getUrlTypebot" target="_blank">BOT</a>
+      <button :disabled="isLoading" @click="updateUrl">
+        <a :href="url" target="_blank">BOT</a>
       </button>
       <primary-nav-item
         v-for="menuItem in menuItems"
@@ -52,6 +52,7 @@ import { frontendURL } from 'dashboard/helper/URLHelper';
 import { ACCOUNT_EVENTS } from '../../../helper/AnalyticsHelper/events';
 import { mapGetters } from 'vuex';
 import axios from 'axios';
+import { LocalStorage } from '../../../../shared/helpers/localStorage';
 
 export default {
   components: {
@@ -91,26 +92,22 @@ export default {
     return {
       helpDocsURL: wootConstants.DOCS_URL,
       showOptionsMenu: false,
-      typebotToken: null,
+      typebotToken: '',
       typebotEmail: '',
       isLoading: false,
+      url: '',
     };
   },
   computed: {
     ...mapGetters({
       currentUser: 'getCurrentUser',
     }),
-    getUrlTypebot() {
-      if (!this.typebotToken || !this.typebotEmail) return '';
-
-      const url = `http://botdev.zapclick.digital:3000/api/auth/callback/email?callbackUrl=http%3A%2F%2Fbotdev.zapclick.digital%3A3000%2Fpt-BR%2Fregister&amp;token=${
-        this.typebotToken
-      }&amp;email=${this.typebotEmail.replace('@', '%40')}`;
-      return url;
-    },
   },
   async mounted() {
-    this.createTypebotToken();
+    await this.fetchTypebotToken();
+    console.log('test mounted @@@');
+
+    await this.createApiTokenTypebot();
   },
   methods: {
     frontendURL,
@@ -120,6 +117,28 @@ export default {
     toggleAccountModal() {
       this.$emit('toggle-accounts');
     },
+    getUrlTypebot() {
+      const urlTypebot = 'https://botdev.zapclick.digital/pt-BR/typebots';
+      console.log(this.typebotToken, this.typebotEmail, "@@@ getUrlTypebot")
+      if (!this.typebotToken || !this.typebotEmail) return urlTypebot;
+
+      const viewBot = LocalStorage.get('view-bot-primary') || false;
+      console.log(viewBot, 'viewBot');
+      const primaryUrl = `https://botdev.zapclick.digital/api/auth/callback/email?callbackUrl=https%3A%2F%2Fbotdev.zapclick.digital%2Fpt-BR%2Fsignin&token=${
+        this.typebotToken
+      }&email=${this.typebotEmail.replace('@', '%40')}`;
+
+      const newUrl = viewBot ? urlTypebot : primaryUrl;
+      console.log(newUrl, 'newUrl');
+
+      LocalStorage.set('view-bot-primary', true);
+      console.log('@@@@ chamou axios get post');
+
+      return newUrl;
+    },
+    updateUrl() {
+      this.url = this.getUrlTypebot();
+    },
     toggleSupportChatWindow() {
       window.$chatwoot.toggle();
     },
@@ -127,119 +146,92 @@ export default {
       this.$track(ACCOUNT_EVENTS.OPENED_NOTIFICATIONS);
       this.$emit('open-notification-panel');
     },
-    async createTypebotToken() {
-      await axios
-        .get('https://botdev.zapclick.digital/api/auth/providers')
-        .then(function (response) {
-          console.log(response);
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-
-      const response = await axios.get(
-        'https://botdev.zapclick.digital/api/auth/csrf',
-        {
-          headers: {
-            Accept: '*/*',
-            'Accept-Language': 'pt-BR,pt;q=0.9',
-            Connection: 'keep-alive',
-            'Content-Type': 'application/json',
-            Cookie:
-              '__Secure-next-auth.callback-url=https%3A%2F%2Fbotdev.zapclick.digital; __Host-next-auth.csrf-token=046f05d5abbaead854c547548323f77f31912d0a452477d7fe621c005123fdeb%7Cfa20eea0063398e0aa1ed6a47afd9fe31e46bf77b769636ad5961e8cdc4ac3c9',
-            Referer: 'https://botdev.zapclick.digital/pt-BR/signin',
-            'Sec-Fetch-Dest': 'empty',
-            'Sec-Fetch-Mode': 'cors',
-            'User-Agent':
-              'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-            'sec-ch-ua':
-              '"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"',
-            'sec-ch-ua-mobile': '?0',
-            'sec-ch-ua-platform': '"Linux"',
-          },
-        }
-      );
-      console.log(response.data.csrfToken, '@@@ response');
-
-      const { email } = this.currentUser;
-
-      const formData = new FormData();
-      formData.append('email', email);
-      formData.append('csrfToken', response.data.csrfToken);
-      formData.append('redirect', false);
-      formData.append(
-        'callbackUrl',
-        'https://botdev.zapclick.digital/pt-BR/signin'
-      );
-      formData.append('json', true);
-
-      const x = await axios.post(
-        'https://botdev.zapclick.digital/api/auth/signin/email',
-        formData,
-        {
-          headers: {
-            cookie:
-              'next-auth.callback-url=http%253A%252F%252Fbotdev.zapclick.digital%253A3000%252Fpt-BR%252Fsignin%253FredirectPath%253D%25252Ftypebots; next-auth.csrf-token=a305722528b497223f9e72a8f2bd8fc9eb6cbdf7b7db67cb17208b6a195ab149%257C014ffba229921ac1d0c99fe9af8652a53aa56378a0a081d8bb085ebdad173bdd; __Host-next-auth.csrf-token=e11293c4a587d9a528589f7c89e87bf43995bc9261f61638ffd876b7c7680a73%257C860db6daeda5d346c42384347ff720c39b8b318919905f0b7f1b33061ce33cba; __Secure-next-auth.callback-url=https%253A%252F%252Fbotdev.zapclick.digital%252Fpt-BR%252Fsignin',
-            Accept: '*/*',
-            'Accept-Language': 'pt-BR,pt;q=0.9',
-            Connection: 'keep-alive',
-            'Content-Type': 'application/x-www-form-urlencoded',
-            Cookie:
-              '__Secure-next-auth.callback-url=https%3A%2F%2Fbotdev.zapclick.digital; __Host-next-auth.csrf-token=6cbff3080e296b76754f41475d228b0fa70a4558874f6b93a9a103f403cc526e%7Cf2a658ed795176a8df2fe50228b40406cce7b2ecd86f017d5315c097f83ab46e',
-            Origin: 'https://botdev.zapclick.digital',
-            Referer: 'https://botdev.zapclick.digital/pt-BR/signin',
-            'Sec-Fetch-Dest': 'empty',
-            'Sec-Fetch-Mode': 'cors',
-            'User-Agent':
-              'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-            'sec-ch-ua':
-              '"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"',
-            'sec-ch-ua-mobile': '?0',
-            'sec-ch-ua-platform': '"Linux"',
-          },
-        }
-      );
-
-      axios.get('https://botdev.zapclick.digital/api/auth/session', {
-        headers: {
-          cookie:
-            'next-auth.callback-url=http%253A%252F%252Fbotdev.zapclick.digital%253A3000%252Fpt-BR%252Fsignin%253FredirectPath%253D%25252Ftypebots; next-auth.csrf-token=a305722528b497223f9e72a8f2bd8fc9eb6cbdf7b7db67cb17208b6a195ab149%257C014ffba229921ac1d0c99fe9af8652a53aa56378a0a081d8bb085ebdad173bdd; __Host-next-auth.csrf-token=e11293c4a587d9a528589f7c89e87bf43995bc9261f61638ffd876b7c7680a73%257C860db6daeda5d346c42384347ff720c39b8b318919905f0b7f1b33061ce33cba; __Secure-next-auth.callback-url=https%253A%252F%252Fbotdev.zapclick.digital%252Fpt-BR%252Fsignin',
-          Accept: '*/*',
-          'Accept-Language': 'pt-BR,pt;q=0.9',
-          Connection: 'keep-alive',
-          'Content-Type': 'application/json',
-          Cookie:
-            '__Secure-next-auth.callback-url=https%3A%2F%2Fbotdev.zapclick.digital; __Host-next-auth.csrf-token=046f05d5abbaead854c547548323f77f31912d0a452477d7fe621c005123fdeb%7Cfa20eea0063398e0aa1ed6a47afd9fe31e46bf77b769636ad5961e8cdc4ac3c9',
-          Referer: 'https://botdev.zapclick.digital/pt-BR/signin',
-          'Sec-Fetch-Dest': 'empty',
-          'Sec-Fetch-Mode': 'cors',
-          'User-Agent':
-            'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-          'sec-ch-ua':
-            '"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"',
-          'sec-ch-ua-mobile': '?0',
-          'sec-ch-ua-platform': '"Linux"',
-        },
-      });
-      console.log(x, '@@@ x');
-    },
-    /* async fetchTypebotToken() {
-      this.isLoading = true;
+    async createApiTokenTypebot() {
       try {
+        const { id, email } = this.currentUser;
+
+        const responseNew = await axios.get(
+          `https://dev.zapclick.digital/users/typebot/${id}}`
+        );
+
+        if (
+          !!responseNew.data.token_typebot &&
+          !responseNew.data.api_token_typebot
+        ) {
+          const primaryUrl = `https://botdev.zapclick.digital/api/auth/callback/email?callbackUrl=https%3A%2F%2Fbotdev.zapclick.digital%2Fpt-BR%2Fsignin&token=${
+            responseNew.data.token_typebot
+          }&email=${email.replace('@', '%40')}`;
+
+          await axios.post(
+            'https://botdev.zapclick.digital/api/auth/api-token-devbot',
+            {
+              url: primaryUrl,
+            },
+            {
+              timeout: 80000,
+              headers: {
+                Authorization: 'a8Fj4G7Kd9L2mO1Qp6RzVw3',
+                Accept: '*/*',
+                'Accept-Language': 'pt-BR,pt;q=0.9',
+                Connection: 'keep-alive',
+                'Content-Type': 'application/json',
+                Origin: 'https://botdev.zapclick.digital',
+                Referer: 'https://botdev.zapclick.digital/pt-BR/signin',
+                'Sec-Fetch-Mode': 'cors',
+              },
+            }
+          );
+        }
+      } catch (error) {
+        console.error(error, '@@@ error');
+      }
+    },
+    async fetchTypebotToken() {
+      try {
+        this.isLoading = true;
+
         const { id, email } = this.currentUser;
         const response = await axios.get(
           `https://dev.zapclick.digital/users/typebot/${id}}`
         );
         this.typebotToken = response.data.token_typebot;
         this.typebotEmail = email;
-        console.log(response.data.token_typebot, "@@@ token")
+        console.log(response.data.token_typebot, email, '@@@ email');
+
+        const expirationToken =
+          new Date(response.data.expiration_token).getTime() <
+          new Date().getTime();
+
+        const viewBot = LocalStorage.get('view-bot-primary') || false;
+
+        if (!response.data.expiration_token || expirationToken || !viewBot) {
+          await axios.post(
+            'https://botdev.zapclick.digital/api/auth/signtype',
+            {
+              email,
+            },
+            {
+              timeout: 60000,
+              headers: {
+                Authorization: 'a8Fj4G7Kd9L2mO1Qp6RzVw3',
+                Accept: '*/*',
+                'Accept-Language': 'pt-BR,pt;q=0.9',
+                Connection: 'keep-alive',
+                'Content-Type': 'application/json',
+                Origin: 'https://botdev.zapclick.digital',
+                Referer: 'https://botdev.zapclick.digital/pt-BR/signin',
+                'Sec-Fetch-Mode': 'cors',
+              },
+            }
+          );
+        }
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error('Failed to fetch Typebot token:', error);
       } finally {
         this.isLoading = false;
       }
-    }, */
+    },
   },
 };
 </script>

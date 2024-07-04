@@ -22,6 +22,7 @@ const conversations = accountId => ({
     'conversation_through_unattended',
     'conversations_status',
     'conversations_status_ej2',
+    'conversations_flows'
   ],
   menuItems: [
     {
@@ -59,6 +60,13 @@ const conversations = accountId => ({
       key: 'schedule',
       toState: frontendURL(`accounts/${accountId}/schedule`),
       toStateName: 'schedule',
+    },
+    {
+      icon: 'arrow-trending-lines',
+      label: 'FLOW_DEVBOT',
+      key: 'conversations_flows',
+      toState: frontendURL(`accounts/${accountId}/flows/conversations`),
+      toStateName: 'conversations_flows',
     },
 /*     {
       icon: 'arrow-trending-lines',

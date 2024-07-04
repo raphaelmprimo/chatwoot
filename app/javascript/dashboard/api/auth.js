@@ -6,6 +6,7 @@ import {
   clearCookiesOnLogout,
   deleteIndexedDBOnLogout,
 } from '../store/utils/api';
+import { LocalStorage } from '../../shared/helpers/localStorage';
 
 export default {
   validityCheck() {
@@ -13,6 +14,7 @@ export default {
     return axios.get(urlData.url);
   },
   logout() {
+    LocalStorage.remove('view-bot-primary');
     const urlData = endPoints('logout');
     const fetchPromise = new Promise((resolve, reject) => {
       axios

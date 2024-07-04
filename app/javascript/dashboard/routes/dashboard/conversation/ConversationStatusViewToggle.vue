@@ -1,6 +1,6 @@
 <template>
 	<section class="w-screen flex">
-		<section class="min-w-[230px] h-full py-2 bordas">
+		<section class="min-w-[250px] h-full py-2 bordas">
 		  <div class="h-full rounded-xl w-full py-4 px-2">
 		    <label>
 		      Visualização:

@@ -212,6 +212,7 @@
     "STATUS_CONVERSATIONS": "Kanban",
     "STATUS_CONVERSATIONS_EJ2": "Kanban-EJ2",
     "SCHEDULE": "Schedule",
+    "FLOW_DEVBOT": "Fluxo",
     "MENTIONED_CONVERSATIONS": "Mentions",
     "PARTICIPATING_CONVERSATIONS": "Participating",
     "UNATTENDED_CONVERSATIONS": "Unattended",

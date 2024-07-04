@@ -199,89 +199,8 @@ export default {
         ssoAccountId: this.ssoAccountId,
         ssoConversationId: this.ssoConversationId,
       };
-
       login(credentials)
         .then(async () => {
-          /* await axios.get(
-            'https://botdev.zapclick.digital/api/auth/providers',
-            {
-              headers: {
-                cookie:
-                  'next-auth.callback-url=http%253A%252F%252Fbotdev.zapclick.digital%253A3000%252Fpt-BR%252Fsignin%253FredirectPath%253D%25252Ftypebots; next-auth.csrf-token=a305722528b497223f9e72a8f2bd8fc9eb6cbdf7b7db67cb17208b6a195ab149%257C014ffba229921ac1d0c99fe9af8652a53aa56378a0a081d8bb085ebdad173bdd; __Host-next-auth.csrf-token=e11293c4a587d9a528589f7c89e87bf43995bc9261f61638ffd876b7c7680a73%257C860db6daeda5d346c42384347ff720c39b8b318919905f0b7f1b33061ce33cba; __Secure-next-auth.callback-url=https%253A%252F%252Fbotdev.zapclick.digital%252Fpt-BR%252Fsignin',
-                Accept: ,
-                'Accept-Language': 'pt-BR,pt;q=0.9',
-                Connection: 'keep-alive',
-                'Content-Type': 'application/json',
-                Cookie:
-                  '__Secure-next-auth.callback-url=https%3A%2F%2Fbotdev.zapclick.digital; __Host-next-auth.csrf-token=046f05d5abbaead854c547548323f77f31912d0a452477d7fe621c005123fdeb%7Cfa20eea0063398e0aa1ed6a47afd9fe31e46bf77b769636ad5961e8cdc4ac3c9',
-                'If-None-Match': '"vo9jtywp045e"',
-                Referer: 'https://botdev.zapclick.digital/pt-BR/signin',
-                'Sec-Fetch-Dest': 'empty',
-                'Sec-Fetch-Mode': 'cors',
-                'Sec-Fetch-Site': 'same-origin',
-                'User-Agent':
-                  'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-                'sec-ch-ua':
-                  '"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"',
-                'sec-ch-ua-mobile': '?0',
-                'sec-ch-ua-platform': '"Linux"',
-              },
-            }
-          ); */
-
-          const response = await axios.get(
-            'https://botdev.zapclick.digital/api/auth/csrf',
-            {
-              headers: {
-                cookie:
-                  'next-auth.callback-url=http%253A%252F%252Fbotdev.zapclick.digital%253A3000%252Fpt-BR%252Fsignin%253FredirectPath%253D%25252Ftypebots; next-auth.csrf-token=a305722528b497223f9e72a8f2bd8fc9eb6cbdf7b7db67cb17208b6a195ab149%257C014ffba229921ac1d0c99fe9af8652a53aa56378a0a081d8bb085ebdad173bdd; __Host-next-auth.csrf-token=e11293c4a587d9a528589f7c89e87bf43995bc9261f61638ffd876b7c7680a73%257C860db6daeda5d346c42384347ff720c39b8b318919905f0b7f1b33061ce33cba; __Secure-next-auth.callback-url=https%253A%252F%252Fbotdev.zapclick.digital%252Fpt-BR%252Fsignin',
-                Accept: '*/*',
-                'Accept-Language': 'pt-BR,pt;q=0.9',
-                Connection: 'keep-alive',
-                'Content-Type': 'application/json',
-                Cookie:
-                  '__Secure-next-auth.callback-url=https%3A%2F%2Fbotdev.zapclick.digital; __Host-next-auth.csrf-token=046f05d5abbaead854c547548323f77f31912d0a452477d7fe621c005123fdeb%7Cfa20eea0063398e0aa1ed6a47afd9fe31e46bf77b769636ad5961e8cdc4ac3c9',
-                Referer: 'https://botdev.zapclick.digital/pt-BR/signin',
-                'Sec-Fetch-Dest': 'empty',
-                'Sec-Fetch-Mode': 'cors',
-                'Sec-Fetch-Site': 'same-origin',
-                'User-Agent':
-                  'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-                'sec-ch-ua':
-                  '"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"',
-                'sec-ch-ua-mobile': '?0',
-                'sec-ch-ua-platform': '"Linux"',
-              },
-            }
-          );
-          // eslint-disable-next-line no-console
-          console.log(response.data.csrfToken, '@@@response');
-          /* const formData = new FormData();
-
-          formData.append('email', credentials.email);
-          formData.append('csrfToken', response.data.csrfToken);
-          formData.append('redirect', false);
-          formData.append('json', true);
-          formData.append(
-            'csrfToken',
-            '5ec1bda5d877891c0f1fa007af26c30972824f41b388cf2efffe4b968f633cd2'
-          );
-
-          axios.post(
-            'https://botdev.zapclick.digital/api/auth/signin/email',
-            formData,
-            {
-              headers: {
-                Accept: ,
-                'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
-                Connection: 'keep-alive',
-                'Content-Type': 'application/json',
-                'Sec-Fetch-Dest': 'empty',
-                'Sec-Fetch-Mode': 'cors',
-                'Sec-Fetch-Site': 'same-origin',
-              },
-            }
-          ); */
           this.showAlert(this.$t('LOGIN.API.SUCCESS_MESSAGE'));
         })
         .catch(response => {

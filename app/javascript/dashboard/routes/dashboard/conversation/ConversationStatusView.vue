@@ -1,16 +1,16 @@
 <template>
     <div class="col-md-12 control-section" id="container">
       <div class="content-wrapper" id="container-kanban">
-        <div class="flex justify-between items-center w-full">
-          <div v-on:click="() => toggleModalFunil('open')">
+        <div class="flex justify-between items-center xl:items-end w-full mb-8">
+          <div v-on:click="() => toggleModalFunil('open')" class="xl:mb-4">
             <ejs-button cssClass="e-flat" :isPrimary="false" d='dlgbtn'>
               Configurar funil
             </ejs-button>
           </div>
           <div class="container-search">
-            <span class="flex items-end gap-0.5 mb-8">
-              <fluent-icon icon="filter" size="30" class="icon-filter"/>
-              <span class="mr-4">
+            <span class="flex items-end gap-0.5">
+              <fluent-icon icon="filter" size="30" class="icon-filter xl:hidden"/>
+              <span class="mr-4 hidden xl:block">
                 <div>
                   <div class="grid grid-cols-1 gap-4 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
                     <div class="flex flex-col h-min">
@@ -189,7 +189,6 @@
 
 #container {
   height: 100%;
-  background: #FFF;
 }
 
 #container-kanban {
@@ -263,10 +262,9 @@
 }
 
 .icon-filter {
-  color: #00BDD1 !important;
+  color: #00def7 !important;
   margin-right: 15px;
   align-self: center;
-  margin-top: 1rem;
 }
 
 .container-search .e-input-group.e-control-wrapper {
