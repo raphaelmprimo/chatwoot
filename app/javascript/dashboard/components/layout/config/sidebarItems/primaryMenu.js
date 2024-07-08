@@ -20,6 +20,14 @@ const primaryMenuItems = accountId => [
     roles: ['administrator', 'agent'],
   },
   {
+    icon: 'bot',
+    key: 'bot',
+    label: 'BOT',
+    toState: frontendURL(`bots/${accountId}/devbots`),
+    toStateName: 'devbots',
+    roles: ['administrator', 'agent'],
+  },
+  {
     icon: 'book-contacts',
     key: 'contacts',
     label: 'CONTACTS',

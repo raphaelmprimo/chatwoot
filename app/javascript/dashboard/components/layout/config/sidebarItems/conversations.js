@@ -61,13 +61,7 @@ const conversations = accountId => ({
       toState: frontendURL(`accounts/${accountId}/schedule`),
       toStateName: 'schedule',
     },
-    {
-      icon: 'arrow-trending-lines',
-      label: 'FLOW_DEVBOT',
-      key: 'conversations_flows',
-      toState: frontendURL(`accounts/${accountId}/flows/conversations`),
-      toStateName: 'conversations_flows',
-    },
+
 /*     {
       icon: 'arrow-trending-lines',
       label: 'STATUS_CONVERSATIONS_EJ2',

@@ -60,7 +60,7 @@
             </a>
           </router-link>
         </woot-dropdown-item>
-        <woot-dropdown-item>
+        <!-- <woot-dropdown-item>
           <woot-button
             variant="clear"
             color-scheme="secondary"
@@ -70,7 +70,7 @@
           >
             {{ $t('SIDEBAR_ITEMS.APPEARANCE') }}
           </woot-button>
-        </woot-dropdown-item>
+        </woot-dropdown-item> -->
         <woot-dropdown-item v-if="currentUser.type === 'SuperAdmin'">
           <a
             href="/super_admin"

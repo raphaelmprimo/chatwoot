@@ -57,7 +57,7 @@ export const actions = {
     commit(SET_WIDGET_COLOR, widgetColor);
   },
   setColorScheme({ commit }, darkMode) {
-    commit(SET_COLOR_SCHEME, darkMode);
+    commit(SET_COLOR_SCHEME, "light");
   },
   setReferrerHost({ commit }, referrerHost) {
     commit(SET_REFERRER_HOST, referrerHost);

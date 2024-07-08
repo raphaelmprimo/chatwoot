@@ -93,6 +93,7 @@
     "vue-dompurify-html": "^2.5.2",
     "vue-easytable": "2.5.5",
     "vue-i18n": "8.24.3",
+    "vue-iframes": "^0.0.21",
     "vue-letter": "^0.1.3",
     "vue-loader": "^15.10.0",
     "vue-multiselect": "~2.1.6",

@@ -6,7 +6,7 @@ import { routes as notificationRoutes } from './notifications/routes';
 import { routes as inboxRoutes } from './inbox/routes';
 import { frontendURL } from '../../helper/URLHelper';
 import helpcenterRoutes from './helpcenter/helpcenter.routes';
-
+import { routes as botRoutes } from './flows/routes';
 const AppContainer = () => import('./Dashboard.vue');
 const Suspended = () => import('./suspended/Index.vue');
 
@@ -23,6 +23,7 @@ export default {
         ...contactRoutes,
         ...searchRoutes,
         ...notificationRoutes,
+        ...botRoutes,
       ],
     },
     {
