@@ -14,8 +14,12 @@
                 <div>
                   <div class="grid grid-cols-1 gap-4 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
                     <div class="flex flex-col h-min">
-                      <label for="name" class="text-stone-600 text-sm font-medium">Nome</label>
-                      <input type="text" id="name" placeholder="Filtre por nome" class="mt-2 h-[40px] block w-full rounded-md border border-gray-200 px-2 py-2 shadow-sm outline-none focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
+                      <label for="contacts" class="text-stone-600 text-sm font-medium">Contatos</label>
+                      <select id="contacts" class="mt-2 h-[40px] mb-0 block w-full rounded-md border border-gray-200 px-2 py-2 shadow-sm outline-none focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                        <option v-for="contact in contacts" :key="contact.key" :value="contact.name">{{ contact.name }}</option>
+                      </select>
+                      <!-- <label for="name" class="text-stone-600 text-sm font-medium">Nome</label>
+                      <input type="text" id="name" placeholder="Filtre por nome" class="mt-2 h-[40px] block w-full rounded-md border border-gray-200 px-2 py-2 shadow-sm outline-none focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" /> -->
                     </div>
   
                     <div class="flex flex-col h-min">
@@ -333,6 +337,7 @@ export default {
       statusOnStartDrag: '',
       selectedChat: [],
       columns: [],
+      contacts: [],
     };
   },
   provide: {
@@ -367,6 +372,12 @@ export default {
           console.error('Erro ao buscar colunas:', error);
         });
       // Fim das Colunas
+      axios.get(`/api/v1/accounts/${this.currentUser.account_id}/contacts`, { withCredentials: true })
+        .then(response => {
+          this.contacts = response.data.payload.map(contact => (
+            { name: contact.name.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()), key: contact.id }
+          ));
+        });
       const filtersToFetchAllConversations = {
         "assigneeType": "me",
         "status": "open",
