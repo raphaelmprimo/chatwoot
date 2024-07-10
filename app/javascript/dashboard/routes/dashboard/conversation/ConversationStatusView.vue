@@ -27,11 +27,7 @@
                       <label for="status" class="text-stone-600 text-sm font-medium">Funil</label>
   
                       <select id="status" class="mt-2 h-[40px] mb-0 block w-full rounded-md border border-gray-200 px-2 py-2 shadow-sm outline-none focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                        <option checked>Selecione</option>
-                        <option>Agendados</option>
-                        <option>Reagendados</option>
-                        <option>Remarcados</option>
-                        <option>Tratativas</option>
+                        <option v-for="column in columns" :key="column.key" :value="column.keyField">{{ column.headerText }}</option>
                       </select>
                     </div>
                   </div>
@@ -57,7 +53,7 @@
                 :key="column.key"
                 :headerText="column.headerText"
                 :allowToggle="allowToggle"
-                :keyField="column.key" 
+                :keyField="column.keyField" 
               />
           </e-columns>
         </ejs-kanban>
@@ -132,7 +128,7 @@
 .e-kanban.kanban-card-default .e-story {
   background-image: url(https://syncfusion.atlassian.net/secure/viewavatar?size=medium&avatarId=15515&avatarType=issuetype);
 }
-.e-kanban.kanban-card-default .e-epic {
+.e-kanban.kanban-card-default .e-epic {   
   background-image: url(https://syncfusion.atlassian.net/secure/viewavatar?size=medium&avatarId=15507&avatarType=issuetype);
 }
 .e-kanban.kanban-card-default .e-bug {
@@ -291,6 +287,7 @@ import Modal from '../../../components/Modal.vue'
 import { mapGetters } from 'vuex';
 import uiSettingsMixin from 'dashboard/mixins/uiSettings';
 import conversationMixin from '../../../mixins/conversations';
+import { getCurrentAccount } from '../../../helper/routeHelpers';
 
 
 Vue.use(KanbanPlugin);
@@ -306,7 +303,7 @@ export default {
     'ejs-textbox': TextBoxComponent,
     'ejs-grid': GridComponent,
     'Modal': Modal,
-    ConversationBox
+    ConversationBox,
   },
   mixins:[uiSettingsMixin, conversationMixin],
   props: {
@@ -359,14 +356,12 @@ export default {
   methods: {
     initialize() {
       // inicializa as Colunas do Kanban
-      const csrfToken = document.getElementsByName("csrf-token")[0].content;
-      axios.get("/api/v1/accounts/1/labels",{ withCredentials: true})
+     let contador = 0;
+      axios.get(`/api/v1/accounts/${this.currentUser.account_id}/labels`,{ withCredentials: true})
       .then(response => {
-        console.log(response.data,'AQUI')
-        this.columns = response.data.payload.map(label => ({
-          headerText: label.description,
-          key: label.title,
-        }));
+        this.columns = response.data.payload.map((label, index) => (
+          { headerText: label.description, key: label.title, keyField: index === 0 ? 'open' : `mock${++contador}` }
+        ));
         })
         .catch(error => {
           console.error('Erro ao buscar colunas:', error);
@@ -444,6 +439,7 @@ export default {
       chatList: 'getAllConversations',
       currentChat: 'getSelectedChat',
       allChatList: 'getAllStatusChats',
+      currentUser: 'getCurrentUser',
     }),
     isContactPanelOpen() {
       if (this.currentChat.id) {
