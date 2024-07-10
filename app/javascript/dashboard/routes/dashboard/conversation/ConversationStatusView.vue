@@ -52,10 +52,13 @@
         <ejs-kanban cssClass="kanban-card-default" id="kanban" keyField="status" :dataSource="conversationList"
         :cardSettings="cardSettings" :cardClick="onCardClick" ref="KanbanObj" :allowToggle="allowToggle" :dragStart="dragStart"  :dragStop="dragStop">
           <e-columns>
-            <e-column headerText="Agendados" keyField="open" :allowToggle="allowToggle"></e-column>
-            <e-column headerText="Reagendados" keyField="mock1" :allowToggle="allowToggle"></e-column>
-            <e-column headerText="Remarcados" keyField="mock2" :allowToggle="allowToggle"></e-column>
-            <e-column headerText="Tratativas" keyField="mock3" :allowToggle="allowToggle"></e-column>
+            <e-column
+              v-for="column in columns"
+                :key="column.key"
+                :headerText="column.headerText"
+                :allowToggle="allowToggle"
+                :keyField="column.key" 
+              />
           </e-columns>
         </ejs-kanban>
       </div>
@@ -331,7 +334,8 @@ export default {
       editSettings: { allowEditing: true, mode: 'Batch'},
       data: [],
       statusOnStartDrag: '',
-      selectedChat: []
+      selectedChat: [],
+      columns: [],
     };
   },
   provide: {
@@ -354,6 +358,20 @@ export default {
   },
   methods: {
     initialize() {
+      // inicializa as Colunas do Kanban
+      const csrfToken = document.getElementsByName("csrf-token")[0].content;
+      axios.get("/api/v1/accounts/1/labels",{ withCredentials: true})
+      .then(response => {
+        console.log(response.data,'AQUI')
+        this.columns = response.data.payload.map(label => ({
+          headerText: label.description,
+          key: label.title,
+        }));
+        })
+        .catch(error => {
+          console.error('Erro ao buscar colunas:', error);
+        });
+      // Fim das Colunas
       const filtersToFetchAllConversations = {
         "assigneeType": "me",
         "status": "open",
