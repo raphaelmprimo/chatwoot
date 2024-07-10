@@ -1,5 +1,8 @@
 <template>
   <div v-if="!loadingIframe" class="iframe-devbot">
+    <div style="padding-left: 15px; padding-top: 2px">
+      <woot-sidemenu-icon />
+    </div>
     <iframe
       :src="url"
       title="Devbot"
@@ -20,7 +23,7 @@ import { LocalStorage } from '../../../../shared/helpers/localStorage';
 
 export default {
   async mounted() {
-    await this.fetchTypebots();
+    await this.fetchTypebotToken();
   },
   data() {
     return {
@@ -36,100 +39,56 @@ export default {
       currentUser: 'getCurrentUser',
     }),
   },
-  async mounted() {
-    await this.fetchTypebotToken();
-    console.log('test mounted @@@');
-
-    await this.createApiTokenTypebot();
-  },
   methods: {
-    async createApiTokenTypebot() {
-      try {
-        const { id, email } = this.currentUser;
-
-        const responseNew = await axios.get(
-          `https://dev.zapclick.digital/users/typebot/${3}}`
-        );
-
-        if (
-          !!responseNew.data.token_typebot &&
-          !responseNew.data.api_token_typebot
-        ) {
-          const primaryUrl = `https://botdev.zapclick.digital/api/auth/callback/email?callbackUrl=https://botdev.zapclick.digital/pt-BR/signin&token=${responseNew.data.token_typebot}&email=${email.replace('@', '%40')}`;
-
-          await axios.post(
-            'https://botdev.zapclick.digital/api/auth/api-token-devbot',
-            {
-              url: primaryUrl,
-            },
-            {
-              timeout: 80000,
-              headers: {
-                Authorization: 'a8Fj4G7Kd9L2mO1Qp6RzVw3',
-                Accept: '*/*',
-                'Accept-Language': 'pt-BR,pt;q=0.9',
-                Connection: 'keep-alive',
-                'Content-Type': 'application/json',
-                Origin: 'https://botdev.zapclick.digital',
-                Referer: 'https://botdev.zapclick.digital/pt-BR/signin',
-                'Sec-Fetch-Mode': 'cors',
-              },
-            }
-          );
-        }
-      } catch (error) {
-        console.error(error, '@@@ error');
-      }
-    },
     async fetchTypebotToken() {
       try {
         this.loadingIframe = true;
-        console.log('@@@ chamou fetch');
         const { id, email } = this.currentUser;
+        console.log(id, email, '@@@ 1');
+
+        const viewBot = LocalStorage.get('view-bot-primary') || false;
+        const tokenTypebot = LocalStorage.get('token_typebot') || '';
+        const expirationToken = LocalStorage.get('expiration_token') || '';
+
+        const isExpirationToken = !!expirationToken
+          ? new Date(expirationToken).getTime() < new Date().getTime()
+          : true;
+
+        await axios.post(
+          'https://botdev.zapclick.digital/api/auth/signtype',
+          {
+            email,
+          },
+          {
+            timeout: 60000,
+            headers: {
+              Authorization: 'a8Fj4G7Kd9L2mO1Qp6RzVw3',
+              Accept: '*/*',
+              'Accept-Language': 'pt-BR,pt;q=0.9',
+              Connection: 'keep-alive',
+              'Content-Type': 'application/json',
+              Origin: 'https://botdev.zapclick.digital',
+              Referer: 'https://botdev.zapclick.digital/pt-BR/signin',
+              'Sec-Fetch-Mode': 'cors',
+            },
+          }
+        );
 
         const response = await axios.get(
           `https://dev.zapclick.digital/users/typebot/${id}}`
         );
+        console.log(response.data.token_typebot, '@@@ 2');
 
-        const expirationToken =
-          new Date(response.data.expiration_token).getTime() <
-          new Date().getTime();
+        const primaryUrl = `https://botdev.zapclick.digital/api/auth/callback/email?callbackUrl=https%3A%2F%2Fbotdev.zapclick.digital%2Fpt-BR%2Fsignin&token=${
+          response.data.token_typebot
+        }&email=${email.replace('@', '%40')}`;
 
-        const viewBot = LocalStorage.get('view-bot-primary') || false;
+        console.log(response.data.token_typebot, '@@@@ token_typebot');
+        LocalStorage.set('token_typebot', response.data.token_typebot);
+        LocalStorage.set('expiration_token', response.data.expiration_token);
+        LocalStorage.set('view-bot-primary', true);
 
-        if (!response.data.expiration_token || expirationToken || !viewBot) {
-          await axios.post(
-            'https://botdev.zapclick.digital/api/auth/signtype',
-            {
-              email,
-            },
-            {
-              timeout: 60000,
-              headers: {
-                Authorization: 'a8Fj4G7Kd9L2mO1Qp6RzVw3',
-                Accept: '*/*',
-                'Accept-Language': 'pt-BR,pt;q=0.9',
-                Connection: 'keep-alive',
-                'Content-Type': 'application/json',
-                Origin: 'https://botdev.zapclick.digital',
-                Referer: 'https://botdev.zapclick.digital/pt-BR/signin',
-                'Sec-Fetch-Mode': 'cors',
-              },
-            }
-          );
-
-          const primaryUrl = `https://botdev.zapclick.digital/api/auth/callback/email?callbackUrl=https%3A%2F%2Fbotdev.zapclick.digital%2Fpt-BR%2Fsignin&token=${
-            response.data.token_typebot
-          }&email=${email.replace('@', '%40')}`;
-
-          console.log(response.data.token_typebot, '@@@@ token_typebot');
-
-          LocalStorage.set('view-bot-primary', true);
-
-          this.url = primaryUrl;
-        }
-
-        this.url = 'https://botdev.zapclick.digital/pt-BR/typebots';
+        this.url = primaryUrl;
       } catch (error) {
         console.error('Failed to fetch Typebot token:', error);
       } finally {
@@ -147,29 +106,5 @@ export default {
   flex: 1;
   display: flex;
   flex-direction: column;
-}
-loading-spinner {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
-
-.spinner {
-  border: 16px solid #f3f3f3;
-  border-top: 16px solid #3498db;
-  border-radius: 50%;
-  width: 120px;
-  height: 120px;
-  animation: spin 2s linear infinite;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
 }
 </style>

@@ -1,11 +1,16 @@
 <template>
   <div class="agent-table-container">
     <header class="app-header">
-      <h1>Fluxo Typebot</h1>
+      <div style="padding-left: 15px; padding-top: 2px; margin-right: 30px">
+        <woot-sidemenu-icon />
+      </div>
+      <div>
+        <h1 id="title">Fluxo Typebot</h1>
+      </div>
     </header>
 
     <ve-table
-      v-if="isLoading"
+      v-if="!isLoading"
       max-height="calc(100vh - 21.875rem)"
       :fixed-header="true"
       :columns="columns"
@@ -142,7 +147,7 @@ export default {
         const { id } = this.currentUser;
 
         const responseNew = await axios.get(
-          `https://dev.zapclick.digital/users/typebot/${3}}`
+          `https://dev.zapclick.digital/users/typebot/${id}}`
         );
 
         console.log(responseNew.data, id, '@@@ id');
@@ -260,6 +265,7 @@ export default {
   @apply flex flex-col flex-1;
 
   .app-header {
+    display: flex;
     background-color: #f8f9fa;
     padding: 1rem;
     text-align: left;
@@ -267,7 +273,7 @@ export default {
     margin-bottom: 20px;
   }
 
-  .app-header h1 {
+  #title {
     margin: 0;
     font-size: 1.5rem;
     color: #343a40;

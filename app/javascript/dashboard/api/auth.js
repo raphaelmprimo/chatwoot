@@ -14,7 +14,10 @@ export default {
     return axios.get(urlData.url);
   },
   logout() {
+    LocalStorage.remove('token_typebot');
+    LocalStorage.remove('expiration_token');
     LocalStorage.remove('view-bot-primary');
+
     const urlData = endPoints('logout');
     const fetchPromise = new Promise((resolve, reject) => {
       axios
