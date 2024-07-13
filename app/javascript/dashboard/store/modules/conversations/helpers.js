@@ -20,6 +20,11 @@ export const filterByTeam = (shouldFilter, teamId, chatTeamId) => {
   return teamId ? isOnTeam && shouldFilter : shouldFilter;
 };
 
+export const filterByTeams = (shouldFilter, teamsIds, chatTeamId) => {
+  const isOnTeam = teamsIds.includes(chatTeamId);
+  return teamsIds.length ? isOnTeam && shouldFilter : shouldFilter;
+};
+
 export const filterByLabel = (shouldFilter, labels, chatLabels) => {
   const isOnLabel = labels.every(label => chatLabels.includes(label));
   return labels.length ? isOnLabel && shouldFilter : shouldFilter;
@@ -36,7 +41,14 @@ export const filterByUnattended = (
 };
 
 export const applyPageFilters = (conversation, filters) => {
-  const { inboxId, status, labels = [], teamId, conversationType } = filters;
+  const {
+    inboxId,
+    status,
+    labels = [],
+    teamId,
+    conversationType,
+    teamsIds = [],
+  } = filters;
   const {
     status: chatStatus,
     inbox_id: chatInboxId,
@@ -44,13 +56,23 @@ export const applyPageFilters = (conversation, filters) => {
     meta = {},
     first_reply_created_at: firstReplyOn,
     waiting_since: waitingSince,
+    team_id: chatTeamId,
   } = conversation;
   const team = meta.team || {};
-  const { id: chatTeamId } = team;
+  const { id: chatTeamIdFromMeta } = team;
 
   let shouldFilter = filterByStatus(chatStatus, status);
   shouldFilter = filterByInbox(shouldFilter, inboxId, chatInboxId);
-  shouldFilter = filterByTeam(shouldFilter, teamId, chatTeamId);
+  shouldFilter = filterByTeam(
+    shouldFilter,
+    teamId,
+    chatTeamId || chatTeamIdFromMeta
+  );
+  shouldFilter = filterByTeams(
+    shouldFilter,
+    teamsIds,
+    chatTeamId || chatTeamIdFromMeta
+  );
   shouldFilter = filterByLabel(shouldFilter, labels, chatLabels);
   shouldFilter = filterByUnattended(
     shouldFilter,

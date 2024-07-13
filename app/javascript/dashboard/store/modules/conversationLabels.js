@@ -40,6 +40,22 @@ export const actions = {
       });
     }
   },
+  updateLabel: async ({ commit }, { conversationId, conversation }) => {
+    commit(types.default.SET_CONVERSATION_LABELS_UI_FLAG, {
+      isUpdating: true,
+    });
+    try {
+      const response = await ConversationAPI.updateLabel(
+        conversationId,
+        conversation
+      );
+    } catch (error) {
+      commit(types.default.SET_CONVERSATION_LABELS_UI_FLAG, {
+        isUpdating: false,
+        isError: true,
+      });
+    }
+  },
   update: async ({ commit }, { conversationId, labels }) => {
     commit(types.default.SET_CONVERSATION_LABELS_UI_FLAG, {
       isUpdating: true,

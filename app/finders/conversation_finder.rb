@@ -86,7 +86,7 @@ class ConversationFinder
   end
 
   def find_all_conversations
-    @conversations = current_account.conversations.where(inbox_id: @inbox_ids)
+    @conversations = current_account.conversations.where(inbox_id: @inbox_ids) || current_account.conversations
     filter_by_conversation_type if params[:conversation_type]
     @conversations
   end
@@ -136,6 +136,12 @@ class ConversationFinder
     return unless @team
 
     @conversations = @conversations.where(team: @team)
+  end
+
+  def filter_by_teams
+    return unless @params[:teams]
+
+    @conversations.where(team: @params[:teams])
   end
 
   def filter_by_labels

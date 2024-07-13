@@ -12,6 +12,7 @@ class ConversationApi extends ApiClient {
     assigneeType,
     page,
     labels,
+    cached_label_list,
     teamId,
     conversationType,
     sortBy,
@@ -24,6 +25,7 @@ class ConversationApi extends ApiClient {
         assignee_type: assigneeType,
         page,
         labels,
+        cached_label_list,
         conversation_type: conversationType,
         sort_by: sortBy,
       },
@@ -95,13 +97,22 @@ class ConversationApi extends ApiClient {
     return axios.post(`${this.url}/${conversationId}/unmute`);
   }
 
-  meta({ inboxId, status, assigneeType, labels, teamId, conversationType }) {
+  meta({
+    inboxId,
+    status,
+    assigneeType,
+    labels,
+    cached_label_list,
+    teamId,
+    conversationType,
+  }) {
     return axios.get(`${this.url}/meta`, {
       params: {
         inbox_id: inboxId,
         status,
         assignee_type: assigneeType,
         labels,
+        cached_label_list,
         team_id: teamId,
         conversation_type: conversationType,
       },
@@ -125,6 +136,12 @@ class ConversationApi extends ApiClient {
   updateParticipants({ conversationId, userIds }) {
     return axios.patch(`${this.url}/${conversationId}/participants`, {
       user_ids: userIds,
+    });
+  }
+
+  updateLabel({ conversationId, conversation }) {
+    return axios.patch(`${this.url}/${conversationId}/update_label`, {
+      conversation: conversation,
     });
   }
 

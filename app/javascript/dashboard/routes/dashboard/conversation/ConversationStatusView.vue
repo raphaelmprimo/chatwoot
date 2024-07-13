@@ -16,11 +16,18 @@
                     <div class="flex flex-col h-min">
                       <label for="contacts" class="text-stone-600 text-sm font-medium">Contatos</label>
                       <select id="contacts" class="mt-2 h-[40px] mb-0 block w-full rounded-md border border-gray-200 px-2 py-2 shadow-sm outline-none focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                        <option v-for="contact in contacts" :key="contact.key" :value="contact.name">{{ contact.name }}</option>
+                        <option>Selecione o Agente</option>
+                        <option v-for="agent in agentList" :key="agent.email" :value="agent.name">{{ agent.name }}</option>
                       </select>
                       <!-- <label for="name" class="text-stone-600 text-sm font-medium">Nome</label>
                       <input type="text" id="name" placeholder="Filtre por nome" class="mt-2 h-[40px] block w-full rounded-md border border-gray-200 px-2 py-2 shadow-sm outline-none focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" /> -->
+                   
                     </div>
+                    <div style="display: none;">
+                      <ejs-textbox ref='SearchTeam' id="search_teams" :value="selectedTeams" @change="handleTeamsChange"></ejs-textbox>
+                      <ejs-textbox ref='SearchLabel' id="search_labels" :value="selectedLabels" @change="handleLabelsChange"></ejs-textbox>
+                    </div>
+
   
                     <div class="flex flex-col h-min">
                       <label for="date" class="text-stone-600 text-sm font-medium">Data</label>
@@ -31,7 +38,8 @@
                       <label for="status" class="text-stone-600 text-sm font-medium">Funil</label>
   
                       <select id="status" class="mt-2 h-[40px] mb-0 block w-full rounded-md border border-gray-200 px-2 py-2 shadow-sm outline-none focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                        <option v-for="column in columns" :key="column.key" :value="column.keyField">{{ column.headerText }}</option>
+                        <option>Selecione o Marcador</option>
+                        <option v-for="label in labelsList" :key="label.title" :value="label.description">{{ label.description }}</option>
                       </select>
                     </div>
                   </div>
@@ -40,8 +48,7 @@
               <ejs-textbox width="250px" class="e-large" placeholder="Pesquisar" ref="SearchText" id="search_text"></ejs-textbox>
               <woot-button
                 type="button"
-                class="button-search"
-              >
+                class="button-search">
                 <span class="flex items-center gap-0.5">
                   <fluent-icon icon="search" size="16" />
                 </span>
@@ -49,20 +56,27 @@
             </span>
           </div>
         </div>
+        <div >
+
+  
+    </div>
+
         <ejs-kanban cssClass="kanban-card-default" id="kanban" keyField="status" :dataSource="conversationList"
         :cardSettings="cardSettings" :cardClick="onCardClick" ref="KanbanObj" :allowToggle="allowToggle" :dragStart="dragStart"  :dragStop="dragStop">
           <e-columns>
+            <e-column headerText="Não Atribuídas" keyField="open"></e-column>
+
             <e-column
-              v-for="column in columns"
-                :key="column.key"
-                :headerText="column.headerText"
+              v-for="label in labelsList"
+                :key="label.id"
+                :headerText="label.description"
                 :allowToggle="allowToggle"
-                :keyField="column.keyField" 
+                :keyField="label.title" 
               />
           </e-columns>
         </ejs-kanban>
       </div>
-  
+
       <Modal :show="showModalFunil" :onClose="() => toggleModalFunil('close')" :w60="true">
       <div class="h-[82vh] w-full px-4 pt-16">
         <h2 class="text-xl font-semibold mb-8">Configurar Etapas</h2>
@@ -288,10 +302,13 @@ import { GridComponent, Edit, GridPlugin } from '@syncfusion/ej2-vue-grids';
 import { TextBoxComponent } from "@syncfusion/ej2-vue-inputs";
 import ConversationBox from '../../../components/widgets/conversation/ConversationBox.vue';
 import Modal from '../../../components/Modal.vue'
-import { mapGetters } from 'vuex';
+import { mapGetters,mapActions } from 'vuex';
 import uiSettingsMixin from 'dashboard/mixins/uiSettings';
 import conversationMixin from '../../../mixins/conversations';
 import { getCurrentAccount } from '../../../helper/routeHelpers';
+import filterQueryGenerator from '../../../helper/filterQueryGenerator.js';
+import { Query } from '@syncfusion/ej2-data';
+
 
 
 Vue.use(KanbanPlugin);
@@ -319,15 +336,28 @@ export default {
       type: [String, Number],
       default: 0,
     },
+    selectedTeams: {
+      type: Array,
+      default: () => []
+    },
+    selectedLabels: {
+      type: Array,
+      default: () => []
+    }
+   
   },
   data: function() {
     return {
       kanbanData: extend([], kanbanData, null, true),
       cardSettings: {
+        teamId: "team_id",
         contentField: "name",
-        headerField: "name",
+        headerField: "agent_name",
         tagsField: 'status',
         grabberField: 'color',
+        Assignee: "agent_name",
+        PrimaryKey: "team_id",
+        
       },
       allowToggle: true,
       showModalFunil: false,
@@ -336,8 +366,6 @@ export default {
       data: [],
       statusOnStartDrag: '',
       selectedChat: [],
-      columns: [],
-      contacts: [],
     };
   },
   provide: {
@@ -350,34 +378,67 @@ export default {
     },
   },
   mounted() {
+    this.$store.dispatch('agents/get');
+    this.$store.dispatch('labels/get');
+    this.initializeKanban();
     this.initialize();
   },
-  beforeMount: function() {
+  beforeMount: function () {
+    this.getProcessedListLabels();
     this.updateUISettings({
       show_secondary_sidebar: false,
       previously_used_sidebar_view: false,
     });
+
   },
   methods: {
+    async getProcessedListLabels() {
+      await this.$store.dispatch('labels/get');
+      this.localLabels = this.labels.map(label => (
+        { description: label.description,title: label.title, color: label.color, id: label.id }
+      ));
+    },
+    handleTeamsChange() { 
+      var emptyValue = true;
+      if (this.textTeamObj.element.value.length === 0) {
+              this.kanbanObj.query = new Query();
+              return;
+      }
+          let searchValue =  this.textTeamObj.element.value;
+          searchValue.length === 0 ? emptyValue = true : emptyValue = false;
+          let searchIds = searchValue.split(',').map(id => parseInt(id.trim(), 10));
+
+          let searchQuery = new Query();
+        if (searchValue !== '') {
+          searchQuery = new Query().where('team_id', 'contains', searchValue);
+      } 
+      this.kanbanObj.query = searchQuery;
+    },
+
+    handleLabelsChange() { 
+      var emptyValue = true;
+      if (this.textLabelObj.element.value.length === 0) {
+              this.kanbanObj.query = new Query();
+              return;
+      }
+          let searchValue =  this.textLabelObj.element.value;
+          searchValue.length === 0 ? emptyValue = true : emptyValue = false;
+          let searchIds = searchValue.split(',').map(id => parseInt(id.trim(), 10));
+
+          let searchQuery = new Query();
+        if (searchValue !== '') {
+          searchQuery = new Query().where('status', 'contains', searchValue);
+      }  
+      this.kanbanObj.query = searchQuery;
+    },
+
+    initializeKanban() { 
+      this.kanbanObj = this.$refs.KanbanObj.ej2Instances;
+      this.textTeamObj = this.$refs.SearchTeam.ej2Instances;
+      this.textLabelObj = this.$refs.SearchLabel.ej2Instances;
+    },
     initialize() {
-      // inicializa as Colunas do Kanban
-     let contador = 0;
-      axios.get(`/api/v1/accounts/${this.currentUser.account_id}/labels`,{ withCredentials: true})
-      .then(response => {
-        this.columns = response.data.payload.map((label, index) => (
-          { headerText: label.description, key: label.title, keyField: index === 0 ? 'open' : `mock${++contador}` }
-        ));
-        })
-        .catch(error => {
-          console.error('Erro ao buscar colunas:', error);
-        });
-      // Fim das Colunas
-      axios.get(`/api/v1/accounts/${this.currentUser.account_id}/contacts`, { withCredentials: true })
-        .then(response => {
-          this.contacts = response.data.payload.map(contact => (
-            { name: contact.name.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()), key: contact.id }
-          ));
-        });
+      console.log(this.$store.state.conversations)
       const filtersToFetchAllConversations = {
         "assigneeType": "me",
         "status": "open",
@@ -425,8 +486,19 @@ export default {
       console.log(event);
 
     },
-    dragStop(event) {
-      console.log(event);
+    async dragStop(event) {
+      const conversation = { id: event?.data[0].id, status: event?.data[0].status };
+      try {
+        await this.$store.dispatch('conversationLabels/updateLabel', {
+          conversationId: conversation.id,
+          conversation: conversation,
+        });
+      } catch (error) {
+        //
+      }
+      
+
+    
     },
     conversationListFormatter(conversationList) {
       let formatedConversationList = [];
@@ -434,24 +506,35 @@ export default {
       conversationList.map(conversation => {
         let getData = {
           id: conversation?.id,
-          name: conversation?.meta.sender.name,
-          status: conversation?.status,
-          color: "#02897B",
+          name: conversation?.meta.sender.name.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()),
+          team_id: conversation?.meta.team.id,
+          status: conversation?.labels[0],
+          agent_name: conversation?.meta.assignee.name,
+          image_agent: conversation?.meta.assignee.thumbnail,
+          color: "#02997B",
         };
         formatedConversationList.push(getData);
       });
-
       this.selectedChat = conversationList
       return formatedConversationList
-    }
+    },
+   
   },
   computed: {
     ...mapGetters({
       chatList: 'getAllConversations',
       currentChat: 'getSelectedChat',
-      allChatList: 'getAllStatusChats',
+      allChatList: 'getAllFilteredChats',
       currentUser: 'getCurrentUser',
+      labelsList: 'labels/getLabels',
+      agentList: 'agents/getAgents',
+
     }),
+    ...mapActions('labels', ['getAllLabels']),
+
+    labels() {
+      return this.$store.state.labels.records;
+    },
     isContactPanelOpen() {
       if (this.currentChat.id) {
         const { is_contact_sidebar_open: isContactSidebarOpen } =
@@ -461,12 +544,14 @@ export default {
       return false;
     },
     conversationList() {
+      const filterLabels = this.localLabels?.map(label => label.title);
       const filters = {
             assigneeType: "me",
             status: "open",
+            labels: filterLabels,    
             sortBy: "last_activity_at_desc",
             page: 1
-      };
+      }
       let conversationList = [];      
       conversationList = [...this.allChatList(filters)];
       return this.conversationListFormatter(conversationList);

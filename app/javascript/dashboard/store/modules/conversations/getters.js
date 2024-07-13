@@ -69,6 +69,12 @@ const getters = {
       return shouldFilter;
     });
   },
+  getAllFilteredChats: _state => activeFilters => {
+    return _state.allConversations.filter(conversation => {
+      const shouldFilter = applyPageFilters(conversation, activeFilters);
+      return shouldFilter;
+    });
+  },
   getChatListLoadingStatus: ({ listLoadingStatus }) => listLoadingStatus,
   getAllMessagesLoaded(_state) {
     const [chat] = getSelectedChatConversation(_state);

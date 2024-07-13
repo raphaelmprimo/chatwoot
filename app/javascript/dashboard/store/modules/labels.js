@@ -40,6 +40,16 @@ export const actions = {
       // Ignore error
     }
   },
+  async getAllLabels({ commit }) {
+    try {
+      const response = await LabelsAPI.get(true);
+      const listLabels = response.data.payload;
+      commit(types.SET_LABELS, listLabels);
+    } catch (error) {
+    } finally {
+      commit(types.SET_LABEL_UI_FLAG, { isFetching: false });
+    }
+  },
 
   get: async function getLabels({ commit }) {
     commit(types.SET_LABEL_UI_FLAG, { isFetching: true });
