@@ -30,12 +30,14 @@
 
 		    <section class="flex flex-col gap-8 mt-12">
 		    	<div v-if="teamsList.length" >
-			    	<h2>Times:</h2>
+			    	<h2 class="mb-3">Times:</h2>
 			    	<span v-for="item in teamsList" :key="item.id" class="flex items-center gap-2">
-					<label :for="item.id">
-			    		<input type="checkbox" :id="item.id" :value="item.id" v-model="selectedTeams">
-			    		{{ item.name.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()) }}
-					</label>
+					<div class="flex items-center">
+						<input type="checkbox" :id="item.id" :value="item.id" v-model="selectedTeams" class="h-4 w-4 cursor-pointer mr-1">
+						<label :for="item.id" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 cursor-pointer ">
+							{{ item.name.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()) }}
+						</label>
+					</div>
 			    	</span>
 			    </div>
 
@@ -45,12 +47,14 @@
 
 			    <div>
 					<div v-if="labelsList.length">
-			    	<h2>Marcadores:</h2>
+			    	<h2 class="mb-3">Marcadores:</h2>
 					<span v-for="label in labelsList" :key="label.id" class="flex items-center gap-2">
-					<label :for="label.id">
-			    		<input type="checkbox" :id="label.id" :value="label.title" v-model="selectedLabels">
-			    		{{ label.description }}
+					<div class="flex items-center">
+			    		<input type="checkbox" :id="label.id" :value="label.title" v-model="selectedLabels" class="h-4 w-4 cursor-pointer mr-1">
+					<label :for="label.id" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 cursor-pointer ">
+							{{ label.description }}
 					</label>
+				</div>
 			    	</span>
 				  </div>
 			    </div>

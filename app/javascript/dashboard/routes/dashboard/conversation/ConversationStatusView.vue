@@ -438,7 +438,6 @@ export default {
       this.textLabelObj = this.$refs.SearchLabel.ej2Instances;
     },
     initialize() {
-      console.log(this.$store.state.conversations)
       const filtersToFetchAllConversations = {
         "assigneeType": "me",
         "status": "open",
@@ -483,8 +482,6 @@ export default {
     },
     dragStart(event) {
       this.statusOnStartDrag = event?.data[0]?.Status;
-      console.log(event);
-
     },
     async dragStop(event) {
       const conversation = { id: event?.data[0].id, status: event?.data[0].status };
@@ -508,7 +505,7 @@ export default {
           id: conversation?.id,
           name: conversation?.meta.sender.name.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()),
           team_id: conversation?.meta.team.id,
-          status: conversation?.labels[0],
+          status: conversation?.labels[0] !== null ? conversation?.labels[0] : 'open',
           agent_name: conversation?.meta.assignee.name,
           image_agent: conversation?.meta.assignee.thumbnail,
           color: "#02997B",
@@ -544,11 +541,9 @@ export default {
       return false;
     },
     conversationList() {
-      const filterLabels = this.localLabels?.map(label => label.title);
       const filters = {
             assigneeType: "me",
             status: "open",
-            labels: filterLabels,    
             sortBy: "last_activity_at_desc",
             page: 1
       }
