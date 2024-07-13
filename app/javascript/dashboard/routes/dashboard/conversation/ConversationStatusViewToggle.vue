@@ -29,19 +29,13 @@
 		    </woot-button>
 
 		    <section class="flex flex-col gap-8 mt-12">
-		    	<div>
+		    	<div v-if="teamsList.length" >
 			    	<h2>Times:</h2>
-			    	<span class="flex items-center gap-2">
-			    		<input type="checkbox" id="time1">
-			    		<label for="time1">Time 1</label>
-			    	</span>
-			    	<span class="flex items-center gap-2">
-			    		<input type="checkbox" id="time2">
-			    		<label for="time2">Time 2</label>
-			    	</span>
-			    	<span class="flex items-center gap-2">
-			    		<input type="checkbox" id="time3">
-			    		<label for="time3">Time 3</label>
+			    	<span v-for="item in teamsList" :key="item.id" class="flex items-center gap-2">
+					<label :for="item.id">
+			    		<input type="checkbox" :id="item.id" :value="item.id" v-model="selectedTeams">
+			    		{{ item.name.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()) }}
+					</label>
 			    	</span>
 			    </div>
 
@@ -50,32 +44,20 @@
 			    </div>
 
 			    <div>
+					<div v-if="labelsList.length">
 			    	<h2>Marcadores:</h2>
-			    	<span class="flex items-center gap-2">
-			    		<input type="checkbox" id="tag1">
-			    		<label for="tag1">Tags 1</label>
+					<span v-for="label in labelsList" :key="label.id" class="flex items-center gap-2">
+					<label :for="label.id">
+			    		<input type="checkbox" :id="label.id" :value="label.title" v-model="selectedLabels">
+			    		{{ label.description }}
+					</label>
 			    	</span>
-			    	<span class="flex items-center gap-2">
-			    		<input type="checkbox" id="tag2">
-			    		<label for="tag2">Tags 2</label>
-			    	</span>
-			    	<span class="flex items-center gap-2">
-			    		<input type="checkbox" id="tag3">
-			    		<label for="tag3">Tags 3</label>
-			    	</span>
-			    	<span class="flex items-center gap-2">
-			    		<input type="checkbox" id="tag4">
-			    		<label for="tag4">Tags 4</label>
-			    	</span>
-			    	<span class="flex items-center gap-2">
-			    		<input type="checkbox" id="tag5">
-			    		<label for="tag5">Tags 5</label>
-			    	</span>
+				  </div>
 			    </div>
 		    </section>
 		  </div>
 		</section>
-		<conversation-status-view v-if="showing === 'kanban'"/>
+		<conversation-status-view v-if="showing === 'kanban'" :selected-teams="selectedTeams" :selected-labels="selectedLabels"/>
 		<conversation-view v-else/>
 	</section>
 </template>
@@ -84,23 +66,37 @@
 import ConversationStatusView from './ConversationStatusView'
 import ConversationView from './ConversationView'
 import uiSettingsMixin from 'dashboard/mixins/uiSettings';
+import { mapGetters } from 'vuex';
 
 
-	export default {
+export default {
 		components: {
 			'conversation-status-view': ConversationStatusView,
 			'conversation-view': ConversationView,
 		},
 		data: function() {
 			return {
-				showing: 'kanban'
+				showing: 'kanban',
+				selectedTeams: [],
+				selectedLabels: [],
 			}
-		},
+	},
+	mounted() {
+		this.$store.dispatch('labels/get');
+	},
+
 		methods: {
 			toggleView: function(value) {
 				this.showing = value
-			}
-		},
+			},
+		
+	},
+		computed: {
+			...mapGetters({
+				teamsList: 'teams/getTeams',
+				labelsList: 'labels/getLabels',
+				})
+			},
 		mixins:[uiSettingsMixin],
 	  	beforeDestroy: function() {
 		    this.updateUISettings({

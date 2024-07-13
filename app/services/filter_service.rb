@@ -48,6 +48,11 @@ class FilterService
       return Conversation.statuses.values if query_hash['values'].include?('all')
 
       query_hash['values'].map { |x| Conversation.statuses[x.to_sym] }
+    when 'labels'
+      puts "--------------------------> #{query_hash} <-----------------------------"
+      return Conversation.with_labels(values) if query_hash['values'].is_a?(Array)
+
+      Conversation.with_label(query_hash['values'])
     when 'message_type'
       query_hash['values'].map { |x| Message.message_types[x.to_sym] }
     when 'content'
