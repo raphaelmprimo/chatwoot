@@ -484,7 +484,6 @@ export default {
       this.statusOnStartDrag = event?.data[0]?.Status;
     },
     async dragStop(event) {
-      console.log('CONVERSATION',event?.data[0])
       const conversation = { id: event?.data[0].id, uuid: event?.data[0].uuid, status: event?.data[0].status };
       try {
         await this.$store.dispatch('conversationLabels/updateLabel', {
@@ -551,7 +550,6 @@ export default {
       }
       let conversationList = [];      
       conversationList = [...this.allChatList(filters)];
-      console.log('LISTA DE CONVERSAS',conversationList)
       return this.conversationListFormatter(conversationList);
     },
   },
