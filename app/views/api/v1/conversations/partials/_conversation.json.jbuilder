@@ -21,6 +21,7 @@ json.meta do
 end
 
 json.id conversation.display_id
+json.real_id conversation.id
 if conversation.messages.where(account_id: conversation.account_id).last.blank?
   json.messages []
 else

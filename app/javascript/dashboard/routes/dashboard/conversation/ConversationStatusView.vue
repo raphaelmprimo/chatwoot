@@ -502,7 +502,7 @@ export default {
 
       conversationList.map(conversation => {
         let getData = {
-          id: conversation?.id,
+          id: conversation?.real_id,
           name: conversation?.meta.sender.name.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()),
           team_id: conversation?.meta.team.id,
           status: conversation?.labels[0] !== null ? conversation?.labels[0] : 'open',
