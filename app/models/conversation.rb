@@ -180,7 +180,14 @@ class Conversation < ApplicationRecord
 
   def color 
     return "#A1B7BF" if (cached_label_list.to_sym == :open or !cached_label_list.present?)
-    Label.find_by(title: cached_label_list).color
+    
+    label = Label.find_by(title: cached_label_list)
+    label.present? ? label.color : "#A1B7BF"
+  end
+
+  def label 
+    label = Label.find_by(title: cached_label_list)
+    label.present? ? label.title : "open"
   end
 
   def get_team_id

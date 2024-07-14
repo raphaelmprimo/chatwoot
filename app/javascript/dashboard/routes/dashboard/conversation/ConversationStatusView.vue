@@ -506,7 +506,7 @@ export default {
           uuid: conversation?.uuid,
           name: conversation?.meta.sender.name.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()),
           team_id: conversation?.team_id,
-          status: conversation?.labels[0] !== null ? conversation?.labels[0] : 'open',
+          status: conversation?.label,
           agent_name: conversation?.meta.assignee.name,
           image_agent: conversation?.meta.assignee.thumbnail,
           color: conversation?.color,
