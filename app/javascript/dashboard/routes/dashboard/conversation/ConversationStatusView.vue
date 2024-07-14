@@ -484,7 +484,8 @@ export default {
       this.statusOnStartDrag = event?.data[0]?.Status;
     },
     async dragStop(event) {
-      const conversation = { id: event?.data[0].real_id, status: event?.data[0].status };
+      console.log('CONVERSATION',event?.data[0])
+      const conversation = { id: event?.data[0].id, uuid: event?.data[0].uuid, status: event?.data[0].status };
       try {
         await this.$store.dispatch('conversationLabels/updateLabel', {
           conversationId: conversation.id,
@@ -503,13 +504,13 @@ export default {
       conversationList.map(conversation => {
         let getData = {
           id: conversation?.id,
-          real_id: conversation?.real_id,
+          uuid: conversation?.uuid,
           name: conversation?.meta.sender.name.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()),
-          team_id: conversation?.meta.team.id,
+          team_id: conversation?.team_id,
           status: conversation?.labels[0] !== null ? conversation?.labels[0] : 'open',
           agent_name: conversation?.meta.assignee.name,
           image_agent: conversation?.meta.assignee.thumbnail,
-          color: "#02997B",
+          color: conversation?.color,
         };
         formatedConversationList.push(getData);
       });
@@ -522,7 +523,7 @@ export default {
     ...mapGetters({
       chatList: 'getAllConversations',
       currentChat: 'getSelectedChat',
-      allChatList: 'getAllFilteredChats',
+      allChatList: 'getAllStatusChats',
       currentUser: 'getCurrentUser',
       labelsList: 'labels/getLabels',
       agentList: 'agents/getAgents',
@@ -550,6 +551,7 @@ export default {
       }
       let conversationList = [];      
       conversationList = [...this.allChatList(filters)];
+      console.log('LISTA DE CONVERSAS',conversationList)
       return this.conversationListFormatter(conversationList);
     },
   },

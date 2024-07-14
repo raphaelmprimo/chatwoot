@@ -31,6 +31,8 @@ else
   ]
 end
 
+json.color conversation.color
+json.team_id conversation.get_team_id
 json.account_id conversation.account_id
 json.uuid conversation.uuid
 json.additional_attributes conversation.additional_attributes

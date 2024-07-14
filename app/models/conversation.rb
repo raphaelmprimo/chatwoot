@@ -178,6 +178,16 @@ class Conversation < ApplicationRecord
     (cached_label_list || '').split(',').map(&:strip)
   end
 
+  def color 
+    return "#A1B7BF" if (cached_label_list.to_sym == :open or cached_label_list.nil?)
+    Label.find_by(title: cached_label_list).color
+  end
+
+  def get_team_id
+    return team.id unless !team.present?
+    0
+  end
+
   def notifiable_assignee_change?
     return false unless saved_change_to_assignee_id?
     return false if assignee_id.blank?
