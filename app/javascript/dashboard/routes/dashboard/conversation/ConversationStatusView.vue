@@ -484,7 +484,7 @@ export default {
       this.statusOnStartDrag = event?.data[0]?.Status;
     },
     async dragStop(event) {
-      const conversation = { id: event?.data[0].id, status: event?.data[0].status };
+      const conversation = { id: event?.data[0].real_id, status: event?.data[0].status };
       try {
         await this.$store.dispatch('conversationLabels/updateLabel', {
           conversationId: conversation.id,
@@ -502,7 +502,8 @@ export default {
 
       conversationList.map(conversation => {
         let getData = {
-          id: conversation?.real_id,
+          id: conversation?.id,
+          real_id: conversation?.real_id,
           name: conversation?.meta.sender.name.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()),
           team_id: conversation?.meta.team.id,
           status: conversation?.labels[0] !== null ? conversation?.labels[0] : 'open',
