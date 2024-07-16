@@ -27,6 +27,7 @@ module.exports = {
     'import/no-unresolved': 'off',
     'vue/html-indent': 'off',
     'vue/multi-word-component-names': 'off',
+    'no-console': 'off',
     'vue/max-attributes-per-line': [
       'error',
       {
@@ -54,7 +55,8 @@ module.exports = {
     'vue/component-definition-name-casing': 'off',
     'vue/singleline-html-element-content-newline': 'off',
     'import/extensions': ['off'],
-    'no-console': 'error',
+    'vue/no-parsing-error': 'off',
+    'vue/multiline-html-element-content-newline': 'off',
   },
   settings: {
     'import/resolver': {

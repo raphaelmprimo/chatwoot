@@ -1,126 +1,525 @@
 <template>
-    <div class="col-md-12 control-section" id="container">
-      <div class="content-wrapper" id="container-kanban">
-        <div class="flex justify-between items-center xl:items-end w-full mb-8">
-          <div v-on:click="() => toggleModalFunil('open')" class="xl:mb-4">
-            <ejs-button cssClass="e-flat" :isPrimary="false" d='dlgbtn'>
-              Configurar funil
-            </ejs-button>
-          </div>
-          <div class="container-search">
-            <span class="flex items-end gap-0.5">
-              <fluent-icon icon="filter" size="30" class="icon-filter xl:hidden"/>
-              <span class="mr-4 hidden xl:block">
-                <div>
-                  <div class="grid grid-cols-1 gap-4 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
-                    <div class="flex flex-col h-min">
-                      <label for="contacts" class="text-stone-600 text-sm font-medium">Contatos</label>
-                      <select id="contacts" class="mt-2 h-[40px] mb-0 block w-full rounded-md border border-gray-200 px-2 py-2 shadow-sm outline-none focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                        <option>Selecione o Agente</option>
-                        <option v-for="agent in agentList" :key="agent.email" :value="agent.name">{{ agent.name }}</option>
-                      </select>
-                      <!-- <label for="name" class="text-stone-600 text-sm font-medium">Nome</label>
+  <div id="container" class="col-md-12 control-section">
+    <div id="container-kanban" class="content-wrapper">
+      <div class="flex justify-between items-center xl:items-end w-full mb-8">
+        <div class="xl:mb-4" @click="() => toggleModalFunil('open')">
+          <ejs-button css-class="e-flat" :is-primary="false" d="dlgbtn">
+            Configurar funil
+          </ejs-button>
+        </div>
+        <div class="container-search">
+          <span class="flex items-end gap-0.5">
+            <fluent-icon
+              icon="filter"
+              size="30"
+              class="icon-filter xl:hidden"
+            />
+            <span class="mr-4 hidden xl:block">
+              <div>
+                <div
+                  class="grid grid-cols-1 gap-4 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3"
+                >
+                  <div class="flex flex-col h-min">
+                    <label
+                      for="contacts"
+                      class="text-stone-600 text-sm font-medium"
+                      >Contatos</label
+                    >
+                    <select
+                      id="contacts"
+                      class="mt-2 h-[40px] mb-0 block w-full rounded-md border border-gray-200 px-2 py-2 shadow-sm outline-none focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                    >
+                      <option>Selecione o Agente</option>
+                      <option
+                        v-for="agent in agentList"
+                        :key="agent.email"
+                        :value="agent.name"
+                      >
+                        {{ agent.name }}
+                      </option>
+                    </select>
+                    <!-- <label for="name" class="text-stone-600 text-sm font-medium">Nome</label>
                       <input type="text" id="name" placeholder="Filtre por nome" class="mt-2 h-[40px] block w-full rounded-md border border-gray-200 px-2 py-2 shadow-sm outline-none focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" /> -->
-                   
-                    </div>
-                    <div style="display: none;">
-                      <ejs-textbox ref='SearchTeam' id="search_teams" :value="selectedTeams" @change="handleTeamsChange"></ejs-textbox>
-                      <ejs-textbox ref='SearchLabel' id="search_labels" :value="selectedLabels" @change="handleLabelsChange"></ejs-textbox>
-                    </div>
+                  </div>
+                  <div style="display: none">
+                    <ejs-textbox
+                      id="search_labels"
+                      ref="SearchLabel"
+                      :v-model="selectedLabel"
+                      :value="selectedLabel"
+                      @change="handleLabelsChange"
+                    />
+                    <ejs-textbox
+                      id="search_teams"
+                      ref="SearchTeam"
+                      :v-model="selectedTeam"
+                      :value="selectedTeam"
+                      @change="handleTeamsChange"
+                    />
+                  </div>
 
-  
-                    <div class="flex flex-col h-min">
-                      <label for="date" class="text-stone-600 text-sm font-medium">Data</label>
-                      <input type="date" id="date" class="mt-2 h-[40px] block w-full rounded-md border border-gray-200 px-2 py-2 shadow-sm outline-none focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
-                    </div>
-  
-                    <div class="flex flex-col h-min">
-                      <label for="status" class="text-stone-600 text-sm font-medium">Funil</label>
-  
-                      <select id="status" class="mt-2 h-[40px] mb-0 block w-full rounded-md border border-gray-200 px-2 py-2 shadow-sm outline-none focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                        <option>Selecione o Marcador</option>
-                        <option v-for="label in labelsList" :key="label.title" :value="label.description">{{ label.description }}</option>
-                      </select>
-                    </div>
+                  <div class="flex flex-col h-min">
+                    <label for="date" class="text-stone-600 text-sm font-medium"
+                      >Data</label
+                    >
+                    <input
+                      id="date"
+                      type="date"
+                      class="mt-2 h-[40px] block w-full rounded-md border border-gray-200 px-2 py-2 shadow-sm outline-none focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                    />
+                  </div>
+
+                  <div class="flex flex-col h-min">
+                    <label
+                      for="status"
+                      class="text-stone-600 text-sm font-medium"
+                      >Funil</label
+                    >
+
+                    <select
+                      id="status"
+                      class="mt-2 h-[40px] mb-0 block w-full rounded-md border border-gray-200 px-2 py-2 shadow-sm outline-none focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                    >
+                      <option>Selecione o Marcador</option>
+                      <option
+                        v-for="label in labelsList"
+                        :key="label.title"
+                        :value="label.description"
+                      >
+                        {{ label.description }}
+                      </option>
+                    </select>
                   </div>
                 </div>
-              </span>
-              <ejs-textbox width="250px" class="e-large" placeholder="Pesquisar" ref="SearchText" id="search_text"></ejs-textbox>
-              <woot-button
-                type="button"
-                class="button-search">
-                <span class="flex items-center gap-0.5">
-                  <fluent-icon icon="search" size="16" />
-                </span>
-              </woot-button>
+              </div>
             </span>
-          </div>
+            <ejs-textbox
+              id="search_text"
+              ref="SearchText"
+              width="250px"
+              class="e-large"
+              placeholder="Pesquisar"
+            />
+            <woot-button type="button" class="button-search">
+              <span class="flex items-center gap-0.5">
+                <fluent-icon icon="search" size="16" />
+              </span>
+            </woot-button>
+          </span>
         </div>
-        <div >
+      </div>
+      <div />
 
-  
+      <ejs-kanban
+        id="kanban"
+        ref="KanbanObj"
+        css-class="kanban-card-default"
+        key-field="status"
+        :data-source="conversationList"
+        :card-settings="cardSettings"
+        :card-click="onCardClick"
+        :allow-toggle="allowToggle"
+        :drag-start="dragStart"
+        :drag-stop="dragStop"
+      >
+        <e-columns>
+          <e-column header-text="Não Atribuídas" key-field="open" />
+
+          <e-column
+            v-for="label in labelsList"
+            :key="label.id"
+            :header-text="label.description"
+            :allow-toggle="allowToggle"
+            :key-field="label.title"
+          />
+        </e-columns>
+      </ejs-kanban>
     </div>
 
-        <ejs-kanban cssClass="kanban-card-default" id="kanban" keyField="status" :dataSource="conversationList"
-        :cardSettings="cardSettings" :cardClick="onCardClick" ref="KanbanObj" :allowToggle="allowToggle" :dragStart="dragStart"  :dragStop="dragStop">
-          <e-columns>
-            <e-column headerText="Não Atribuídas" keyField="open"></e-column>
-
-            <e-column
-              v-for="label in labelsList"
-                :key="label.id"
-                :headerText="label.description"
-                :allowToggle="allowToggle"
-                :keyField="label.title" 
-              />
-          </e-columns>
-        </ejs-kanban>
-      </div>
-
-      <Modal :show="showModalFunil" :onClose="() => toggleModalFunil('close')" :w60="true">
+    <Modal
+      :show="showModalFunil"
+      :on-close="() => toggleModalFunil('close')"
+      :w60="true"
+    >
       <div class="h-[82vh] w-full px-4 pt-16">
         <h2 class="text-xl font-semibold mb-8">Configurar Etapas</h2>
-        <ejs-grid :dataSource="data" :editSettings='editSettings' :cell-edit="rowSelected">
-            <e-columns>
-                <e-column field='nomeEtapa' headerText='Etapas do Funil' textAlign='center'></e-column>
-                <e-column field='camposObrigatorios' headerText='Campos Obrigatórios' textAlign='center' editType='booleanedit' displayAsCheckBox='true' type='boolean' ></e-column>
-                <e-column field='campoValor' headerText='Campo de Valor' textAlign='center' editType='booleanedit' displayAsCheckBox='true' type='boolean' ></e-column>
-                <e-column headerText='Etapa Final' textAlign='center' field="etapaFinal" editType='booleanedit' displayAsCheckBox='true' type='boolean' ></e-column>
-            </e-columns>
+        <ejs-grid
+          :data-source="data"
+          :edit-settings="editSettings"
+          :cell-edit="rowSelected"
+        >
+          <e-columns>
+            <e-column
+              field="nomeEtapa"
+              header-text="Etapas do Funil"
+              text-align="center"
+            />
+            <e-column
+              field="camposObrigatorios"
+              header-text="Campos Obrigatórios"
+              text-align="center"
+              edit-type="booleanedit"
+              display-as-check-box="true"
+              type="boolean"
+            />
+            <e-column
+              field="campoValor"
+              header-text="Campo de Valor"
+              text-align="center"
+              edit-type="booleanedit"
+              display-as-check-box="true"
+              type="boolean"
+            />
+            <e-column
+              header-text="Etapa Final"
+              text-align="center"
+              field="etapaFinal"
+              edit-type="booleanedit"
+              display-as-check-box="true"
+              type="boolean"
+            />
+          </e-columns>
         </ejs-grid>
         <woot-button
           type="button"
           class="button-visualization mt-4"
-          v-on:click="() => pushTable()"
+          @click="() => pushTable()"
         >
           Adicionar etapa
         </woot-button>
-        <hr>
-        <h2 class="text-xl font-semibold my-8">Campos que vão aparecer no card</h2>
+        <hr />
+        <h2 class="text-xl font-semibold my-8">
+          Campos que vão aparecer no card
+        </h2>
         <div class="w-[350px] pb-8">
-          <ejs-grid :dataSource="[{nomeCampo: 'Campo 1', campoSelecionado: false}, {nomeCampo: 'Tag 1', campoSelecionado: false}]" :editSettings='editSettings'>
-              <e-columns>
-                  <e-column field='nomeCampo' headerText='Nome do campo' textAlign='center'></e-column>
-                  <e-column field='campoSelecionado' headerText='' textAlign='center' editType='booleanedit' displayAsCheckBox='true' type='boolean' ></e-column>
-              </e-columns>
+          <ejs-grid
+            :data-source="[
+              { nomeCampo: 'Campo 1', campoSelecionado: false },
+              { nomeCampo: 'Tag 1', campoSelecionado: false },
+            ]"
+            :edit-settings="editSettings"
+          >
+            <e-columns>
+              <e-column
+                field="nomeCampo"
+                header-text="Nome do campo"
+                text-align="center"
+              />
+              <e-column
+                field="campoSelecionado"
+                header-text=""
+                text-align="center"
+                edit-type="booleanedit"
+                display-as-check-box="true"
+                type="boolean"
+              />
+            </e-columns>
           </ejs-grid>
         </div>
       </div>
     </Modal>
 
-    <Modal :show="showModalChat" :onClose="() => toggleModalChat('close')" :w80="true">
+    <Modal
+      :show="showModalChat"
+      :on-close="() => toggleModalChat('close')"
+      :w80="true"
+    >
       <div class="h-[82vh] w-full px-4 pt-16">
         <conversation-box
           :inbox-id="inboxId"
           :is-contact-panel-open="true"
           :is-on-expanded-layout="true"
-          @contact-panel-toggle="false"
           class="h-full"
+          @contact-panel-toggle="false"
         />
       </div>
     </Modal>
-    </div>
+  </div>
 </template>
+<script>
+import Vue from 'vue';
+import { extend } from '@syncfusion/ej2-base';
+import {
+  KanbanComponent,
+  ColumnDirective,
+  ColumnsDirective,
+  KanbanPlugin,
+} from '@syncfusion/ej2-vue-kanban';
+import { ButtonPlugin } from '@syncfusion/ej2-vue-buttons';
+import { TextBoxPlugin } from '@syncfusion/ej2-vue-inputs';
+import { kanbanData } from './datasource';
+import { GridComponent, Edit, GridPlugin } from '@syncfusion/ej2-vue-grids';
+import { TextBoxComponent } from '@syncfusion/ej2-vue-inputs';
+import ConversationBox from '../../../components/widgets/conversation/ConversationBox.vue';
+import Modal from '../../../components/Modal.vue';
+import { mapGetters, mapActions } from 'vuex';
+import uiSettingsMixin from 'dashboard/mixins/uiSettings';
+import conversationMixin from '../../../mixins/conversations';
+import { Query } from '@syncfusion/ej2-data';
+
+Vue.use(KanbanPlugin);
+Vue.use(TextBoxPlugin);
+Vue.use(ButtonPlugin);
+Vue.use(GridPlugin);
+
+export default {
+  components: {
+    'ejs-kanban': KanbanComponent,
+    'e-column': ColumnDirective,
+    'e-columns': ColumnsDirective,
+    'ejs-textbox': TextBoxComponent,
+    'ejs-grid': GridComponent,
+    Modal: Modal,
+    ConversationBox,
+  },
+  mixins: [uiSettingsMixin, conversationMixin],
+  provide: {
+    kanban: [],
+    grid: [Edit],
+  },
+  props: {
+    conversationId: {
+      type: [String, Number],
+      default: 0,
+    },
+    inboxId: {
+      type: [String, Number],
+      default: 0,
+    },
+    selectedTeam: {
+      type: [String, Number],
+      default: 0,
+    },
+    selectedLabel: {
+      type: String,
+      default: 'todos',
+    },
+  },
+  data: function () {
+    return {
+      kanbanData: extend([], kanbanData, null, true),
+      cardSettings: {
+        teamId: 'team_id',
+        contentField: 'name',
+        headerField: 'agent_name',
+        tagsField: 'status',
+        grabberField: 'color',
+        Assignee: 'agent_name',
+        PrimaryKey: 'team_id',
+      },
+      allowToggle: true,
+      showModalFunil: false,
+      showModalChat: false,
+      editSettings: { allowEditing: true, mode: 'Batch' },
+      data: [],
+      statusOnStartDrag: '',
+      selectedChat: [],
+    };
+  },
+  watch: {
+    conversationId() {
+      this.fetchConversationIfUnavailable();
+    },
+  },
+  mounted() {
+    this.$store.dispatch('agents/get');
+    this.$store.dispatch('labels/get');
+    this.initializeKanban();
+    this.initialize();
+  },
+  beforeMount: function () {
+    this.getProcessedListLabels();
+    this.updateUISettings({
+      show_secondary_sidebar: false,
+      previously_used_sidebar_view: false,
+    });
+  },
+  methods: {
+    async getProcessedListLabels() {
+      await this.$store.dispatch('labels/get');
+      this.localLabels = this.labels.map(label => ({
+        description: label.description,
+        title: label.title,
+        color: label.color,
+        id: label.id,
+      }));
+    },
+    handleTeamsChange() {
+      var emptyValue = true;
+      if (
+        this.textTeamObj.element.value.length === 0 ||
+        this.textTeamObj.element.value === 0
+      ) {
+        this.kanbanObj.query = new Query();
+        return;
+      }
+      let searchValue = this.textTeamObj.element.value;
+      searchValue.length === 0 ? (emptyValue = true) : (emptyValue = false);
+
+      let searchQuery = new Query();
+      if (searchValue !== '0') {
+        searchQuery = new Query().search(
+          searchValue,
+          ['team_id'],
+          'contains',
+          true
+        );
+      }
+      this.kanbanObj.query = searchQuery;
+    },
+
+    handleLabelsChange() {
+      var emptyValue = true;
+      if (this.textLabelObj.element.value === 'todos') {
+        this.kanbanObj.query = new Query();
+        return;
+      }
+      let searchValue = this.textLabelObj.element.value;
+      searchValue.length === 0 ? (emptyValue = true) : (emptyValue = false);
+      let searchIds = searchValue.split(',').map(id => parseInt(id.trim(), 10));
+
+      let searchQuery = new Query();
+      if (searchValue !== '') {
+        searchQuery = new Query().where('status', 'equal', searchValue);
+      }
+      this.kanbanObj.query = searchQuery;
+    },
+
+    initializeKanban() {
+      this.kanbanObj = this.$refs.KanbanObj.ej2Instances;
+      this.textTeamObj = this.$refs.SearchTeam.ej2Instances;
+      this.textLabelObj = this.$refs.SearchLabel.ej2Instances;
+    },
+    initialize() {
+      const filtersToFetchAllConversations = {
+        assigneeType: 'me',
+        status: 'open',
+        sortBy: 'last_activity_at_desc',
+        page: 1,
+      };
+      this.$store.dispatch(
+        'fetchAllConversations',
+        filtersToFetchAllConversations
+      );
+    },
+    onCardClick: function (_args) {
+      let filtredSelectedChat = this.selectedChat.filter(
+        chat => _args?.data?.id === chat?.id
+      );
+      this.$store.dispatch('setActiveChat', {
+        data: filtredSelectedChat[0],
+        after: 1,
+      });
+      this.toggleModalChat('open');
+    },
+    redirectToDashboard() {
+      this.$router.push('/app/accounts/1/dashboard');
+    },
+    toggleModalFunil(action) {
+      if (action == 'open') {
+        this.showModalFunil = true;
+      } else {
+        this.showModalFunil = false;
+      }
+    },
+    toggleModalChat(action) {
+      if (action == 'open') {
+        this.showModalChat = true;
+      } else {
+        this.showModalChat = false;
+      }
+    },
+    rowSelected(e) {
+      console.log(e, this.data[0]);
+    },
+    pushTable() {
+      const hasId = this.data.at(-1)?.id;
+      const newId = hasId >= 0 ? hasId + 1 : 0;
+      this.data.push({
+        id: newId,
+        nomeEtapa: `Etapa ${newId}`,
+        camposObrigatorios: false,
+        campoValor: false,
+        etapaFinal: false,
+      });
+    },
+    dragStart(event) {
+      this.statusOnStartDrag = event?.data[0]?.Status;
+    },
+    async dragStop(event) {
+      const conversation = {
+        id: event?.data[0].id,
+        uuid: event?.data[0].uuid,
+        status: event?.data[0].status,
+      };
+      try {
+        await this.$store.dispatch('conversationLabels/updateLabel', {
+          conversationId: conversation.id,
+          conversation: conversation,
+        });
+      } catch (error) {
+        //
+      }
+    },
+    conversationListFormatter(conversationList) {
+      let formatedConversationList = [];
+
+      conversationList.map(conversation => {
+        let getData = {
+          id: conversation?.id,
+          uuid: conversation?.uuid,
+          name: conversation?.meta.sender.name.replace(
+            /(^\w{1})|(\s+\w{1})/g,
+            letter => letter.toUpperCase()
+          ),
+          team_id: conversation?.team_id,
+          status: conversation?.label,
+          agent_name: conversation?.meta.assignee.name,
+          image_agent: conversation?.meta.assignee.thumbnail,
+          color: conversation?.color,
+        };
+        formatedConversationList.push(getData);
+      });
+      this.selectedChat = conversationList;
+      return formatedConversationList;
+    },
+  },
+  computed: {
+    ...mapGetters({
+      chatList: 'getAllConversations',
+      currentChat: 'getSelectedChat',
+      allChatList: 'getAllStatusChats',
+      currentUser: 'getCurrentUser',
+      labelsList: 'labels/getLabels',
+      agentList: 'agents/getAgents',
+    }),
+    ...mapActions('labels', ['getAllLabels']),
+
+    labels() {
+      return this.$store.state.labels.records;
+    },
+    isContactPanelOpen() {
+      if (this.currentChat.id) {
+        const { is_contact_sidebar_open: isContactSidebarOpen } =
+          this.uiSettings;
+        return isContactSidebarOpen;
+      }
+      return false;
+    },
+    conversationList() {
+      const filters = {
+        assigneeType: 'me',
+        status: 'open',
+        sortBy: 'last_activity_at_desc',
+        page: 1,
+      };
+      let conversationList = [];
+      conversationList = [...this.allChatList(filters)];
+      return this.conversationListFormatter(conversationList);
+    },
+  },
+};
+</script>
 <style>
 @import '../../../../../../node_modules/@syncfusion/ej2-base/styles/material.css';
 @import '../../../../../../node_modules/@syncfusion/ej2-buttons/styles/material.css';
@@ -130,7 +529,7 @@
 @import '../../../../../../node_modules/@syncfusion/ej2-popups/styles/material.css';
 @import '../../../../../../node_modules/@syncfusion/ej2-vue-kanban/styles/material.css';
 @import '../../../../../../node_modules/@syncfusion/ej2-vue-inputs/styles/bootstrap.css';
-@import "../../../../../../node_modules/@syncfusion/ej2-vue-grids/styles/tailwind.css";
+@import '../../../../../../node_modules/@syncfusion/ej2-vue-grids/styles/tailwind.css';
 
 .e-kanban.kanban-card-default .e-card-footer-css {
   align-self: center;
@@ -146,7 +545,7 @@
 .e-kanban.kanban-card-default .e-story {
   background-image: url(https://syncfusion.atlassian.net/secure/viewavatar?size=medium&avatarId=15515&avatarType=issuetype);
 }
-.e-kanban.kanban-card-default .e-epic {   
+.e-kanban.kanban-card-default .e-epic {
   background-image: url(https://syncfusion.atlassian.net/secure/viewavatar?size=medium&avatarId=15507&avatarType=issuetype);
 }
 .e-kanban.kanban-card-default .e-bug {
@@ -197,8 +596,13 @@
   background-image: url(https://ej2.syncfusion.com/demos/src/kanban/images/Margaret%20hamilt.png);
 }
 
-.e-kanban.kanban-card-default .e-nancy-davloio, .e-kanban.kanban-card-default .e-andrew-fuller, .e-kanban.kanban-card-default .e-janet-leverling,
-.e-kanban.kanban-card-default .e-steven-walker, .e-kanban.kanban-card-default .e-michael-suyama, .e-kanban.kanban-card-default .e-robert-king, .e-kanban.kanban-card-default .e-margaret-hamilt  {
+.e-kanban.kanban-card-default .e-nancy-davloio,
+.e-kanban.kanban-card-default .e-andrew-fuller,
+.e-kanban.kanban-card-default .e-janet-leverling,
+.e-kanban.kanban-card-default .e-steven-walker,
+.e-kanban.kanban-card-default .e-michael-suyama,
+.e-kanban.kanban-card-default .e-robert-king,
+.e-kanban.kanban-card-default .e-margaret-hamilt {
   border-radius: 72px;
   height: 40px;
   width: 40px;
@@ -212,7 +616,10 @@
   padding: 10px 20px;
 }
 
-.e-kanban .e-kanban-table.e-content-table .e-content-row:not(.e-swimlane-row) td {
+.e-kanban
+  .e-kanban-table.e-content-table
+  .e-content-row:not(.e-swimlane-row)
+  td {
   background: #f5f5f5;
   height: 800px;
   border-radius: 15px;
@@ -232,15 +639,29 @@
   border-radius: 10px;
 }
 
-.e-kanban .e-kanban-content .e-content-row .e-content-cells .e-card-wrapper .e-card {
+.e-kanban
+  .e-kanban-content
+  .e-content-row
+  .e-content-cells
+  .e-card-wrapper
+  .e-card {
   border-radius: 15px;
 }
 
-.e-kanban .e-kanban-content .e-content-row .e-content-cells .e-card-wrapper .e-card:hover {
+.e-kanban
+  .e-kanban-content
+  .e-content-row
+  .e-content-cells
+  .e-card-wrapper
+  .e-card:hover {
   background-color: rgb(216, 216, 216);
 }
 
-.e-kanban .e-kanban-content .e-content-row .e-content-cells.e-collapsed .e-collapse-header-text {
+.e-kanban
+  .e-kanban-content
+  .e-content-row
+  .e-content-cells.e-collapsed
+  .e-collapse-header-text {
   rotate: 180deg;
 }
 
@@ -250,7 +671,7 @@
 
 .button-visualization {
   border-radius: 15px;
-  background-color: #00BDD1 !important;
+  background-color: #00bdd1 !important;
 }
 
 .container-button-visualization {
@@ -263,19 +684,41 @@
   justify-content: center;
 }
 
-.e-input:not(:valid), .e-input:valid, .e-float-input.e-control-wrapper input:not(:valid), .e-float-input.e-control-wrapper input:valid, .e-float-input input:not(:valid), .e-float-input input:valid, .e-input-group input:not(:valid), .e-input-group input:valid, .e-input-group.e-control-wrapper input:not(:valid), .e-input-group.e-control-wrapper input:valid, .e-float-input.e-control-wrapper textarea:not(:valid), .e-float-input.e-control-wrapper textarea:valid, .e-float-input textarea:not(:valid), .e-float-input textarea:valid, .e-input-group.e-control-wrapper textarea:not(:valid), .e-input-group.e-control-wrapper textarea:valid, .e-input-group textarea:not(:valid), .e-input-group textarea:valid {
+.e-input:not(:valid),
+.e-input:valid,
+.e-float-input.e-control-wrapper input:not(:valid),
+.e-float-input.e-control-wrapper input:valid,
+.e-float-input input:not(:valid),
+.e-float-input input:valid,
+.e-input-group input:not(:valid),
+.e-input-group input:valid,
+.e-input-group.e-control-wrapper input:not(:valid),
+.e-input-group.e-control-wrapper input:valid,
+.e-float-input.e-control-wrapper textarea:not(:valid),
+.e-float-input.e-control-wrapper textarea:valid,
+.e-float-input textarea:not(:valid),
+.e-float-input textarea:valid,
+.e-input-group.e-control-wrapper textarea:not(:valid),
+.e-input-group.e-control-wrapper textarea:valid,
+.e-input-group textarea:not(:valid),
+.e-input-group textarea:valid {
   height: 2.5rem;
 }
 
-.e-input-group:not(.e-success):not(.e-warning):not(.e-error):not(.e-float-icon-left),
-.e-input-group:hover:not(.e-success):not(.e-warning):not(.e-error):not(.e-float-icon-left) { /* csslint allow: adjoining-classes */
+.e-input-group:not(.e-success):not(.e-warning):not(.e-error):not(
+    .e-float-icon-left
+  ),
+.e-input-group:hover:not(.e-success):not(.e-warning):not(.e-error):not(
+    .e-float-icon-left
+  ) {
+  /* csslint allow: adjoining-classes */
   border-radius: 15px;
 }
 
 .button-search {
   margin-left: 15px;
   border-radius: 15px;
-  background-color: #00BDD1 !important;
+  background-color: #00bdd1 !important;
 }
 
 .icon-filter {
@@ -291,267 +734,3 @@
   height: 40px !important;
 }
 </style>
-<script>
-import Vue from "vue";
-import { extend } from "@syncfusion/ej2-base";
-import { KanbanComponent, ColumnDirective, ColumnsDirective, KanbanPlugin, } from "@syncfusion/ej2-vue-kanban";
-import { ButtonPlugin } from "@syncfusion/ej2-vue-buttons";
-import { TextBoxPlugin } from "@syncfusion/ej2-vue-inputs";
-import { kanbanData } from "./datasource";
-import { GridComponent, Edit, GridPlugin } from '@syncfusion/ej2-vue-grids';
-import { TextBoxComponent } from "@syncfusion/ej2-vue-inputs";
-import ConversationBox from '../../../components/widgets/conversation/ConversationBox.vue';
-import Modal from '../../../components/Modal.vue'
-import { mapGetters,mapActions } from 'vuex';
-import uiSettingsMixin from 'dashboard/mixins/uiSettings';
-import conversationMixin from '../../../mixins/conversations';
-import { getCurrentAccount } from '../../../helper/routeHelpers';
-import filterQueryGenerator from '../../../helper/filterQueryGenerator.js';
-import { Query } from '@syncfusion/ej2-data';
-
-
-
-Vue.use(KanbanPlugin);
-Vue.use(TextBoxPlugin);
-Vue.use(ButtonPlugin);
-Vue.use(GridPlugin);
-
-export default {
-  components: {
-    'ejs-kanban': KanbanComponent,
-    'e-column': ColumnDirective,
-    'e-columns': ColumnsDirective,
-    'ejs-textbox': TextBoxComponent,
-    'ejs-grid': GridComponent,
-    'Modal': Modal,
-    ConversationBox,
-  },
-  mixins:[uiSettingsMixin, conversationMixin],
-  props: {
-    conversationId: {
-      type: [String, Number],
-      default: 0,
-    },
-    inboxId: {
-      type: [String, Number],
-      default: 0,
-    },
-    selectedTeams: {
-      type: Array,
-      default: () => []
-    },
-    selectedLabels: {
-      type: Array,
-      default: () => []
-    }
-   
-  },
-  data: function() {
-    return {
-      kanbanData: extend([], kanbanData, null, true),
-      cardSettings: {
-        teamId: "team_id",
-        contentField: "name",
-        headerField: "agent_name",
-        tagsField: 'status',
-        grabberField: 'color',
-        Assignee: "agent_name",
-        PrimaryKey: "team_id",
-        
-      },
-      allowToggle: true,
-      showModalFunil: false,
-      showModalChat: false,
-      editSettings: { allowEditing: true, mode: 'Batch'},
-      data: [],
-      statusOnStartDrag: '',
-      selectedChat: [],
-    };
-  },
-  provide: {
-    kanban: [],
-    grid: [Edit],
-  },
-  watch: {
-    conversationId() {
-      this.fetchConversationIfUnavailable();
-    },
-  },
-  mounted() {
-    this.$store.dispatch('agents/get');
-    this.$store.dispatch('labels/get');
-    this.initializeKanban();
-    this.initialize();
-  },
-  beforeMount: function () {
-    this.getProcessedListLabels();
-    this.updateUISettings({
-      show_secondary_sidebar: false,
-      previously_used_sidebar_view: false,
-    });
-
-  },
-  methods: {
-    async getProcessedListLabels() {
-      await this.$store.dispatch('labels/get');
-      this.localLabels = this.labels.map(label => (
-        { description: label.description,title: label.title, color: label.color, id: label.id }
-      ));
-    },
-    handleTeamsChange() { 
-      var emptyValue = true;
-      if (this.textTeamObj.element.value.length === 0) {
-              this.kanbanObj.query = new Query();
-              return;
-      }
-          let searchValue =  this.textTeamObj.element.value;
-          searchValue.length === 0 ? emptyValue = true : emptyValue = false;
-          let searchIds = searchValue.split(',').map(id => parseInt(id.trim(), 10));
-
-          let searchQuery = new Query();
-        if (searchValue !== '') {
-          searchQuery = new Query().where('team_id', 'contains', searchValue);
-      } 
-      this.kanbanObj.query = searchQuery;
-    },
-
-    handleLabelsChange() { 
-      var emptyValue = true;
-      if (this.textLabelObj.element.value.length === 0) {
-              this.kanbanObj.query = new Query();
-              return;
-      }
-          let searchValue =  this.textLabelObj.element.value;
-          searchValue.length === 0 ? emptyValue = true : emptyValue = false;
-          let searchIds = searchValue.split(',').map(id => parseInt(id.trim(), 10));
-
-          let searchQuery = new Query();
-        if (searchValue !== '') {
-          searchQuery = new Query().where('status', 'contains', searchValue);
-      }  
-      this.kanbanObj.query = searchQuery;
-    },
-
-    initializeKanban() { 
-      this.kanbanObj = this.$refs.KanbanObj.ej2Instances;
-      this.textTeamObj = this.$refs.SearchTeam.ej2Instances;
-      this.textLabelObj = this.$refs.SearchLabel.ej2Instances;
-    },
-    initialize() {
-      const filtersToFetchAllConversations = {
-        "assigneeType": "me",
-        "status": "open",
-        "sortBy": "last_activity_at_desc",
-        "page": 1
-      }
-      this.$store.dispatch('fetchAllConversations', filtersToFetchAllConversations)
-    },
-    onCardClick: function(_args) {
-      let filtredSelectedChat = this.selectedChat.filter(chat => _args?.data?.id === chat?.id)
-      this.$store
-          .dispatch('setActiveChat', {
-            data: filtredSelectedChat[0],
-            after: 1,
-          })
-      this.toggleModalChat('open')
-    },
-    redirectToDashboard() {
-      this.$router.push('/app/accounts/1/dashboard');
-    },
-    toggleModalFunil(action) {
-      if (action == 'open') {
-        this.showModalFunil = true
-      } else {
-        this.showModalFunil = false
-      }
-    },
-    toggleModalChat(action) {
-      if (action == 'open') {
-        this.showModalChat = true
-      } else {
-        this.showModalChat = false
-      }
-    },
-    rowSelected(e) {
-      console.log(e, this.data[0])
-    },
-    pushTable() {
-      const hasId = this.data.at(-1)?.id
-      const newId = hasId >= 0 ? hasId + 1 : 0 
-      this.data.push({id: newId, nomeEtapa: `Etapa ${newId}`, camposObrigatorios: false, campoValor: false, etapaFinal: false})
-    },
-    dragStart(event) {
-      this.statusOnStartDrag = event?.data[0]?.Status;
-    },
-    async dragStop(event) {
-      const conversation = { id: event?.data[0].id, uuid: event?.data[0].uuid, status: event?.data[0].status };
-      try {
-        await this.$store.dispatch('conversationLabels/updateLabel', {
-          conversationId: conversation.id,
-          conversation: conversation,
-        });
-      } catch (error) {
-        //
-      }
-      
-
-    
-    },
-    conversationListFormatter(conversationList) {
-      let formatedConversationList = [];
-
-      conversationList.map(conversation => {
-        let getData = {
-          id: conversation?.id,
-          uuid: conversation?.uuid,
-          name: conversation?.meta.sender.name.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()),
-          team_id: conversation?.team_id,
-          status: conversation?.label,
-          agent_name: conversation?.meta.assignee.name,
-          image_agent: conversation?.meta.assignee.thumbnail,
-          color: conversation?.color,
-        };
-        formatedConversationList.push(getData);
-      });
-      this.selectedChat = conversationList
-      return formatedConversationList
-    },
-   
-  },
-  computed: {
-    ...mapGetters({
-      chatList: 'getAllConversations',
-      currentChat: 'getSelectedChat',
-      allChatList: 'getAllStatusChats',
-      currentUser: 'getCurrentUser',
-      labelsList: 'labels/getLabels',
-      agentList: 'agents/getAgents',
-
-    }),
-    ...mapActions('labels', ['getAllLabels']),
-
-    labels() {
-      return this.$store.state.labels.records;
-    },
-    isContactPanelOpen() {
-      if (this.currentChat.id) {
-        const { is_contact_sidebar_open: isContactSidebarOpen } =
-          this.uiSettings;
-        return isContactSidebarOpen;
-      }
-      return false;
-    },
-    conversationList() {
-      const filters = {
-            assigneeType: "me",
-            status: "open",
-            sortBy: "last_activity_at_desc",
-            page: 1
-      }
-      let conversationList = [];      
-      conversationList = [...this.allChatList(filters)];
-      return this.conversationListFormatter(conversationList);
-    },
-  },
-}
-</script>

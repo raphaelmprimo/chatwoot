@@ -9,7 +9,7 @@
         class="label-wrap"
         @keyup.esc="closeDropdownLabel"
       >
-        <add-label @add="toggleLabels" v-if="activeLabels.length < 1"/>
+        <add-label @add="toggleLabels" v-if="activeLabels.length < 1" />
         <woot-label
           v-for="label in activeLabels"
           :key="label.id"
@@ -89,7 +89,7 @@ export default {
   methods: {
     addLabel(value) {
       this.showSearchDropdownLabel = !this.showSearchDropdownLabel;
-      this.addLabelToConversation(value)
+      this.addLabelToConversation(value);
     },
     toggleLabels() {
       this.showSearchDropdownLabel = !this.showSearchDropdownLabel;
