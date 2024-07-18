@@ -160,7 +160,8 @@
     "KEYBOARD_SHORTCUTS": "Atalhos do teclado",
     "APPEARANCE": "Alterar Tema",
     "SUPER_ADMIN_CONSOLE": "Console de Super Admin",
-    "LOGOUT": "Sair"
+    "LOGOUT": "Sair",
+    "CREATE_INSTANCE": "Criar Instância"
   },
   "APP_GLOBAL": {
     "TRIAL_MESSAGE": "dias de teste restantes.",
@@ -203,6 +204,7 @@
     }
   },
   "SIDEBAR": {
+    "EVOLUTION": "Evolution",
     "CURRENTLY_VIEWING_ACCOUNT": "Visualização atual:",
     "SWITCH": "Trocar",
     "INBOX_VIEW": "",
@@ -236,6 +238,7 @@
     "CUSTOM_VIEWS_SEGMENTS": "Segmentos",
     "ALL_CONTACTS": "Todos os Contatos",
     "FLOW_DEVBOT": "Fluxo Typebot",
+    "INSTANCES_FLOW": "Instâncias",
     "DEVBOTS": "DevBot",
     "BOT": "Fluxo Typebot",
     "TAGGED_WITH": "Marcado com",

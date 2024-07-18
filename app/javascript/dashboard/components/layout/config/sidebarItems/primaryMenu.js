@@ -28,6 +28,14 @@ const primaryMenuItems = accountId => [
     roles: ['administrator', 'agent'],
   },
   {
+    icon: 'whatsapp',
+    key: 'evolution',
+    label: 'EVOLUTION',
+    toState: frontendURL(`evolution/${accountId}/instances`),
+    toStateName: 'instances',
+    roles: ['administrator', 'agent'],
+  },
+  {
     icon: 'book-contacts',
     key: 'contacts',
     label: 'CONTACTS',

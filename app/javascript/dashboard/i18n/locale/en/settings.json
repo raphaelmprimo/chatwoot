@@ -160,7 +160,8 @@
     "KEYBOARD_SHORTCUTS": "Keyboard Shortcuts",
     "APPEARANCE": "Change Appearance",
     "SUPER_ADMIN_CONSOLE": "Super Admin Console",
-    "LOGOUT": "Logout"
+    "LOGOUT": "Logout",
+    "CREATE_INSTANCE": "Create Instance"
   },
   "APP_GLOBAL": {
     "TRIAL_MESSAGE": "days trial remaining.",
@@ -213,6 +214,8 @@
     "STATUS_CONVERSATIONS_EJ2": "Kanban-EJ2",
     "SCHEDULE": "Schedule",
     "FLOW_DEVBOT": "Typebot Flow",
+    "INSTANCES_FLOW": "Instances",
+    "EVOLUTION": "Evolution",
     "DEVBOTS": "DevBot",
     "BOT": "Typebot Flow",
     "MENTIONED_CONVERSATIONS": "Mentions",

@@ -6,6 +6,7 @@ import settings from './sidebarItems/settings';
 import notifications from './sidebarItems/notifications';
 import primaryMenu from './sidebarItems/primaryMenu';
 import bots from './sidebarItems/bots';
+import evolution from './sidebarItems/evolution';
 
 export const getSidebarItems = accountId => ({
   primaryMenu: primaryMenu(accountId),
@@ -17,5 +18,6 @@ export const getSidebarItems = accountId => ({
     campaigns(accountId),
     settings(accountId),
     notifications(accountId),
+    evolution(accountId),
   ],
 });
