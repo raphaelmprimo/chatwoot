@@ -1,45 +1,61 @@
 <template>
   <div
-    class="app-wrapper h-full flex-grow-0 min-h-0 w-full max-w-full ml-auto mr-auto flex flex-wrap dark:text-slate-300"
+    class="app-wrapper h-full flex-grow-0 min-h-0 w-full max-w-full ml-auto mr-auto dark:text-slate-300"
   >
     <sidebar
       :route="currentRoute"
-      :show-secondary-sidebar="isSidebarOpen"
+      :show-secondary-sidebar="false"
       @open-notification-panel="openNotificationPanel"
       @toggle-account-modal="toggleAccountModal"
       @open-key-shortcut-modal="toggleKeyShortcutModal"
       @close-key-shortcut-modal="closeKeyShortcutModal"
       @show-add-label-popup="showAddLabelPopup"
     />
-    <section class="flex h-full min-h-0 overflow-hidden flex-1 px-0">
-      <router-view />
-      <command-bar />
-      <account-selector
-        :show-account-modal="showAccountModal"
-        @close-account-modal="toggleAccountModal"
-        @show-create-account-modal="openCreateAccountModal"
+    <div class="flex h-[calc(100%_-_64px)]">
+      <SecondarySidebar
+        v-if="true"
+        :account-id="accountId"
+        :inboxes="inboxes"
+        :labels="labels"
+        :teams="teams"
+        :custom-views="customViews"
+        :menu-config="activeSecondaryMenu"
+        :current-role="currentRole"
+        :is-on-chatwoot-cloud="isOnChatwootCloud"
+        @add-label="showAddLabelPopup"
+        @toggle-accounts="toggleAccountModal"
       />
-      <add-account-modal
-        :show="showCreateAccountModal"
-        @close-account-create-modal="closeCreateAccountModal"
-      />
-      <woot-key-shortcut-modal
-        :show.sync="showShortcutModal"
-        @close="closeKeyShortcutModal"
-        @clickaway="closeKeyShortcutModal"
-      />
-      <notification-panel
-        v-if="isNotificationPanel"
-        @close="closeNotificationPanel"
-      />
-      <woot-modal :show.sync="showAddLabelModal" :on-close="hideAddLabelPopup">
-        <add-label-modal @close="hideAddLabelPopup" />
-      </woot-modal>
-    </section>
+      <section class="flex h-full min-h-0 overflow-hidden flex-1 px-0">
+        <router-view />
+        <command-bar />
+        <account-selector
+          :show-account-modal="showAccountModal"
+          @close-account-modal="toggleAccountModal"
+          @show-create-account-modal="openCreateAccountModal"
+        />
+        <add-account-modal
+          :show="showCreateAccountModal"
+          @close-account-create-modal="closeCreateAccountModal"
+        />
+        <woot-key-shortcut-modal
+          :show.sync="showShortcutModal"
+          @close="closeKeyShortcutModal"
+          @clickaway="closeKeyShortcutModal"
+        />
+        <notification-panel
+          v-if="isNotificationPanel"
+          @close="closeNotificationPanel"
+        />
+        <woot-modal :show.sync="showAddLabelModal" :on-close="hideAddLabelPopup">
+          <add-label-modal @close="hideAddLabelPopup" />
+        </woot-modal>
+      </section>
+    </div>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Sidebar from '../../components/layout/Sidebar.vue';
 import CommandBar from './commands/commandbar.vue';
 import { BUS_EVENTS } from 'shared/constants/busEvents';
@@ -50,6 +66,8 @@ import AddLabelModal from 'dashboard/routes/dashboard/settings/labels/AddLabel.v
 import NotificationPanel from 'dashboard/routes/dashboard/notifications/components/NotificationPanel.vue';
 import uiSettingsMixin from 'dashboard/mixins/uiSettings';
 import wootConstants from 'dashboard/constants/globals';
+import SecondarySidebar from '../../components/layout/sidebarComponents/Secondary.vue';
+import { getSidebarItems } from '../../components/layout/config/default-sidebar';
 
 export default {
   components: {
@@ -60,6 +78,7 @@ export default {
     AccountSelector,
     AddLabelModal,
     NotificationPanel,
+    SecondarySidebar,
   },
   mixins: [uiSettingsMixin],
   data() {
@@ -73,6 +92,18 @@ export default {
     };
   },
   computed: {
+    ...mapGetters({
+      accountId: 'getCurrentAccountId',
+      currentRole: 'getCurrentRole',
+      currentUser: 'getCurrentUser',
+      globalConfig: 'globalConfig/get',
+      inboxes: 'inboxes/getInboxes',
+      isACustomBrandedInstance: 'globalConfig/isACustomBrandedInstance',
+      isFeatureEnabledonAccount: 'accounts/isFeatureEnabledonAccount',
+      isOnChatwootCloud: 'globalConfig/isOnChatwootCloud',
+      labels: 'labels/getLabelsOnSidebar',
+      teams: 'teams/getMyTeams',
+    }),
     currentRoute() {
       return ' ';
     },
@@ -90,6 +121,24 @@ export default {
       const { previously_used_sidebar_view: showSecondarySidebar } =
         this.uiSettings;
       return showSecondarySidebar;
+    },
+    customViews() {
+      return this.$store.getters['customViews/getCustomViewsByFilterType'](
+        this.activeCustomView
+      );
+    },
+    activeSecondaryMenu() {
+      const { secondaryMenu } = this.sideMenuConfig;
+      const { name: currentRoute } = this.$route;
+
+      const activeSecondaryMenu =
+        secondaryMenu.find(menuItem =>
+          menuItem.routes.includes(currentRoute)
+        ) || {};
+      return activeSecondaryMenu;
+    },
+    sideMenuConfig() {
+      return getSidebarItems(this.accountId);
     },
   },
   watch: {

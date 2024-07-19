@@ -10,6 +10,7 @@
         variant="smooth"
         size="small"
         @click="toggleEmojiPicker"
+        class="rounded-xl"
       />
       <file-upload
         ref="upload"
@@ -35,6 +36,7 @@
           color-scheme="secondary"
           variant="smooth"
           size="small"
+          class="rounded-xl"
         />
       </file-upload>
       <woot-button
@@ -46,6 +48,7 @@
         variant="smooth"
         size="small"
         @click="toggleAudioRecorder"
+        class="rounded-xl"
       />
       <woot-button
         v-if="showEditorToggle"
@@ -56,6 +59,7 @@
         variant="smooth"
         size="small"
         @click="$emit('toggle-editor')"
+        class="rounded-xl"
       />
       <woot-button
         v-if="showAudioPlayStopButton"
@@ -77,6 +81,7 @@
         size="small"
         :title="signatureToggleTooltip"
         @click="toggleMessageSignature"
+        class="rounded-xl"
       />
       <woot-button
         v-if="hasWhatsappTemplates"
