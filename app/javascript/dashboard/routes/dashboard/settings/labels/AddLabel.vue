@@ -38,6 +38,57 @@
           {{ $t('LABEL_MGMT.FORM.SHOW_ON_SIDEBAR.LABEL') }}
         </label>
       </div>
+      <div id="properties">
+        <div
+          v-for="(property, index) in properties"
+          :key="index"
+          class="flex justify-end items-center py-0 px-0 gap-2 w-full"
+        >
+          <div>
+            <woot-input
+              v-model.trim="property.name"
+              class="w-full"
+              :label="$t('LABEL_MGMT.FORM.PROPERTY_NAME.LABEL')"
+              :placeholder="$t('LABEL_MGMT.FORM.PROPERTY_NAME.PLACEHOLDER')"
+            />
+          </div>
+          <div>
+            <label>
+              {{ $t('LABEL_MGMT.FORM.PROPERTY_TYPE.LABEL') }}
+              <select v-model="property.property_type">
+                <option value="TextValue">
+                  {{ $t('LABEL_MGMT.FORM.PROPERTY_TYPE_VALUE.TEXT_VALUE') }}
+                </option>
+                <option value="MoneyValue">
+                  {{ $t('LABEL_MGMT.FORM.PROPERTY_TYPE_VALUE.MONEY_VALUE') }}
+                </option>
+                <option value="NumberValue">
+                  {{ $t('LABEL_MGMT.FORM.PROPERTY_TYPE_VALUE.NUMBER_VALUE') }}
+                </option>
+              </select>
+            </label>
+          </div>
+          <woot-button
+            v-tooltip.top="$t('LABEL_MGMT.FORM.REMOVE_PROPERTY')"
+            variant="smooth"
+            color-scheme="alert"
+            size="tiny"
+            icon="dismiss-circle"
+            class-names="grey-btn"
+            @click="removeProperty(index)"
+          />
+        </div>
+      </div>
+      <div class="flex justify-end items-center py-2 px-0 gap-2 w-full">
+        <woot-button
+          class="button success"
+          icon="add-circle"
+          size="tiny"
+          @click.prevent="addProperty"
+        >
+          {{ $t('LABEL_MGMT.FORM.ADD_PROPERTY') }}
+        </woot-button>
+      </div>
       <div class="flex justify-end items-center py-2 px-0 gap-2 w-full">
         <woot-button
           :is-disabled="$v.title.$invalid || uiFlags.isCreating"
@@ -75,6 +126,12 @@ export default {
       description: '',
       title: '',
       showOnSidebar: true,
+      properties: [
+        {
+          name: '',
+          property_type: 'TextValue',
+        },
+      ],
     };
   },
   validations,
@@ -91,6 +148,12 @@ export default {
     onClose() {
       this.$emit('close');
     },
+    addProperty() {
+      this.properties.push({ name: '', property_type: 'TextValue' });
+    },
+    removeProperty(index) {
+      this.properties.splice(index, 1);
+    },
     async addLabel() {
       try {
         await this.$store.dispatch('labels/create', {
@@ -98,6 +161,7 @@ export default {
           description: this.description,
           title: this.title.toLowerCase(),
           show_on_sidebar: this.showOnSidebar,
+          properties_attributes: this.properties,
         });
         this.showAlert(this.$t('LABEL_MGMT.ADD.API.SUCCESS_MESSAGE'));
         this.onClose();

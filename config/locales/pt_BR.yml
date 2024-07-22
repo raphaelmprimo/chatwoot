@@ -84,6 +84,7 @@ pt_BR:
       label_title: Nome do campo
       conversations_count: Nº de Conversas
       avg_first_response_time: Tempo médio de primeira resposta
+      avg_properties: Propriedades
       avg_resolution_time: Tempo médio de resolução
     team_csv:
       team_name: Nome do departamento

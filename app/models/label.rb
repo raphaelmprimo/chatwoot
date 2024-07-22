@@ -21,6 +21,8 @@ class Label < ApplicationRecord
   include AccountCacheRevalidator
 
   belongs_to :account
+  has_many :properties, dependent: :destroy
+  accepts_nested_attributes_for :properties, allow_destroy: true
 
   validates :title,
             presence: { message: I18n.t('errors.validations.presence') },

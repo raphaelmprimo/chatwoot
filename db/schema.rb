@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_06_19_200204) do
+ActiveRecord::Schema[7.0].define(version: 2024_07_21_135751) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -707,6 +707,14 @@ ActiveRecord::Schema[7.0].define(version: 2024_06_19_200204) do
     t.index ["source_id"], name: "index_messages_on_source_id"
   end
 
+  create_table "money_values", force: :cascade do |t|
+    t.bigint "value_id", null: false
+    t.integer "value"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["value_id"], name: "index_money_values_on_value_id"
+  end
+
   create_table "notes", force: :cascade do |t|
     t.text "content", null: false
     t.bigint "account_id", null: false
@@ -761,6 +769,14 @@ ActiveRecord::Schema[7.0].define(version: 2024_06_19_200204) do
     t.index ["user_id"], name: "index_notifications_on_user_id"
   end
 
+  create_table "number_values", force: :cascade do |t|
+    t.bigint "value_id", null: false
+    t.integer "value"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["value_id"], name: "index_number_values_on_value_id"
+  end
+
   create_table "platform_app_permissibles", force: :cascade do |t|
     t.bigint "platform_app_id", null: false
     t.string "permissible_type", null: false
@@ -812,6 +828,15 @@ ActiveRecord::Schema[7.0].define(version: 2024_06_19_200204) do
     t.index ["portal_id", "user_id"], name: "index_portals_members_on_portal_id_and_user_id", unique: true
     t.index ["portal_id"], name: "index_portals_members_on_portal_id"
     t.index ["user_id"], name: "index_portals_members_on_user_id"
+  end
+
+  create_table "properties", force: :cascade do |t|
+    t.string "name"
+    t.string "property_type"
+    t.bigint "label_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["label_id"], name: "index_properties_on_label_id"
   end
 
   create_table "related_categories", force: :cascade do |t|
@@ -929,6 +954,14 @@ ActiveRecord::Schema[7.0].define(version: 2024_06_19_200204) do
     t.datetime "updated_at", precision: nil, null: false
   end
 
+  create_table "text_values", force: :cascade do |t|
+    t.bigint "value_id", null: false
+    t.text "value"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["value_id"], name: "index_text_values_on_value_id"
+  end
+
   create_table "users", id: :serial, force: :cascade do |t|
     t.string "provider", default: "email", null: false
     t.string "uid", default: "", null: false
@@ -967,6 +1000,14 @@ ActiveRecord::Schema[7.0].define(version: 2024_06_19_200204) do
     t.index ["uid", "provider"], name: "index_users_on_uid_and_provider", unique: true
   end
 
+  create_table "values", force: :cascade do |t|
+    t.bigint "property_id", null: false
+    t.string "value_type"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["property_id"], name: "index_values_on_property_id"
+  end
+
   create_table "webhooks", force: :cascade do |t|
     t.integer "account_id"
     t.integer "inbox_id"
@@ -997,6 +1038,11 @@ ActiveRecord::Schema[7.0].define(version: 2024_06_19_200204) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "inboxes", "portals"
+  add_foreign_key "money_values", "values"
+  add_foreign_key "number_values", "values"
+  add_foreign_key "properties", "labels"
+  add_foreign_key "text_values", "values"
+  add_foreign_key "values", "properties"
   create_trigger("accounts_after_insert_row_tr", :generated => true, :compatibility => 1).
       on("accounts").
       after(:insert).

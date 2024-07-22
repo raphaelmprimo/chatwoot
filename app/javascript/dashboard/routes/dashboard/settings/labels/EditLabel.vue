@@ -19,7 +19,36 @@
         :placeholder="$t('LABEL_MGMT.FORM.DESCRIPTION.PLACEHOLDER')"
         @input="$v.description.$touch"
       />
-
+      <div>
+        <div id="properties">
+          <div
+            v-for="(property, index) in $v.properties"
+            :key="index"
+            class="property"
+          >
+            <div>
+              <label :for="'propertyName' + index">Property Name</label>
+              <input
+                :id="'propertyName' + index"
+                v-model="property.name"
+                type="text"
+              />
+            </div>
+            <div>
+              <label :for="'propertyValue' + index">Value</label>
+              <input
+                :id="'propertyValue' + index"
+                v-model="property.value"
+                type="text"
+              />
+            </div>
+            <button type="button" @click="removeProperty($v, index)">
+              Remove
+            </button>
+          </div>
+        </div>
+      </div>
+      <button type="button" @click="addProperty($v)">Add Property</button>
       <div class="w-full">
         <label>
           {{ $t('LABEL_MGMT.FORM.COLOR.LABEL') }}
@@ -67,6 +96,12 @@ export default {
       description: '',
       showOnSidebar: true,
       color: '',
+      properties: [
+        {
+          name: '',
+          value: '',
+        },
+      ],
     };
   },
   validations,
@@ -109,6 +144,12 @@ export default {
         .catch(() => {
           this.showAlert(this.$t('LABEL_MGMT.EDIT.API.ERROR_MESSAGE'));
         });
+    },
+    removeProperty(index) {
+      this.label.properties.splice(index, 1);
+    },
+    addProperty(item) {
+      console.log('TEWSTE', item.properties);
     },
   },
 };

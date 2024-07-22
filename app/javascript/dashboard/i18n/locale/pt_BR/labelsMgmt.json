@@ -33,6 +33,22 @@
       "SHOW_ON_SIDEBAR": {
         "LABEL": "Exibir marcador na barra lateral"
       },
+      "PROPERTY_NAME": {
+        "LABEL": "Nome do Campo",
+        "PLACEHOLDER": "Digite o nome do Campo"
+      },
+      "PROPERTY_TYPE": {
+        "LABEL": "Tipo do Campo",
+        "PLACEHOLDER": "Digite o Tipo do Campo"
+      },
+      "PROPERTY_TYPE_VALUE": {
+        "TEXT_VALUE": "Texto",
+        "NUMBER_VALUE": "Número",
+        "MONEY_VALUE": "Dinheiro"
+      },
+      "ADD_PROPERTY": "Adicionar Campo",
+      "REMOVE_PROPERTY": "Remover Campo Campo",
+
       "EDIT": "Alterar",
       "CREATE": "Criar",
       "DELETE": "Excluir",
