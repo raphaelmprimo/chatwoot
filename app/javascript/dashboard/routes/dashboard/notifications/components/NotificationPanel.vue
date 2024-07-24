@@ -2,7 +2,7 @@
   <div class="modal-mask">
     <div
       v-on-clickaway="closeNotificationPanel"
-      class="flex-col h-[90vh] w-[32.5rem] flex justify-between z-10 rounded-md shadow-md absolute bg-white dark:bg-slate-800 left-14 rtl:left-auto rtl:right-14 m-4"
+      class="flex-col h-[90vh] w-[32.5rem] flex justify-between z-10 rounded-md shadow-md absolute bg-white dark:bg-slate-800 right-14 rtl:right-auto rtl:right-14 m-4"
     >
       <div
         class="flex-row items-center border-b border-solid pt-5 pb-3 px-6 border-slate-50 dark:border-slate-700 w-full flex justify-between"

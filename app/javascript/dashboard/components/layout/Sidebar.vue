@@ -1,5 +1,5 @@
 <template>
-  <aside class="h-full flex">
+  <aside class="w-full flex">
     <primary-sidebar
       :logo-source="globalConfig.logoThumbnail"
       :installation-name="globalConfig.installationName"

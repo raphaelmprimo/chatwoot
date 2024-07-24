@@ -61,7 +61,7 @@
         v-else-if="!showRichContentEditor"
         ref="messageInput"
         v-model="message"
-        class="input"
+        class="input w-full"
         :placeholder="messagePlaceHolder"
         :min-height="4"
         :signature="signatureToApply"

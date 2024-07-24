@@ -1,8 +1,8 @@
 <template>
   <div
-    class="h-full w-16 bg-white dark:bg-slate-900 border-r border-slate-50 dark:border-slate-800/50 rtl:border-l rtl:border-r-0 flex justify-between flex-col"
+    class="h-16 w-full pr-4 bg-white dark:bg-slate-900 border-b border-slate-50 dark:border-slate-800/50 rtl:border-l rtl:border-r-0 flex justify-between"
   >
-    <div class="flex flex-col items-center">
+    <div class="flex gap-2 justify-center">
       <logo
         :source="logoSource"
         :name="installationName"
@@ -18,7 +18,7 @@
         :is-child-menu-active="menuItem.key === activeMenuItem"
       />
     </div>
-    <div class="flex flex-col items-center justify-end pb-6">
+    <div class="flex items-center justify-end gap-2">
       <primary-nav-item
         v-if="!isACustomBrandedInstance"
         icon="book-open-globe"
