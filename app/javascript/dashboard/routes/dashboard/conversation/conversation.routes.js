@@ -2,7 +2,8 @@
 import { frontendURL } from '../../../helper/URLHelper';
 const ConversationView = () => import('./ConversationView');
 const ConversationStatusView = () => import('./ConversationStatusView');
-const ConversationStatusViewToggle = () => import('./ConversationStatusViewToggle')
+const ConversationStatusViewToggle = () =>
+  import('./ConversationStatusViewToggle');
 const ScheduleView = () => import('./ScheduleView');
 
 export default {
@@ -10,7 +11,7 @@ export default {
     {
       path: frontendURL('accounts/:accountId/dashboard'),
       name: 'home',
-      roles: ['administrator', 'agent'],
+      roles: ['administrator', 'agent', 'worker'],
       component: ConversationView,
       props: () => {
         return { inboxId: 0 };
@@ -19,7 +20,7 @@ export default {
     {
       path: frontendURL('accounts/:accountId/conversations/:conversation_id'),
       name: 'inbox_conversation',
-      roles: ['administrator', 'agent'],
+      roles: ['administrator', 'agent', 'worker'],
       component: ConversationView,
       props: route => {
         return { inboxId: 0, conversationId: route.params.conversation_id };
@@ -28,7 +29,7 @@ export default {
     {
       path: frontendURL('accounts/:accountId/inbox/:inbox_id'),
       name: 'inbox_dashboard',
-      roles: ['administrator', 'agent'],
+      roles: ['administrator', 'agent', 'worker'],
       component: ConversationView,
       props: route => {
         return { inboxId: route.params.inbox_id };
@@ -39,7 +40,7 @@ export default {
         'accounts/:accountId/inbox/:inbox_id/conversations/:conversation_id'
       ),
       name: 'conversation_through_inbox',
-      roles: ['administrator', 'agent'],
+      roles: ['administrator', 'agent', 'worker'],
       component: ConversationView,
       props: route => {
         return {
@@ -51,7 +52,7 @@ export default {
     {
       path: frontendURL('accounts/:accountId/label/:label'),
       name: 'label_conversations',
-      roles: ['administrator', 'agent'],
+      roles: ['administrator', 'agent', 'worker'],
       component: ConversationView,
       props: route => ({ label: route.params.label }),
     },
@@ -60,7 +61,7 @@ export default {
         'accounts/:accountId/label/:label/conversations/:conversation_id'
       ),
       name: 'conversations_through_label',
-      roles: ['administrator', 'agent'],
+      roles: ['administrator', 'agent', 'worker'],
       component: ConversationView,
       props: route => ({
         conversationId: route.params.conversation_id,
@@ -115,7 +116,7 @@ export default {
     {
       path: frontendURL('accounts/:accountId/status/conversations'),
       name: 'conversations_status',
-      roles: ['administrator', 'agent'],
+      roles: ['administrator', 'agent', 'worker'],
       component: ConversationStatusViewToggle,
       props: () => {
         return { inboxId: 0 };
@@ -124,7 +125,7 @@ export default {
     {
       path: frontendURL('accounts/:accountId/schedule'),
       name: 'schedule',
-      roles: ['administrator', 'agent'],
+      roles: ['administrator', 'agent', 'worker'],
       component: ScheduleView,
     },
     {
