@@ -337,9 +337,10 @@ export default {
             typebot: this.typebot.name,
             listening_from_me: true,
             url: `https://viewerdev.zapclick.digital/${this.typebot.publicId}`,
-            expire: 99999999999,
+            expire: 0,
             delay_message: 0,
             unknown_message: 'Messagem desconhecida',
+            keyword_finish: '/sair'
           },
           {
             headers: {
