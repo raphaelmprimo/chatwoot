@@ -473,7 +473,7 @@ export default {
             letter => letter.toUpperCase()
           ),
           team_id: conversation?.team_id,
-          status: conversation?.label,
+          status: conversation?.label_title,
           agent_name: conversation?.meta.assignee.name,
           image_agent: conversation?.meta.assignee.thumbnail,
           color: conversation?.color,

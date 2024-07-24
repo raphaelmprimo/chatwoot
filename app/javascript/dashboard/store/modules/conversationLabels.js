@@ -4,6 +4,7 @@ import ConversationAPI from '../../api/conversations';
 
 const state = {
   records: {},
+  properties: {},
   uiFlags: {
     isFetching: false,
     isUpdating: false,
@@ -17,6 +18,9 @@ export const getters = {
   },
   getConversationLabels: $state => id => {
     return $state.records[Number(id)] || [];
+  },
+  listProperties: $state => {
+    return $state.properties || [];
   },
 };
 
@@ -36,6 +40,26 @@ export const actions = {
       });
     } catch (error) {
       commit(types.default.SET_CONVERSATION_LABELS_UI_FLAG, {
+        isFetching: false,
+      });
+    }
+  },
+  getProperties: async ({ commit }, uuid) => {
+    commit(types.default.SET_CONVERSATION_PROPERTIES_UI_FLAG, {
+      isFetching: true,
+    });
+    try {
+      const response = await ConversationAPI.getProperties(uuid);
+
+      console.log('RESULTADO', response.data.payload);
+      commit(types.default.SET_CONVERSATION_PROPERTIES, {
+        data: response.data.payload,
+      });
+      commit(types.default.SET_CONVERSATION_PROPERTIES_UI_FLAG, {
+        isFetching: false,
+      });
+    } catch (error) {
+      commit(types.default.SET_CONVERSATION_PROPERTIES_UI_FLAG, {
         isFetching: false,
       });
     }
@@ -95,8 +119,20 @@ export const mutations = {
       ...data,
     };
   },
+  [types.default.SET_CONVERSATION_PROPERTIES_UI_FLAG]($state, data) {
+    $state.uiFlags = {
+      ...$state.uiFlags,
+      ...data,
+    };
+  },
   [types.default.SET_CONVERSATION_LABELS]: ($state, { id, data }) => {
     Vue.set($state.records, id, data);
+  },
+  [types.default.SET_CONVERSATION_PROPERTIES]: ($state, { data }) => {
+    console.log('Na MUTATIONM', data);
+    data.forEach(property => {
+      Vue.set($state.properties, property.id, property);
+    });
   },
   [types.default.SET_BULK_CONVERSATION_LABELS]: ($state, conversations) => {
     conversations.forEach(conversation => {

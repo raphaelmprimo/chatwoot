@@ -38,51 +38,62 @@
           {{ $t('LABEL_MGMT.FORM.SHOW_ON_SIDEBAR.LABEL') }}
         </label>
       </div>
-      <div id="properties">
+      <div id="properties" class="attrs__node-action-container">
         <div
           v-for="(property, index) in properties"
           :key="index"
           class="flex justify-end items-center py-0 px-0 gap-2 w-full"
         >
-          <div>
-            <woot-input
-              v-model.trim="property.name"
-              class="w-full"
-              :label="$t('LABEL_MGMT.FORM.PROPERTY_NAME.LABEL')"
-              :placeholder="$t('LABEL_MGMT.FORM.PROPERTY_NAME.PLACEHOLDER')"
+          <woot-button
+            size="small"
+            variant="clear"
+            color-scheme="secondary"
+            icon="navigation"
+            class="attrs__node-drag-handle"
+          />
+          <div class="attrs__node-action-item">
+            <div>
+              <woot-input
+                v-model.trim="property.name"
+                class="w-full"
+                :label="$t('LABEL_MGMT.FORM.PROPERTY_NAME.LABEL')"
+                :placeholder="$t('LABEL_MGMT.FORM.PROPERTY_NAME.PLACEHOLDER')"
+              />
+            </div>
+            <div>
+              <label>
+                {{ $t('LABEL_MGMT.FORM.PROPERTY_TYPE.LABEL') }}
+                <select v-model="property.property_type">
+                  <option value="TextValue">
+                    {{ $t('LABEL_MGMT.FORM.PROPERTY_TYPE_VALUE.TEXT_VALUE') }}
+                  </option>
+                  <option value="MoneyValue">
+                    {{ $t('LABEL_MGMT.FORM.PROPERTY_TYPE_VALUE.MONEY_VALUE') }}
+                  </option>
+                  <option value="NumberValue">
+                    {{ $t('LABEL_MGMT.FORM.PROPERTY_TYPE_VALUE.NUMBER_VALUE') }}
+                  </option>
+                </select>
+              </label>
+            </div>
+            <woot-button
+              v-tooltip.top="$t('LABEL_MGMT.FORM.REMOVE_PROPERTY')"
+              variant="smooth"
+              color-scheme="alert"
+              size="small"
+              icon="delete"
+              class-names="grey-btn"
+              @click="removeProperty(index)"
             />
           </div>
-          <div>
-            <label>
-              {{ $t('LABEL_MGMT.FORM.PROPERTY_TYPE.LABEL') }}
-              <select v-model="property.property_type">
-                <option value="TextValue">
-                  {{ $t('LABEL_MGMT.FORM.PROPERTY_TYPE_VALUE.TEXT_VALUE') }}
-                </option>
-                <option value="MoneyValue">
-                  {{ $t('LABEL_MGMT.FORM.PROPERTY_TYPE_VALUE.MONEY_VALUE') }}
-                </option>
-                <option value="NumberValue">
-                  {{ $t('LABEL_MGMT.FORM.PROPERTY_TYPE_VALUE.NUMBER_VALUE') }}
-                </option>
-              </select>
-            </label>
-          </div>
-          <woot-button
-            v-tooltip.top="$t('LABEL_MGMT.FORM.REMOVE_PROPERTY')"
-            variant="smooth"
-            color-scheme="alert"
-            size="tiny"
-            icon="dismiss-circle"
-            class-names="grey-btn"
-            @click="removeProperty(index)"
-          />
         </div>
       </div>
       <div class="flex justify-end items-center py-2 px-0 gap-2 w-full">
         <woot-button
           class="button success"
           icon="add-circle"
+          color-scheme="success"
+          variant="smooth"
           size="tiny"
           @click.prevent="addProperty"
         >
@@ -180,6 +191,22 @@ export default {
   ::v-deep {
     input {
       @apply lowercase;
+    }
+  }
+}
+
+.attrs__node-drag-handle {
+  @apply cursor-move -left-8 absolute;
+}
+.attrs__node-action-container {
+  @apply w-full min-w-0 basis-full items-center flex relative;
+
+  .attrs__node-action-item {
+    @apply flex-grow bg-white dark:bg-slate-700 p-2 mr-2 rounded-md shadow-sm;
+
+    &.has-error {
+      animation: shake 0.3s ease-in-out 0s 2;
+      @apply bg-red-50 dark:bg-red-800;
     }
   }
 }

@@ -51,6 +51,10 @@
       "PREVIOUS_CONVERSATIONS": "Conversas anteriores"
     }
   },
+  "ADD_DATA": {
+    "TITLE": "Adicionar Informações Extras",
+    "DESC": "Cadastrar Informações"
+  },
   "EDIT_CONTACT": {
     "BUTTON_LABEL": "Alterar Contato",
     "TITLE": "Alterar contato",

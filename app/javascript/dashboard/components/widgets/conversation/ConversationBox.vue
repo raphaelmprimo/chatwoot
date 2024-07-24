@@ -46,6 +46,7 @@
         <contact-panel
           v-if="showContactPanel"
           :conversation-id="currentChat.id"
+          :uuid="currentChat.uuid"
           :inbox-id="currentChat.inbox_id"
           :on-toggle="onToggleContactPanel"
         />

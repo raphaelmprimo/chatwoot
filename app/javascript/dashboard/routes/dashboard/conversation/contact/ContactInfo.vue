@@ -132,6 +132,14 @@
           :disabled="uiFlags.isDeleting"
           @click="toggleDeleteModal"
         />
+        <woot-button
+          v-tooltip="$t('EDIT_CONTACT.BUTTON_LABEL')"
+          title="$t('EDIT_CONTACT.BUTTON_LABEL')"
+          icon="form"
+          size="small"
+          color-scheme="success"
+          @click="toggleDataModal"
+        />
       </div>
       <edit-contact
         v-if="showEditModal"
@@ -150,6 +158,12 @@
         :primary-contact="contact"
         :show="showMergeModal"
         @close="toggleMergeModal"
+      />
+      <add-data
+        v-if="showAddModal"
+        :properties="properties"
+        :show="showAddModal"
+        @cancel="toggleDataModal"
       />
     </div>
     <woot-delete-modal
@@ -173,6 +187,7 @@ import Thumbnail from 'dashboard/components/widgets/Thumbnail.vue';
 import SocialIcons from './SocialIcons.vue';
 
 import EditContact from './EditContact.vue';
+import AddData from './AddData.vue';
 import NewConversation from './NewConversation.vue';
 import ContactMergeModal from 'dashboard/modules/contact/ContactMergeModal.vue';
 import alertMixin from 'shared/mixins/alertMixin';
@@ -190,6 +205,7 @@ export default {
   components: {
     ContactInfoRow,
     EditContact,
+    AddData,
     Thumbnail,
     SocialIcons,
     NewConversation,
@@ -200,6 +216,10 @@ export default {
     contact: {
       type: Object,
       default: () => ({}),
+    },
+    uuid: {
+      type: String,
+      default: '',
     },
     channelType: {
       type: String,
@@ -221,15 +241,24 @@ export default {
   data() {
     return {
       showEditModal: false,
+      showAddModal: false,
       showConversationModal: false,
       showMergeModal: false,
       showDeleteModal: false,
+      conversationTypes: [],
+      loading: true,
     };
   },
   computed: {
-    ...mapGetters({ uiFlags: 'contacts/getUIFlags' }),
+    ...mapGetters({
+      uiFlags: 'contacts/getUIFlags',
+      properties: 'conversationLabels/listProperties',
+    }),
     contactProfileLink() {
       return `/app/accounts/${this.$route.params.accountId}/contacts/${this.contact.id}`;
+    },
+    propertiesItems() {
+      return `/app/accounts/${this.$route.params.accountId}/conversations/970c66d0-86eb-4587-8024-1a67115b7c66/properties`;
     },
     additionalAttributes() {
       return this.contact.additional_attributes || {};
@@ -260,7 +289,16 @@ export default {
       return ` ${this.contact.name}?`;
     },
   },
+  mounted() {
+    this.getPropertiesFromConversation();
+  },
   methods: {
+    getPropertiesFromConversation() {
+      this.$store.dispatch('conversationLabels/getProperties', this.uuid);
+    },
+    toggleDataModal() {
+      this.showAddModal = !this.showAddModal;
+    },
     toggleMergeModal() {
       this.showMergeModal = !this.showMergeModal;
     },

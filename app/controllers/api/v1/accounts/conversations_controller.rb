@@ -3,7 +3,7 @@ class Api::V1::Accounts::ConversationsController < Api::V1::Accounts::BaseContro
   include DateRangeHelper
   include HmacConcern
 
-  before_action :conversation, except: [:index, :meta, :search, :create, :filter, :update_label]
+  before_action :conversation, except: [:index, :meta, :search, :create, :filter, :update_label, :properties]
   before_action :inbox, :contact, :contact_inbox, only: [:create]
 
   def index
@@ -43,8 +43,12 @@ class Api::V1::Accounts::ConversationsController < Api::V1::Accounts::BaseContro
 
   def update_label
     @conversation = Conversation.find_by(uuid: params[:conversation][:uuid])
-    status = params[:conversation][:status]
-    @conversation.update!(cached_label_list: status, label_list: status)
+    label = Label.find_by(title: params[:conversation][:status])
+    @conversation.update!(cached_label_list: label.title, label: label)
+  end
+
+  def properties
+    @conversation = Conversation.find_by(uuid: params[:conversation_id])
   end
 
   def filter

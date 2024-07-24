@@ -83,6 +83,7 @@ Rails.application.routes.draw do
           end
           resources :conversations, only: [:index, :create, :show, :update] do
             patch "update_label"
+            get :properties
 
             collection do
               get :meta
