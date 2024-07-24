@@ -81,7 +81,7 @@ export default {
       statusEnum: {
         open: 'Conectado',
         close: 'Desconectado',
-        connectiong: 'Conectando...',
+        connecting: 'Conectando...',
       },
       nameInstance: '',
       loadingActions: { loadingCreate: false, loadingRemove: false, name: '' },
@@ -196,7 +196,6 @@ export default {
   },
   methods: {
     handleInstance(event) {
-      console.log(event.target.value, '@@@ value');
       this.nameInstance = event.target.value;
     },
     hideModal() {
@@ -243,14 +242,6 @@ export default {
           }
         );
 
-        console.log(
-          this.nameInstance,
-          access_token,
-          account_id,
-          response.data.instance,
-          'createI'
-        );
-
         const newInstance = {
           instance: {
             instanceName: response.data.instance.instanceName,
@@ -284,7 +275,6 @@ export default {
             },
           }
         );
-        console.log(responseNew.data, '@@@ response');
         this.instances = responseNew.data;
       } catch (error) {
         console.error(error, '@@@ error');
@@ -294,7 +284,6 @@ export default {
     },
     async removeInstance(instanceName) {
       try {
-        console.log(instanceName, '@@@ remove');
         this.loadingActions = { loadingRemove: true, name: instanceName };
 
         const response = await axios.delete(
@@ -316,17 +305,14 @@ export default {
     update(newInstance) {
       const lastIndex = this.instances.length;
 
-      console.log(newInstance, lastIndex, '@@@ new update');
       Vue.set(this.instances, lastIndex, newInstance);
     },
     remove(instanceName) {
       if (!this.instances.length) return;
-      console.log(this.instances, '@@@ this.instances');
 
       const index = this.instances.findIndex(
         ({ instance }) => instance.instanceName === instanceName
       );
-      console.log(instanceName, index, '@@@ remove id');
       Vue.delete(this.instances, index);
     },
   },

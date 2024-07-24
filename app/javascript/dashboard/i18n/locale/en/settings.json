@@ -161,7 +161,8 @@
     "APPEARANCE": "Change Appearance",
     "SUPER_ADMIN_CONSOLE": "Super Admin Console",
     "LOGOUT": "Logout",
-    "CREATE_INSTANCE": "Create Instance"
+    "CREATE_INSTANCE": "Create Instance",
+    "ASSOCIATE_EVOLUTION": "Associate"
   },
   "APP_GLOBAL": {
     "TRIAL_MESSAGE": "days trial remaining.",

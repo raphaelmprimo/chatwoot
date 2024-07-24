@@ -161,7 +161,8 @@
     "APPEARANCE": "Alterar Tema",
     "SUPER_ADMIN_CONSOLE": "Console de Super Admin",
     "LOGOUT": "Sair",
-    "CREATE_INSTANCE": "Criar Instância"
+    "CREATE_INSTANCE": "Criar Instância",
+    "ASSOCIATE_EVOLUTION": "Associar"
   },
   "APP_GLOBAL": {
     "TRIAL_MESSAGE": "dias de teste restantes.",

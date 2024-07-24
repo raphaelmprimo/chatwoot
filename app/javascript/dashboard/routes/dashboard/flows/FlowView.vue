@@ -16,6 +16,37 @@
       :columns="columns"
       :table-data="tableData"
     />
+    <woot-modal :show.sync="showModal" :on-close="hideModal">
+      <woot-modal-header
+        :header-title="$t('SIDEBAR_ITEMS.ASSOCIATE_EVOLUTION')"
+      />
+      <div class="bg-white ml-7 mr-7 mt-5">
+        <select id="instance" v-model="selectedInstance">
+          <option
+            v-for="instance in instances"
+            :key="instance.value"
+            :value="instance.value"
+          >
+            {{ instance.label }}
+          </option>
+        </select>
+
+        <div class="flex justify-end gap-2 mt-[30px] mb-[30px]">
+          <button
+            @click="hideModal"
+            class="bg-red-400 w-[100px] p-2 text-white font-bold"
+          >
+            Cancelar
+          </button>
+          <button
+            @click="createAssociate"
+            class="bg-woot-400 w-[100px] p-2 text-white font-bold"
+          >
+            {{ this.loadingAssociate ? '...' : 'Associar' }}
+          </button>
+        </div>
+      </div>
+    </woot-modal>
   </div>
 </template>
 
@@ -37,6 +68,7 @@ export default {
   mixins: [clickaway, timeMixin, rtlMixin],
   async mounted() {
     await this.fetchTypebots();
+    await this.fetchInstances();
   },
   data() {
     return {
@@ -44,6 +76,11 @@ export default {
       apiTokenTypebot: '',
       isLoading: true,
       loading: { loadingPublished: false, loadingUnpublished: false, id: '' },
+      showModal: false,
+      instances: [],
+      selectedInstance: null,
+      typebot: null,
+      loadingAssociate: false,
     };
   },
   computed: {
@@ -51,12 +88,12 @@ export default {
       currentUser: 'getCurrentUser',
     }),
     tableData() {
-      console.log(this.typebots, '@@@ this.');
       return this.typebots.map(item => ({
         name: item.name || '---',
         published: item.publishedTypebotId ? 'Sim' : 'Não',
         id: item.id || '---',
         isPublished: !!item.publishedTypebotId,
+        publicId: item.publicId,
       }));
     },
     columns() {
@@ -104,16 +141,21 @@ export default {
                     color: '#fff',
                     border: 'none',
                     cursor: 'pointer',
-                    backgroundColor: '#3b82f6',
+                    backgroundColor: !row.isPublished ? '#3b82f6' : '#ef4444',
                     fontWeight: 'bold',
                     width: '150px',
                   }}
-                  onClick={() => this.publishedBot(row.id)}
-                  disabled={row.isPublished}
+                  onClick={() =>
+                    row.isPublished
+                      ? this.unpublishedBot(row.id)
+                      : this.publishedBot(row.id)
+                  }
                 >
                   {this.loading.loadingPublished && this.loading.id === row.id
                     ? '...'
-                    : 'Publicar'}
+                    : !row.isPublished
+                      ? 'Publicar'
+                      : 'Despublicar'}
                 </button>
                 <button
                   style={{
@@ -122,16 +164,16 @@ export default {
                     color: '#fff',
                     border: 'none',
                     cursor: 'pointer',
-                    backgroundColor: '#ef4444',
+                    backgroundColor: 'green',
                     fontWeight: 'bold',
                     width: '150px',
                   }}
-                  onClick={() => this.unpublishedBot(row.id)}
+                  onClick={() => this.openModal(row)}
                   disabled={!row.isPublished}
                 >
                   {this.loading.loadingUnpublished && this.loading.id === row.id
                     ? '...'
-                    : 'Despublicar'}
+                    : 'Associar'}
                 </button>
               </div>
             );
@@ -141,6 +183,14 @@ export default {
     },
   },
   methods: {
+    hideModal() {
+      this.showModal = false;
+      this.typebot = null;
+    },
+    openModal(selectedTypebot) {
+      this.showModal = true;
+      this.typebot = selectedTypebot;
+    },
     async fetchTypebots() {
       try {
         this.isLoading = true;
@@ -149,8 +199,6 @@ export default {
         const responseNew = await axios.get(
           `https://dev.zapclick.digital/users/typebot/${id}}`
         );
-
-        console.log(responseNew.data, id, '@@@ id');
 
         if (!!responseNew.data.api_token_typebot) {
           this.apiTokenTypebot = responseNew.data.api_token_typebot;
@@ -163,7 +211,6 @@ export default {
               },
             }
           );
-          console.log(workspaces, '@@@ typebots');
 
           const typebots = await axios.get(
             `https://botdev.zapclick.digital/api/v1/typebots?workspaceId=${workspaces.data.workspaces[0].id}`,
@@ -175,8 +222,6 @@ export default {
           );
 
           this.typebots = typebots.data.typebots;
-
-          console.log(typebots, '@@@ typebots');
         }
       } catch (error) {
         console.error(error, '@@@ error');
@@ -184,9 +229,38 @@ export default {
         this.isLoading = false;
       }
     },
+    async fetchInstances() {
+      try {
+        const { account_id } = this.currentUser;
+
+        const response = await axios.get(
+          `https://dev.zapclick.digital:8080/instance/fetchInstances`,
+          {
+            headers: {
+              apikey: `B6D711FCDE4D4FD5936544120E713976`,
+            },
+          }
+        );
+
+        const selectInstances = response.data
+          .filter(({ instance }) => {
+            if (instance.chatwoot)
+              return instance.chatwoot.account_id === String(account_id);
+          })
+          .map(item => ({
+            label: item.instance.instanceName || '---',
+            value: item.instance.instanceName || '---',
+          }));
+
+        this.instances = selectInstances;
+        this.selectedInstance = selectInstances[0].value;
+      } catch (error) {
+        console.error(error, '@@@ error');
+      } finally {
+      }
+    },
     async publishedBot(typebotId) {
       try {
-        console.log(typebotId, this.apiTokenTypebot, '@@@ publishedBot');
         this.loading = {
           loadingPublished: true,
           loadingUnpublished: false,
@@ -202,7 +276,6 @@ export default {
           }
         );
 
-        console.log(response.data, '@@@ response publishedBot');
         this.updateBots(typebotId);
       } catch (error) {
         console.error(error);
@@ -216,7 +289,6 @@ export default {
     },
     async unpublishedBot(typebotId) {
       try {
-        console.log(typebotId, this.apiTokenTypebot, '@@@ unpublishedBot');
         this.loading = {
           loadingPublished: false,
           loadingUnpublished: true,
@@ -234,7 +306,6 @@ export default {
         );
 
         this.updateBots(typebotId, false);
-        console.log(response.data, '@@@ response unpublishedBot');
       } catch (error) {
         console.error(error);
       } finally {
@@ -250,12 +321,38 @@ export default {
       const bot = this.typebots.find(bot => bot.id === typebotId);
       const index = this.typebots.findIndex(bot => bot.id === typebotId);
 
-      console.log(bot, index, this.typebots[index], publishedBot);
       const updateBot = {
         ...bot,
         publishedTypebotId: publishedBot ? '123' : '',
       };
       Vue.set(this.typebots, index, updateBot);
+    },
+    async createAssociate() {
+      try {
+        this.loadingAssociate = true;
+        await axios.post(
+          `https://dev.zapclick.digital:8080/typebot/set/${this.selectedInstance}`,
+          {
+            enabled: true,
+            typebot: this.typebot.name,
+            listening_from_me: true,
+            url: `https://viewerdev.zapclick.digital/${this.typebot.publicId}`,
+            expire: 99999999999,
+            delay_message: 0,
+            unknown_message: 'Messagem desconhecida',
+          },
+          {
+            headers: {
+              apikey: `B6D711FCDE4D4FD5936544120E713976`,
+            },
+          }
+        );
+      } catch (error) {
+        console.error(error);
+      } finally {
+        this.loadingAssociate = false;
+        this.hideModal();
+      }
     },
   },
 };
