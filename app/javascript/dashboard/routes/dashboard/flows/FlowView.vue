@@ -23,7 +23,7 @@
       <div class="bg-white ml-7 mr-7 mt-5">
         <select id="instance" v-model="selectedInstance">
           <option
-            v-for="instance in instances"
+            v-for="instance in selectedInstances"
             :key="instance.value"
             :value="instance.value"
           >
@@ -81,6 +81,7 @@ export default {
       selectedInstance: null,
       typebot: null,
       loadingAssociate: false,
+      selectedInstances: [],
     };
   },
   computed: {
@@ -88,13 +89,23 @@ export default {
       currentUser: 'getCurrentUser',
     }),
     tableData() {
-      return this.typebots.map(item => ({
-        name: item.name || '---',
-        published: item.publishedTypebotId ? 'Sim' : 'Não',
-        id: item.id || '---',
-        isPublished: !!item.publishedTypebotId,
-        publicId: item.publicId,
-      }));
+      return this.typebots.map(item => {
+        const associate = this.instances.find(
+          int => int.typebot === item.publicId
+        ) || { instanceName: '---', typebot: null, typebotUrl: null };
+
+        return {
+          name: item.name || '---',
+          published: item.publishedTypebotId ? 'Sim' : 'Não',
+          id: item.id || '---',
+          isPublished: !!item.publishedTypebotId,
+          publicId: item.publicId,
+          instanceName: associate.instanceName,
+          typebotUrl: associate.typebotUrl
+            ? `${associate.typebotUrl}${associate.typebot}`
+            : '---',
+        };
+      });
     },
     columns() {
       return [
@@ -116,6 +127,13 @@ export default {
           field: 'published',
           key: 'published',
           title: 'Publicado',
+          align: this.isRTLView ? 'right' : 'left',
+          width: 25,
+        },
+        {
+          field: 'instanceName',
+          key: 'instanceName',
+          title: 'Instância',
           align: this.isRTLView ? 'right' : 'left',
           width: 25,
         },
@@ -164,16 +182,44 @@ export default {
                     color: '#fff',
                     border: 'none',
                     cursor: 'pointer',
-                    backgroundColor: 'green',
+                    backgroundColor: '#008000',
                     fontWeight: 'bold',
                     width: '150px',
                   }}
                   onClick={() => this.openModal(row)}
-                  disabled={!row.isPublished}
+                  disabled={!row.isPublished || !this.selectedInstance}
                 >
                   {this.loading.loadingUnpublished && this.loading.id === row.id
                     ? '...'
                     : 'Associar'}
+                </button>
+                <button
+                  style={{
+                    padding: '0.5rem 1rem',
+                    borderRadius: '0.25rem',
+                    color: '#000',
+                    border: 'none',
+                    cursor: 'pointer',
+                    backgroundColor: '#FFE255',
+                    fontWeight: 'bold',
+                    width: '150px',
+                    textAlign: 'center',
+                  }}
+                  disabled={
+                    !row.isPublished || !row.typebotUrl.includes(row.publicId)
+                  }
+                >
+                  <a
+                    href={row.typebotUrl}
+                    style={{
+                      color: '#000',
+                      textDecoration: 'none',
+                      display: 'block',
+                    }}
+                    target="_blank"
+                  >
+                    Typebot
+                  </a>
                 </button>
               </div>
             );
@@ -242,18 +288,31 @@ export default {
           }
         );
 
-        const selectInstances = response.data
-          .filter(({ instance }) => {
-            if (instance.chatwoot)
-              return instance.chatwoot.account_id === String(account_id);
-          })
-          .map(item => ({
-            label: item.instance.instanceName || '---',
-            value: item.instance.instanceName || '---',
-          }));
+        const instancesByAccountId = response.data.filter(({ instance }) => {
+          if (instance.chatwoot)
+            return instance.chatwoot.account_id === String(account_id);
+        });
 
-        this.instances = selectInstances;
-        this.selectedInstance = selectInstances[0].value;
+        const instancesExists = instancesByAccountId.filter(({ instance }) =>
+          this.typebots.every(typebot => typebot.publicId === instance.typebot)
+        );
+
+        const selectInstancesOptions = !!instancesExists.length
+          ? instancesExists.map(item => ({
+              label: item.instance.instanceName,
+              value: item.instance.instanceName,
+            }))
+          : [{ label: '---', value: null }];
+
+        this.selectedInstances = selectInstancesOptions;
+
+        this.selectedInstance = selectInstancesOptions[0].value;
+
+        this.instances = instancesByAccountId.map(item => ({
+          instanceName: item.instance.instanceName,
+          typebot: item.instance.typebot,
+          typebotUrl: item.instance.typebotUrl,
+        }));
       } catch (error) {
         console.error(error, '@@@ error');
       } finally {
@@ -266,7 +325,7 @@ export default {
           loadingUnpublished: false,
           id: typebotId,
         };
-        const response = await axios.post(
+        await axios.post(
           `https://botdev.zapclick.digital/api/v1/typebots/${typebotId}/publish`,
           {},
           {
@@ -295,7 +354,7 @@ export default {
           id: '',
         };
 
-        const response = await axios.post(
+        await axios.post(
           `https://botdev.zapclick.digital/api/v1/typebots/${typebotId}/unpublish`,
           {},
           {
@@ -334,13 +393,13 @@ export default {
           `https://dev.zapclick.digital:8080/typebot/set/${this.selectedInstance}`,
           {
             enabled: true,
-            typebot: this.typebot.name,
+            typebot: this.typebot.publicId,
             listening_from_me: true,
-            url: `https://viewerdev.zapclick.digital/${this.typebot.publicId}`,
+            url: `https://viewerdev.zapclick.digital/`,
             expire: 0,
             delay_message: 0,
             unknown_message: 'Messagem desconhecida',
-            keyword_finish: '/sair'
+            keyword_finish: '/sair',
           },
           {
             headers: {
