@@ -293,8 +293,8 @@ export default {
             return instance.chatwoot.account_id === String(account_id);
         });
 
-        const instancesExists = instancesByAccountId.filter(({ instance }) =>
-          this.typebots.every(typebot => typebot.publicId === instance.typebot)
+        const instancesExists = instancesByAccountId.filter(
+          ({ instance }) => !instance.typebot
         );
 
         const selectInstancesOptions = !!instancesExists.length
@@ -398,7 +398,7 @@ export default {
             url: `https://viewerdev.zapclick.digital/`,
             expire: 0,
             delay_message: 0,
-            unknown_message: 'Messagem desconhecida',
+            unknown_message: 'Mensagem desconhecida',
             keyword_finish: '/sair',
           },
           {
