@@ -39,10 +39,36 @@
             Cancelar
           </button>
           <button
-            @click="createAssociate"
+            @click="handleAssociate"
             class="bg-woot-400 w-[100px] p-2 text-white font-bold"
           >
             {{ this.loadingAssociate ? '...' : 'Associar' }}
+          </button>
+        </div>
+      </div>
+    </woot-modal>
+    <woot-modal :show.sync="showModalExists" :on-close="hideModalCancel">
+      <woot-modal-header />
+      <div class="bg-white ml-7 mr-7 mt-5">
+        <p class="text-base">
+          Essa instância já possuiu o fluxo
+          <strong>{{ flowTypebotNameOld }}</strong> conectado. Você deseja
+          substituir pelo fluxo <strong>{{ flowTypebotName }}</strong
+          >?
+        </p>
+
+        <div class="flex justify-end gap-2 mt-[30px] mb-[30px]">
+          <button
+            @click="hideModalCancel"
+            class="bg-red-400 w-[100px] p-2 text-white font-bold"
+          >
+            Cancelar
+          </button>
+          <button
+            @click="createAssociate"
+            class="bg-woot-400 w-[100px] p-2 text-white font-bold"
+          >
+            {{ this.loadingAssociate ? '...' : 'Substituir' }}
           </button>
         </div>
       </div>
@@ -77,11 +103,15 @@ export default {
       isLoading: true,
       loading: { loadingPublished: false, loadingUnpublished: false, id: '' },
       showModal: false,
+      showModalExists: false,
       instances: [],
       selectedInstance: null,
       typebot: null,
       loadingAssociate: false,
       selectedInstances: [],
+      flowTypebotName: '',
+      flowTypebotNameOld: '',
+      flowInstanceExists: [],
     };
   },
   computed: {
@@ -93,6 +123,12 @@ export default {
         const associate = this.instances.find(
           int => int.typebot === item.publicId
         ) || { instanceName: '---', typebot: null, typebotUrl: null };
+
+        if (!!associate.typebot)
+          this.flowInstanceExists = [
+            ...this.flowInstanceExists,
+            { name: item.name, typebot: associate.typebot },
+          ];
 
         return {
           name: item.name || '---',
@@ -208,18 +244,9 @@ export default {
                   disabled={
                     !row.isPublished || !row.typebotUrl.includes(row.publicId)
                   }
+                  onClick={() => window.open(row.typebotUrl, '_blank')}
                 >
-                  <a
-                    href={row.typebotUrl}
-                    style={{
-                      color: '#000',
-                      textDecoration: 'none',
-                      display: 'block',
-                    }}
-                    target="_blank"
-                  >
-                    Typebot
-                  </a>
+                  Typebot
                 </button>
               </div>
             );
@@ -236,6 +263,18 @@ export default {
     openModal(selectedTypebot) {
       this.showModal = true;
       this.typebot = selectedTypebot;
+    },
+    hideModalCancel() {
+      this.showModalExists = false;
+      this.showModal = true;
+    },
+    hideModalExists() {
+      this.showModalExists = false;
+      this.flowTypebotName = '';
+    },
+    openModalExists() {
+      this.showModalExists = true;
+      this.showModal = false;
     },
     async fetchTypebots() {
       try {
@@ -293,12 +332,12 @@ export default {
             return instance.chatwoot.account_id === String(account_id);
         });
 
-        const instancesExists = instancesByAccountId.filter(
-          ({ instance }) => !instance.typebot
+        const instancesStatusOpen = instancesByAccountId.filter(
+          ({ instance }) => instance.status === 'open'
         );
 
-        const selectInstancesOptions = !!instancesExists.length
-          ? instancesExists.map(item => ({
+        const selectInstancesOptions = !!instancesStatusOpen.length
+          ? instancesStatusOpen.map(item => ({
               label: item.instance.instanceName,
               value: item.instance.instanceName,
             }))
@@ -386,6 +425,23 @@ export default {
       };
       Vue.set(this.typebots, index, updateBot);
     },
+    handleAssociate() {
+      const findInstance = this.instances.find(
+        int => int.instanceName === this.selectedInstance
+      );
+
+      if (findInstance && !!findInstance.typebot) {
+        this.flowTypebotNameOld =
+          this.flowInstanceExists.find(
+            int => int.typebot === findInstance.typebot
+          ).name || '';
+
+        this.flowTypebotName = this.typebot.name;
+        return this.openModalExists();
+      }
+
+      return this.createAssociate();
+    },
     async createAssociate() {
       try {
         this.loadingAssociate = true;
@@ -407,12 +463,30 @@ export default {
             },
           }
         );
+        this.updateInstances(this.selectedInstance, this.typebot.publicId);
       } catch (error) {
         console.error(error);
       } finally {
         this.loadingAssociate = false;
         this.hideModal();
+        this.hideModalExists();
       }
+    },
+    updateInstances(instanceName, publicId) {
+      if (!this.instances.length) return;
+      const instance = this.instances.find(
+        int => int.instanceName === instanceName
+      );
+      const index = this.instances.findIndex(
+        int => int.instanceName === instanceName
+      );
+
+      const updateInstance = {
+        ...instance,
+        typebot: publicId,
+        typebotUrl: 'https://viewerdev.zapclick.digital/',
+      };
+      Vue.set(this.instances, index, updateInstance);
     },
   },
 };
