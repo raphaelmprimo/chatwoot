@@ -100,7 +100,7 @@ class Conversation < ApplicationRecord
   belongs_to :contact_inbox
   belongs_to :team, optional: true
   belongs_to :campaign, optional: true
-  belongs_to :label,optional: true
+  belongs_to :label, optional: true
 
   has_many :mentions, dependent: :destroy_async
   has_many :messages, dependent: :destroy_async, autosave: true
@@ -108,6 +108,9 @@ class Conversation < ApplicationRecord
   has_many :conversation_participants, dependent: :destroy_async
   has_many :notifications, as: :primary_actor, dependent: :destroy_async
   has_many :attachments, through: :messages
+  has_many :calendars, primary_key: :uuid, foreign_key: :conversation_uuid, inverse_of: :conversation, dependent: :destroy_async
+  has_many :schedules, through: :calendars
+
 
   before_save :ensure_snooze_until_reset
   before_create :determine_conversation_status

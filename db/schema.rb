@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_07_22_212015) do
+ActiveRecord::Schema[7.0].define(version: 2024_07_31_100155) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -198,6 +198,23 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_22_212015) do
     t.datetime "updated_at", null: false
     t.boolean "active", default: true, null: false
     t.index ["account_id"], name: "index_automation_rules_on_account_id"
+  end
+
+  create_table "calendars", id: :serial, force: :cascade do |t|
+    t.integer "display_id", null: false
+    t.integer "account_id", null: false
+    t.integer "worker_id", null: false
+    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
+    t.uuid "conversation_uuid"
+    t.string "title"
+    t.string "description"
+    t.integer "status", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_calendars_on_account_id"
+    t.index ["conversation_uuid"], name: "index_calendars_on_conversation_uuid"
+    t.index ["uuid"], name: "index_calendars_on_uuid", unique: true
+    t.index ["worker_id"], name: "index_calendars_on_worker_id"
   end
 
   create_table "campaigns", force: :cascade do |t|
@@ -871,6 +888,39 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_22_212015) do
     t.index ["user_id"], name: "index_reporting_events_on_user_id"
   end
 
+  create_table "schedule_guests", force: :cascade do |t|
+    t.bigint "schedule_id", null: false
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["schedule_id", "user_id"], name: "index_schedule_guests_on_schedule_id_and_user_id", unique: true
+    t.index ["schedule_id"], name: "index_schedule_guests_on_schedule_id"
+    t.index ["user_id"], name: "index_schedule_guests_on_user_id"
+  end
+
+  create_table "schedules", force: :cascade do |t|
+    t.integer "account_id", null: false
+    t.integer "worker_id", null: false
+    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
+    t.uuid "conversation_uuid"
+    t.integer "calendar_id", null: false
+    t.string "subject"
+    t.string "description"
+    t.string "location"
+    t.string "reminder"
+    t.datetime "start_time"
+    t.datetime "end_time"
+    t.boolean "is_all_day", default: false, null: false
+    t.boolean "is_block", default: false, null: false
+    t.boolean "is_readonly", default: false, null: false
+    t.boolean "is_reschedule", default: false, null: false
+    t.integer "status", default: 0, null: false
+    t.integer "room_id"
+    t.integer "resource_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "sla_events", force: :cascade do |t|
     t.bigint "applied_sla_id", null: false
     t.bigint "conversation_id", null: false
@@ -996,6 +1046,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_22_212015) do
     t.string "expiration_token"
     t.string "api_token_typebot"
     t.string "user_id_typebot"
+    t.string "color_for_schedule"
     t.index ["email"], name: "index_users_on_email"
     t.index ["pubsub_token"], name: "index_users_on_pubsub_token", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
@@ -1043,8 +1094,26 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_22_212015) do
   add_foreign_key "money_values", "values"
   add_foreign_key "number_values", "values"
   add_foreign_key "properties", "labels"
+  add_foreign_key "schedule_guests", "schedules"
+  add_foreign_key "schedule_guests", "users"
   add_foreign_key "text_values", "values"
   add_foreign_key "values", "properties"
+  # no candidate create_trigger statement could be found, creating an adapter-specific one
+  execute(<<-SQL)
+CREATE OR REPLACE FUNCTION public.calendars_before_insert_row_tr()
+ RETURNS trigger
+ LANGUAGE plpgsql
+AS $function$
+BEGIN
+    NEW.display_id := nextval('conv_dpid_seq_' || NEW.account_id);
+    RETURN NEW;
+END;
+$function$
+  SQL
+
+  # no candidate create_trigger statement could be found, creating an adapter-specific one
+  execute("CREATE TRIGGER calendars_before_insert_row_tr BEFORE INSERT ON \"calendars\" FOR EACH ROW EXECUTE FUNCTION calendars_before_insert_row_tr()")
+
   create_trigger("accounts_after_insert_row_tr", :generated => true, :compatibility => 1).
       on("accounts").
       after(:insert).

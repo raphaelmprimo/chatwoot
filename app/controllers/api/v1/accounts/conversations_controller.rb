@@ -45,6 +45,7 @@ class Api::V1::Accounts::ConversationsController < Api::V1::Accounts::BaseContro
     @conversation = Conversation.find_by(uuid: params[:conversation][:uuid])
     label = Label.find_by(title: params[:conversation][:status])
     @conversation.update!(cached_label_list: label.title, label: label)
+    head :ok
   end
 
   def properties

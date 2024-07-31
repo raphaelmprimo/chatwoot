@@ -5,7 +5,6 @@ const ConversationStatusView = () => import('./ConversationStatusView');
 const ConversationStatusViewToggle = () =>
   import('./ConversationStatusViewToggle');
 const ScheduleView = () => import('./ScheduleView');
-
 export default {
   routes: [
     {

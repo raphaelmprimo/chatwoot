@@ -129,7 +129,6 @@ export const mutations = {
     Vue.set($state.records, id, data);
   },
   [types.default.SET_CONVERSATION_PROPERTIES]: ($state, { data }) => {
-    console.log('Na MUTATIONM', data);
     data.forEach(property => {
       Vue.set($state.properties, property.id, property);
     });

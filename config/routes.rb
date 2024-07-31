@@ -32,7 +32,7 @@ Rails.application.routes.draw do
   end
 
   get "/api", to: "api#index"
-  namespace :api, defaults: {format: "json"} do
+  namespace :api, defaults: { format: 'json' } do
     namespace :v1 do
       # ----------------------------------
       # start of account scoped api routes
@@ -82,7 +82,7 @@ Rails.application.routes.draw do
             resource :twilio_channel, only: [:create]
           end
           resources :conversations, only: [:index, :create, :show, :update] do
-            patch "update_label"
+            patch :update_label
             get :properties
 
             collection do
@@ -248,6 +248,13 @@ Rails.application.routes.draw do
           end
 
           resources :upload, only: [:create]
+          resources :calendars do
+            resources :schedules do
+              collection do
+                post '$batch', to: 'calendars/schedules#create', as: 'batch'
+              end
+            end
+          end
         end
       end
       # end of account scoped api routes
