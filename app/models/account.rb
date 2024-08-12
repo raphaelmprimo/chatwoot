@@ -56,7 +56,7 @@ class Account < ApplicationRecord
   has_many :facebook_pages, dependent: :destroy_async, class_name: '::Channel::FacebookPage'
   has_many :hooks, dependent: :destroy_async, class_name: 'Integrations::Hook'
   has_many :inboxes, dependent: :destroy_async
-  has_many :labels, dependent: :destroy_async
+  has_many :labels, -> { order(position: :asc) }, inverse_of: :account, dependent: :destroy_async
   has_many :line_channels, dependent: :destroy_async, class_name: '::Channel::Line'
   has_many :mentions, dependent: :destroy_async
   has_many :messages, dependent: :destroy_async
@@ -75,8 +75,9 @@ class Account < ApplicationRecord
   has_many :webhooks, dependent: :destroy_async
   has_many :whatsapp_channels, dependent: :destroy_async, class_name: '::Channel::Whatsapp'
   has_many :working_hours, dependent: :destroy_async
-  has_many :calendars, inverse_of: :account, dependent: :destroy_async
-  has_many :schedules, through: :calendars
+  has_many :calendars, class_name: 'Calendar', inverse_of: :account, dependent: :destroy_async
+  has_many :schedules, class_name: 'Schedule', through: :calendars
+  has_one  :kanban, dependent: :destroy_async
 
   has_one_attached :contacts_export
 
@@ -85,6 +86,7 @@ class Account < ApplicationRecord
 
   before_validation :validate_limit_keys
   after_create_commit :notify_creation
+  after_create_commit :create_calendar_and_kanban
   after_destroy :remove_account_sequences
 
   def agents
@@ -129,6 +131,11 @@ class Account < ApplicationRecord
   end
 
   private
+
+  def create_calendar_and_kanban
+    Calendar.create!(account: self, title: 'default', description: 'Calendário', is_default: true)
+    Kanban.create!(account: self, is_default: true)
+  end
 
   def notify_creation
     Rails.configuration.dispatcher.dispatch(ACCOUNT_CREATED, Time.zone.now, account: self)

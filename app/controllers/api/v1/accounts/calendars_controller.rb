@@ -25,7 +25,7 @@ class Api::V1::Accounts::CalendarsController < Api::V1::Accounts::BaseController
   private
 
   def fetch_calendar
-    @calendar = Current.user.calendars.find(params[:id])
+    @calendar = Current.account.calendars.find(params[:id])
   end
 
   def permitted_params

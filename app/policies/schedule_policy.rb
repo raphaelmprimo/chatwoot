@@ -7,6 +7,10 @@ class SchedulePolicy < ApplicationPolicy
     index?
   end
 
+  def in_label?
+    index?
+  end
+
   def show?
     index?
   end

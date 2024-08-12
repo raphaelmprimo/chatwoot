@@ -2,12 +2,13 @@
 #
 # Table name: properties
 #
-#  id            :bigint           not null, primary key
-#  name          :string
-#  property_type :string
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
-#  label_id      :bigint           not null
+#  id             :bigint           not null, primary key
+#  name           :string
+#  property_type  :string
+#  required_field :boolean          default(FALSE), not null
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#  label_id       :bigint           not null
 #
 # Indexes
 #
@@ -21,4 +22,10 @@ class Property < ApplicationRecord
   belongs_to :label
   has_one :value, dependent: :destroy
   accepts_nested_attributes_for :value
+
+  validates :name, presence: { message: I18n.t('errors.validations.presence') }
+
+  def title
+    name
+  end
 end

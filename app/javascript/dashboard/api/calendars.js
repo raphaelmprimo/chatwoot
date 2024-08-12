@@ -10,6 +10,10 @@ class CalendarApi extends ApiClient {
     return axios.get(`${this.url}/${calendarID}/schedules`);
   }
 
+  getSchedulesLabel(calendarID,labelID) {
+    return axios.get(`${this.url}/${calendarID}/schedules/${labelID}/in_label`);
+  }
+
   getCalendarDefault () {
     return axios.get(`${this.url}/default`);
   }

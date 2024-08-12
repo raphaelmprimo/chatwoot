@@ -1,28 +1,28 @@
 Rails.application.routes.draw do
   # AUTH STARTS
-  mount_devise_token_auth_for "User", at: "auth", controllers: {
-    confirmations: "devise_overrides/confirmations",
-    passwords: "devise_overrides/passwords",
-    sessions: "devise_overrides/sessions",
-    token_validations: "devise_overrides/token_validations",
-    omniauth_callbacks: "devise_overrides/omniauth_callbacks"
+  mount_devise_token_auth_for 'User', at: 'auth', controllers: {
+    confirmations: 'devise_overrides/confirmations',
+    passwords: 'devise_overrides/passwords',
+    sessions: 'devise_overrides/sessions',
+    token_validations: 'devise_overrides/token_validations',
+    omniauth_callbacks: 'devise_overrides/omniauth_callbacks'
   }, via: [:get, :post]
 
-  patch "/users/update-token-typebot", to: "typebot#update_token_typebot"
-  get "/users/typebot/:id", to: "typebot#show_token_typebot"
+  patch '/users/update-token-typebot', to: 'typebot#update_token_typebot'
+  get '/users/typebot/:id', to: 'typebot#show_token_typebot'
 
   ## renders the frontend paths only if its not an api only server
-  if ActiveModel::Type::Boolean.new.cast(ENV.fetch("CW_API_ONLY_SERVER", false))
-    root to: "api#index"
+  if ActiveModel::Type::Boolean.new.cast(ENV.fetch('CW_API_ONLY_SERVER', false))
+    root to: 'api#index'
   else
-    root to: "dashboard#index"
+    root to: 'dashboard#index'
 
-    get "/app", to: "dashboard#index"
-    get "/app/*params", to: "dashboard#index"
-    get "/app/accounts/:account_id/settings/inboxes/new/twitter", to: "dashboard#index", as: "app_new_twitter_inbox"
-    get "/app/accounts/:account_id/settings/inboxes/new/microsoft", to: "dashboard#index", as: "app_new_microsoft_inbox"
-    get "/app/accounts/:account_id/settings/inboxes/new/:inbox_id/agents", to: "dashboard#index", as: "app_twitter_inbox_agents"
-    get "/app/accounts/:account_id/settings/inboxes/new/:inbox_id/agents", to: "dashboard#index", as: "app_microsoft_inbox_agents"
+    get '/app', to: 'dashboard#index'
+    get '/app/*params', to: 'dashboard#index'
+    get '/app/accounts/:account_id/settings/inboxes/new/twitter', to: 'dashboard#index', as: 'app_new_twitter_inbox'
+    get '/app/accounts/:account_id/settings/inboxes/new/microsoft', to: 'dashboard#index', as: 'app_new_microsoft_inbox'
+    get '/app/accounts/:account_id/settings/inboxes/new/:inbox_id/agents', to: 'dashboard#index', as: 'app_twitter_inbox_agents'
+    get '/app/accounts/:account_id/settings/inboxes/new/:inbox_id/agents', to: 'dashboard#index', as: 'app_microsoft_inbox_agents'
 
     resource :widget, only: [:show]
     namespace :survey do
@@ -31,7 +31,7 @@ Rails.application.routes.draw do
     resource :slack_uploads, only: [:show]
   end
 
-  get "/api", to: "api#index"
+  get '/api', to: 'api#index'
   namespace :api, defaults: { format: 'json' } do
     namespace :v1 do
       # ----------------------------------
@@ -140,7 +140,9 @@ Rails.application.routes.draw do
             scope module: :contacts do
               resources :conversations, only: [:index]
               resources :contact_inboxes, only: [:create]
-              resources :labels, only: [:create, :index]
+              resources :labels, only: [:create, :index] do
+                get :list_labels, on: :collection
+              end
               resources :notes
             end
           end
@@ -156,7 +158,12 @@ Rails.application.routes.draw do
               get :download
             end
           end
-          resources :custom_attribute_definitions, only: [:index, :show, :create, :update, :destroy]
+          resources :custom_attribute_definitions, only: [:index, :show, :create, :update, :destroy] do
+            collection do
+              get :only_requireds
+              get :all_for_conversation
+            end
+          end
           resources :custom_filters, only: [:index, :show, :create, :update, :destroy]
           resources :inboxes, only: [:index, :show, :create, :update, :destroy] do
             get :assignable_agents, on: :member
@@ -172,7 +179,11 @@ Rails.application.routes.draw do
               patch :update
             end
           end
-          resources :labels, only: [:index, :show, :create, :update, :destroy]
+          resources :labels, only: [:index, :show, :create, :update, :destroy] do
+            post   :add_attribute, on: :member
+            delete :remove_attribute, on: :member
+            patch  'update_position/:position', to: 'labels#update_position', on: :member
+          end
           resources :response_sources, only: [:create] do
             collection do
               post :parse
@@ -221,12 +232,12 @@ Rails.application.routes.draw do
                 post :process_event
               end
             end
-            resource :slack, only: [:create, :update, :destroy], controller: "slack" do
+            resource :slack, only: [:create, :update, :destroy], controller: 'slack' do
               member do
                 get :list_all_channels
               end
             end
-            resource :dyte, controller: "dyte", only: [] do
+            resource :dyte, controller: 'dyte', only: [] do
               collection do
                 post :create_a_meeting
                 post :add_participant_to_meeting
@@ -250,10 +261,18 @@ Rails.application.routes.draw do
           resources :upload, only: [:create]
           resources :calendars do
             resources :schedules do
+              get ':label_id/in_label', on: :collection, action: :in_label
+              get ':conversation_uuid/of_conversation', on: :collection, action: :of_conversation
               collection do
                 post '$batch', to: 'calendars/schedules#create', as: 'batch'
               end
             end
+          end
+
+          resources :kanban do
+            get :list_attributes, on: :collection
+            post :reorder_card, on: :collection
+            put :update_attributes, on: :collection
           end
         end
       end
@@ -301,7 +320,7 @@ Rails.application.routes.draw do
         resources :inbox_members, only: [:index]
         resources :labels, only: [:create, :destroy]
         namespace :integrations do
-          resource :dyte, controller: "dyte", only: [] do
+          resource :dyte, controller: 'dyte', only: [] do
             collection do
               post :add_participant_to_meeting
             end
@@ -338,7 +357,7 @@ Rails.application.routes.draw do
   end
 
   if ChatwootApp.enterprise?
-    namespace :enterprise, defaults: {format: "json"} do
+    namespace :enterprise, defaults: { format: 'json' } do
       namespace :api do
         namespace :v1 do
           resources :accounts do
@@ -351,13 +370,13 @@ Rails.application.routes.draw do
         end
       end
 
-      post "webhooks/stripe", to: "webhooks/stripe#process_payload"
+      post 'webhooks/stripe', to: 'webhooks/stripe#process_payload'
     end
   end
 
   # ----------------------------------------------------------------------
   # Routes for platform APIs
-  namespace :platform, defaults: {format: "json"} do
+  namespace :platform, defaults: { format: 'json' } do
     namespace :api do
       namespace :v1 do
         resources :users, only: [:create, :show, :update, :destroy] do
@@ -381,7 +400,7 @@ Rails.application.routes.draw do
 
   # ----------------------------------------------------------------------
   # Routes for inbox APIs Exposed to contacts
-  namespace :public, defaults: {format: "json"} do
+  namespace :public, defaults: { format: 'json' } do
     namespace :api do
       namespace :v1 do
         resources :inboxes do
@@ -405,13 +424,13 @@ Rails.application.routes.draw do
     end
   end
 
-  get "hc/:slug", to: "public/api/v1/portals#show"
-  get "hc/:slug/:locale", to: "public/api/v1/portals#show"
-  get "hc/:slug/:locale/articles", to: "public/api/v1/portals/articles#index"
-  get "hc/:slug/:locale/categories", to: "public/api/v1/portals/categories#index"
-  get "hc/:slug/:locale/categories/:category_slug", to: "public/api/v1/portals/categories#show"
-  get "hc/:slug/:locale/categories/:category_slug/articles", to: "public/api/v1/portals/articles#index"
-  get "hc/:slug/articles/:article_slug", to: "public/api/v1/portals/articles#show"
+  get 'hc/:slug', to: 'public/api/v1/portals#show'
+  get 'hc/:slug/:locale', to: 'public/api/v1/portals#show'
+  get 'hc/:slug/:locale/articles', to: 'public/api/v1/portals/articles#index'
+  get 'hc/:slug/:locale/categories', to: 'public/api/v1/portals/categories#index'
+  get 'hc/:slug/:locale/categories/:category_slug', to: 'public/api/v1/portals/categories#show'
+  get 'hc/:slug/:locale/categories/:category_slug/articles', to: 'public/api/v1/portals/articles#index'
+  get 'hc/:slug/articles/:article_slug', to: 'public/api/v1/portals/articles#show'
 
   # ----------------------------------------------------------------------
   # Used in mailer templates
@@ -423,16 +442,16 @@ Rails.application.routes.draw do
 
   # ----------------------------------------------------------------------
   # Routes for channel integrations
-  mount Facebook::Messenger::Server, at: "bot"
-  get "webhooks/twitter", to: "api/v1/webhooks#twitter_crc"
-  post "webhooks/twitter", to: "api/v1/webhooks#twitter_events"
-  post "webhooks/line/:line_channel_id", to: "webhooks/line#process_payload"
-  post "webhooks/telegram/:bot_token", to: "webhooks/telegram#process_payload"
-  post "webhooks/sms/:phone_number", to: "webhooks/sms#process_payload"
-  get "webhooks/whatsapp/:phone_number", to: "webhooks/whatsapp#verify"
-  post "webhooks/whatsapp/:phone_number", to: "webhooks/whatsapp#process_payload"
-  get "webhooks/instagram", to: "webhooks/instagram#verify"
-  post "webhooks/instagram", to: "webhooks/instagram#events"
+  mount Facebook::Messenger::Server, at: 'bot'
+  get 'webhooks/twitter', to: 'api/v1/webhooks#twitter_crc'
+  post 'webhooks/twitter', to: 'api/v1/webhooks#twitter_events'
+  post 'webhooks/line/:line_channel_id', to: 'webhooks/line#process_payload'
+  post 'webhooks/telegram/:bot_token', to: 'webhooks/telegram#process_payload'
+  post 'webhooks/sms/:phone_number', to: 'webhooks/sms#process_payload'
+  get 'webhooks/whatsapp/:phone_number', to: 'webhooks/whatsapp#verify'
+  post 'webhooks/whatsapp/:phone_number', to: 'webhooks/whatsapp#process_payload'
+  get 'webhooks/instagram', to: 'webhooks/instagram#verify'
+  post 'webhooks/instagram', to: 'webhooks/instagram#events'
 
   namespace :twitter do
     resource :callback, only: [:show]
@@ -443,24 +462,24 @@ Rails.application.routes.draw do
     resources :delivery_status, only: [:create]
   end
 
-  get "microsoft/callback", to: "microsoft/callbacks#show"
+  get 'microsoft/callback', to: 'microsoft/callbacks#show'
 
   # ----------------------------------------------------------------------
   # Routes for external service verifications
-  get "apple-app-site-association" => "apple_app#site_association"
-  get ".well-known/assetlinks.json" => "android_app#assetlinks"
-  get ".well-known/microsoft-identity-association.json" => "microsoft#identity_association"
+  get 'apple-app-site-association' => 'apple_app#site_association'
+  get '.well-known/assetlinks.json' => 'android_app#assetlinks'
+  get '.well-known/microsoft-identity-association.json' => 'microsoft#identity_association'
 
   # ----------------------------------------------------------------------
   # Internal Monitoring Routes
-  require "sidekiq/web"
-  require "sidekiq/cron/web"
+  require 'sidekiq/web'
+  require 'sidekiq/cron/web'
 
-  devise_for :super_admins, path: "super_admin", controllers: {sessions: "super_admin/devise/sessions"}
+  devise_for :super_admins, path: 'super_admin', controllers: { sessions: 'super_admin/devise/sessions' }
   devise_scope :super_admin do
-    get "super_admin/logout", to: "super_admin/devise/sessions#destroy"
+    get 'super_admin/logout', to: 'super_admin/devise/sessions#destroy'
     namespace :super_admin do
-      root to: "dashboard#index"
+      root to: 'dashboard#index'
 
       resource :app_config, only: [:show, :create]
 
@@ -495,19 +514,19 @@ Rails.application.routes.draw do
       resources :account_users, only: [:new, :create, :destroy]
     end
     authenticated :super_admin do
-      mount Sidekiq::Web => "/monitoring/sidekiq"
+      mount Sidekiq::Web => '/monitoring/sidekiq'
     end
   end
 
   namespace :installation do
-    get "onboarding", to: "onboarding#index"
-    post "onboarding", to: "onboarding#create"
+    get 'onboarding', to: 'onboarding#index'
+    post 'onboarding', to: 'onboarding#create'
   end
 
   # ---------------------------------------------------------------------
   # Routes for swagger docs
-  get "/swagger/*path", to: "swagger#respond"
-  get "/swagger", to: "swagger#respond"
+  get '/swagger/*path', to: 'swagger#respond'
+  get '/swagger', to: 'swagger#respond'
 
   # ----------------------------------------------------------------------
   # Routes for testing

@@ -59,7 +59,7 @@
 
       <div class="h-full col-md-12 control-section template-accordion">
         <div class="h-full content-wrapper flex">
-          <section class="w-[300px] py-4 px-8 flex flex-col items-center gap-8">
+          <section class="w-[300px] py-4 px-4 flex flex-col items-center gap-8">
             <ejs-menu :items="menuItems" :select="insertActivityOrEvent" />
 
             <ejs-calendar id="calendar" :change="onDateChange" />
@@ -74,34 +74,47 @@
                 <div
                   v-for="calendar in calendars"
                   v-bind:key="calendar.id"
-                  class="bg-white dark:bg-gray-800"
+                  class="bg-white dark:bg-gray-800 w-full"
                 >
                   <accordion-item
                     title="Meus Calendários"
+                    :compact="true"
                     :is-open="open"
                     @click="value => onPanelToggle(value)"
                   >
-                    <span class="flex items-center gap-4">
-                      <label
-                        :for="'calendar-' + calendar.id"
-                        class="cursor-pointer"
-                      >
-                        <input
-                          type="radio"
-                          :id="'calendar-' + calendar.id"
-                          :name="'calendar-item-' + calendar.id"
-                          @change="setCalendarId(calendar.id)"
-                          checked="calendar.id === this.calendarId"
-                          class="me-2"
-                        />
-                        {{ calendar.title }}
-                      </label>
-                    </span>
+                    <div class="grid grid-cols-3">
+                      <div class="col-span-2">
+                        <label
+                          :for="'calendar-' + calendar.id"
+                          class="cursor-pointer"
+                        >
+                          <input
+                            type="radio"
+                            :id="'calendar-' + calendar.id"
+                            :name="'calendar-item-' + calendar.id"
+                            @change="setCalendarId(calendar.id)"
+                            checked="calendar.id === this.calendarId"
+                            class="me-2"
+                          />
+                          {{ calendar.description }}
+                        </label>
+                      </div>
+                      <div class="col-span-1">
+                        <ejs-menu
+                          ref="menu"
+                          id="menu"
+                          :items="exportMenuItems"
+                          :select="exportCalendar"
+                          icsIcon="e-icons e-ics-icon"
+                        ></ejs-menu>
+                      </div>
+                    </div>
                   </accordion-item>
                 </div>
               </transition-group>
             </div>
           </section>
+
           <ejs-schedule
             id="Schedule"
             ref="scheduleObj"
@@ -122,7 +135,9 @@
                   <thumbnail :src="getEmployeeImage(data)" size="48px" />
                 </div>
                 <div class="resource-details">
-                  <div class="resource-name">{{ getEmployeeName(data) }}</div>
+                  <div class="resource-name">
+                    {{ getEmployeeName(data) }}
+                  </div>
                   <div class="resource-designation">
                     {{ getEmployeeDesignation(data) }}
                   </div>
@@ -176,6 +191,8 @@ import {
   TimelineViews,
   Resize,
   DragAndDrop,
+  ICalendarExport,
+  ExcelExport,
 } from '@syncfusion/ej2-vue-schedule';
 import { CalendarComponent } from '@syncfusion/ej2-vue-calendars';
 import { AutoCompleteComponent } from '@syncfusion/ej2-vue-dropdowns';
@@ -188,16 +205,11 @@ import {
 import uiSettingsMixin from 'dashboard/mixins/uiSettings';
 import { mapGetters, mapActions } from 'vuex';
 import { parse } from 'date-fns';
-import {
-  DataManager,
-  Query,
-  CustomDataAdaptor,
-  WebApiAdaptor,
-} from '@syncfusion/ej2-data';
 import { apiURL, calendarsURL } from '../../../helper/URLHelper';
 import calendars from '../../../api/calendars';
 import { id } from 'date-fns/locale';
 import AccordionItem from 'dashboard/components/Accordion/AccordionItem.vue';
+import Spinner from 'shared/components/Spinner.vue';
 
 export default {
   components: {
@@ -214,6 +226,7 @@ export default {
     'ejs-menu': MenuComponent,
     AccordionItem,
     Thumbnail,
+    Spinner,
   },
   mixins: [uiSettingsMixin],
   props: {
@@ -260,8 +273,19 @@ export default {
         {
           text: 'Adicionar',
           items: [
-            { text: 'Evento', id: 0 },
-            { text: 'Atividade', id: 1 },
+            { text: 'Evento', id: 'event' },
+            { text: 'Atividade', id: 'activity' },
+          ],
+        },
+      ],
+      exportMenuItems: [
+        {
+          text: '',
+          iconCss: 'horizontaldot e-icons',
+          cssClass: 'e-flat',
+          items: [
+            { text: 'Exportar para iCalendar', id: 'ical' },
+            { text: 'exportar para Excel', id: 'xlsx' },
           ],
         },
       ],
@@ -269,6 +293,7 @@ export default {
       selectedCalendarId: null,
       virtualscroll: false,
       open: true,
+      googleCalendar: null,
     };
   },
   provide: {
@@ -281,6 +306,8 @@ export default {
       Resize,
       DragAndDrop,
       Agenda,
+      ICalendarExport,
+      ExcelExport,
     ],
   },
   computed: {
@@ -330,7 +357,7 @@ export default {
     });
   },
   mounted() {
-    console.log('CALENDARID', this.calendarId);
+    this.$refs.scheduleObj = this.$refs.scheduleObj.$el.ej2_instances[0];
     this.fetchEvents();
     this.fetchWorkers();
   },
@@ -356,14 +383,19 @@ export default {
     },
     createEvent(event) {
       axios
-        .post(apiURL('accounts/1/calendars/1/schedules'), {
-          subject: event.Subject,
-          start_time: event.StartTime,
-          end_time: event.EndTime,
-          description: event.Description,
-          location: event.Location,
-          user_ids: event.WorkerIds,
-        })
+        .post(
+          apiURL(
+            `accounts/${this.accountId}/calendars/${this.calendarId}/schedules`
+          ),
+          {
+            subject: event.Subject,
+            start_time: event.StartTime,
+            end_time: event.EndTime,
+            description: event.Description,
+            location: event.Location,
+            user_ids: event.WorkerIds,
+          }
+        )
         .then(response => {
           this.fetchEvents();
         })
@@ -373,14 +405,19 @@ export default {
     },
     updateEvent(event) {
       axios
-        .put(apiURL(`accounts/1/calendars/1/schedules/${event.Id}`), {
-          subject: event.Subject,
-          start_time: event.StartTime,
-          end_time: event.EndTime,
-          description: event.Description,
-          location: event.Location,
-          user_ids: event.WorkerIds,
-        })
+        .put(
+          apiURL(
+            `accounts/${this.accountId}/calendars/${this.calendarId}/schedules/${event.Id}`
+          ),
+          {
+            subject: event.Subject,
+            start_time: event.StartTime,
+            end_time: event.EndTime,
+            description: event.Description,
+            location: event.Location,
+            user_ids: event.WorkerIds,
+          }
+        )
         .then(response => {
           this.fetchEvents();
         })
@@ -390,7 +427,11 @@ export default {
     },
     deleteEvent(event) {
       axios
-        .delete(apiURL(`accounts/1/calendars/1/schedules/${event.Id}`))
+        .delete(
+          apiURL(
+            `accounts/${this.accountId}/calendars/${this.calendarId}/schedules/${event.Id}`
+          )
+        )
         .then(response => {
           this.fetchEvents();
         })
@@ -400,8 +441,9 @@ export default {
     },
     fetchEvents() {
       const calId = this.calendarId;
+      const accountId = this.accountId;
       axios
-        .get(apiURL(`accounts/1/calendars/${calId}/schedules`))
+        .get(apiURL(`accounts/${this.accountId}/calendars/${calId}/schedules`))
         .then(response => {
           const mappedData = response.data.map(event => ({
             Id: event.Id,
@@ -429,7 +471,7 @@ export default {
     },
     fetchWorkers() {
       axios
-        .get(apiURL('accounts/1/agents'))
+        .get(apiURL(`accounts/${this.accountId}/agents`))
         .then(response => {
           const workers = response.data.map(worker => ({
             Id: worker.id,
@@ -444,8 +486,8 @@ export default {
         });
     },
     insertActivityOrEvent(event) {
-      if (event?.item.text === 'Evento') {
-        let scheduleObj = this.$refs.scheduleObj.ej2Instances;
+      if (event?.item.id === 'event') {
+        let scheduleObj = this.$refs.scheduleObj;
         let endDate = new Date(this.selectedDate.getTime());
         endDate.setMinutes(this.selectedDate.getMinutes() + 30);
         let eventData = {
@@ -454,11 +496,11 @@ export default {
           StartTime: this.selectedDate,
           EndTime: endDate,
         };
-        scheduleObj.openEditor(eventData, 'Save');
+        scheduleObj.openEditor(eventData, 'Add', true, 0);
       }
     },
     nextMonthDate() {
-      let scheduleObj = this.$refs.scheduleObj.ej2Instances;
+      let scheduleObj = this.$refs.scheduleObj;
       let nextDate = new Date(this.selectedDate.getTime());
       nextDate.setMonth(nextDate.getMonth() + 1);
       this.selectedDate = nextDate;
@@ -466,7 +508,7 @@ export default {
       scheduleObj.refresh();
     },
     prevMonthDate() {
-      let scheduleObj = this.$refs.scheduleObj.ej2Instances;
+      let scheduleObj = this.$refs.scheduleObj;
       let prevDate = new Date(this.selectedDate.getTime());
       prevDate.setMonth(prevDate.getMonth() - 1);
       this.selectedDate = prevDate;
@@ -533,11 +575,29 @@ export default {
     },
 
     setCalendarId(calendarId) {
-      console.log('calendarId', calendarId);
       if (calendarId === this.calendarId) return;
       this.$store.dispatch('calendars/setDefaultCalendarId', calendarId);
       this.$store.dispatch('calendars/getDefaultCalendarId');
       this.fetchEvents();
+    },
+    exportCalendar(event) {
+      let exportFields = [
+        { name: 'Id', text: 'Id' },
+        { name: 'Subject', text: 'Assunto' },
+        { name: 'StartTime', text: 'Data Inicial' },
+        { name: 'EndTime', text: 'Data Final' },
+        { name: 'Location', text: 'Local' },
+      ];
+      let exportValues = { fieldsInfo: exportFields };
+      if (event.item.id === 'xlsx') {
+        this.$refs.scheduleObj.exportToExcel(exportValues);
+      } else if (event.item.id === 'ical') {
+        this.$refs.scheduleObj.exportToICalendar();
+      }
+    },
+    getGoogleCalendar() {
+      this.googleCalendar =
+        this.$store.getters['integrations/getIntegration']('google_calendar');
     },
   },
 };
@@ -554,6 +614,9 @@ export default {
 @import '@syncfusion/ej2-popups/styles/material3.css';
 @import '@syncfusion/ej2-vue-schedule/styles/material3.css';
 
+.horizontaldot.e-icons::before {
+  content: '\eb04';
+}
 .schedule-vue-sample {
   width: 100%;
   height: 100%;

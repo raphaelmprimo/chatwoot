@@ -21,7 +21,7 @@ const state = {
 };
 
 const isAValidAppIntegration = integration => {
-  return ['dialogflow', 'dyte', 'google_translate', 'openai'].includes(
+  return ['dialogflow', 'dyte', 'google_translate', 'google_calendar', 'openai'].includes(
     integration.id
   );
 };
@@ -41,7 +41,7 @@ export const getters = {
   getUIFlags($state) {
     return $state.uiFlags;
   },
-};
+}; 
 
 export const actions = {
   get: async ({ commit }) => {

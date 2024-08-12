@@ -33,12 +33,21 @@
       "SHOW_ON_SIDEBAR": {
         "LABEL": "Exibir marcador na barra lateral"
       },
+      "CAN_ADD_SCHEDULE": {
+        "LABEL": "Pode Agendar"
+      },
+      "IS_FINAL_STEP": {
+        "LABEL": "Etapa Final"
+      },
+      "REQUIRED_FIELD": {
+        "LABEL": "Requerido?"
+      },
       "PROPERTY_NAME": {
         "LABEL": "Nome do Campo",
         "PLACEHOLDER": "Digite o nome do Campo"
       },
       "PROPERTY_TYPE": {
-        "LABEL": "Tipo do Campo",
+        "LABEL": "Tipo",
         "PLACEHOLDER": "Digite o Tipo do Campo"
       },
       "PROPERTY_TYPE_VALUE": {

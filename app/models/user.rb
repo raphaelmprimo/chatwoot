@@ -80,8 +80,8 @@ class User < ApplicationRecord
   accepts_nested_attributes_for :account_users
 
   has_many :assigned_conversations, foreign_key: 'assignee_id', class_name: 'Conversation', dependent: :nullify, inverse_of: :assignee
-  has_many :calendars, foreign_key: :worker_id, inverse_of: :worker, dependent: :nullify
-  has_many :schedules, foreign_key: :worker_id, through: :calendars
+  has_many :calendars, class_name: 'Calendar', foreign_key: :worker_id, inverse_of: :worker, dependent: :nullify
+  has_many :schedules, class_name: 'Schedule', foreign_key: :worker_id, through: :calendars
   alias_attribute :conversations, :assigned_conversations
   has_many :csat_survey_responses, foreign_key: 'assigned_agent_id', dependent: :nullify, inverse_of: :assigned_agent
   has_many :conversation_participants, dependent: :destroy_async
@@ -173,7 +173,7 @@ class User < ApplicationRecord
     1.upto(6).each do |_|
       color += letters[rand(0..13)]
     end
-    update_attribute(:color_for_schedule,color)
+    update_attribute(:color_for_schedule, color)
   end
 
   private

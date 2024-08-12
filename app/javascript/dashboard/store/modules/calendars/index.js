@@ -1,5 +1,3 @@
-import Vue from 'vue';
-import * as MutationHelpers from 'shared/helpers/vuex/mutationHelpers';
 import types from '../../mutation-types';
 import actions from './actions';
 
@@ -30,7 +28,6 @@ export const getters = {
     return state.schedules;
   },
   getDefaultCalendarId (_state) {
-    console.log("DEFALT_CALENDAR",_state.defaultCalendarId)
     return _state.defaultCalendarId;
   },
 };
@@ -69,14 +66,7 @@ export const mutations = {
       _state.schedules.splice(index, 1, updatedSchedule);
     }
   },
- // [types.default.SET_CALENDARS]: MutationHelpers.set(state, data),
- // [types.default.SET_CALENDARS_SCHEDULES]: MutationHelpers.set,
- // [types.default.SET_CURRENT_CALENDAR]: MutationHelpers.set,
-  // [types.REMOVE_SCHEDULE]($state, scheduleID) {
-  //   $state.schedules = $state.schedules.filter(
-  //     schedule => schedule.id !== scheduleID
-  //   );
-  // },
+
 };
 
 export default {

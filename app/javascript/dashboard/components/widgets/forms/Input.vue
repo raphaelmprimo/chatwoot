@@ -2,7 +2,7 @@
   <label class="input-container">
     <span v-if="label">{{ label }}</span>
     <input
-      class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 border-slate-200 dark:border-slate-600"
+      class="me-2 p-1 border border-gray-300 rounded-md text-sm bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 border-slate-200 dark:border-slate-600"
       :value="value"
       :type="type"
       :placeholder="placeholder"

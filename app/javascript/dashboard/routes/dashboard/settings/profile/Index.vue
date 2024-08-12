@@ -65,6 +65,10 @@
               {{ $t('PROFILE_SETTINGS.FORM.EMAIL.ERROR') }}
             </span>
           </label>
+          <label>
+            Cor para as Agendas no Calendário
+            <woot-color-picker v-model="colorForSchedule" />
+          </label>
           <woot-button type="submit" :is-loading="isProfileUpdating">
             {{ $t('PROFILE_SETTINGS.BTN_TEXT') }}
           </woot-button>
@@ -101,6 +105,7 @@
     </div>
     <change-password v-if="!globalConfig.disableUserProfileUpdate" />
     <notification-settings />
+
     <div
       class="border-b border-slate-50 dark:border-slate-700 items-center flex p-4 text-black-900 dark:text-slate-300 row"
     >
@@ -158,6 +163,7 @@ export default {
       email: '',
       isProfileUpdating: false,
       errorMessage: '',
+      colorForSchedule: '',
       keyOptions: [
         {
           key: 'enter',
@@ -221,6 +227,7 @@ export default {
       this.email = this.currentUser.email;
       this.avatarUrl = this.currentUser.avatar_url;
       this.displayName = this.currentUser.display_name;
+      this.colorForSchedule = this.currentUser.color_for_schedule;
     },
     isEditorHotKeyEnabled,
     async updateUser() {
@@ -238,6 +245,7 @@ export default {
           email: this.email,
           avatar: this.avatarFile,
           displayName: this.displayName,
+          color_for_schedule: this.colorForSchedule,
         });
         this.isProfileUpdating = false;
         if (hasEmailChanged) {

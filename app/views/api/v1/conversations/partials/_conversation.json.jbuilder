@@ -31,8 +31,11 @@ else
   ]
 end
 
+json.custom_attributes conversation.custom_attributes
+json.label_attributes conversation.label_attributes
 json.color conversation.color
 json.label_title conversation.label_title
+json.can_schedule conversation.can_schedule
 json.team_id conversation.get_team_id
 json.account_id conversation.account_id
 json.uuid conversation.uuid

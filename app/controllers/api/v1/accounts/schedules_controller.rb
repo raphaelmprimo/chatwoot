@@ -7,15 +7,21 @@ class Api::V1::Accounts::SchedulesController < Api::V1::Accounts::BaseController
     @schedules = @calendar.schedules.all
   end
 
+  def in_label
+    @schedules = @calendar.schedules.in_label(params[:label_id]).all
+  end
+
+  def of_conversation
+    schedule = @calendar.schedules.of_conversation(params[:conversation_uuid]).first
+  end
+
   def create
     @schedule = @calendar.schedules.new(schedule_params)
     @schedule.account = Current.account
     @schedule.worker = Current.user
     @schedule.save!
-    @schedule.add_schedule_guests(params[:user_ids])
+    @schedule.add_schedule_guests(params[:user_ids]) if schedule_params[:user_ids].present?
     head :no_content
-
-    #@schedule.build_schedule_guests(user_ids)
   end
 
   def update
@@ -34,6 +40,10 @@ class Api::V1::Accounts::SchedulesController < Api::V1::Accounts::BaseController
 
   private
 
+  def fetch_user
+    params[:schedule][:user_id] = Current.user.id
+  end
+
   def fetch_calendar
     @calendar = Current.account.calendars.find(params[:calendar_id])
   end
@@ -43,6 +53,8 @@ class Api::V1::Accounts::SchedulesController < Api::V1::Accounts::BaseController
   end
 
   def schedule_params
-    params.require(:schedule).permit(:subject, :start_time, :end_time, :is_all_day, :location, :description, :status, :priority, :reminder, :user_ids)
+    params.require(:schedule).permit(:subject, :start_time, :end_time, :is_all_day, :location,
+                                     :description, :status, :priority, :reminder, :user_ids,
+                                     :label_id, :color_for_schedule)
   end
 end

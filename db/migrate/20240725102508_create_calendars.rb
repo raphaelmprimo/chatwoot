@@ -3,12 +3,13 @@ class CreateCalendars < ActiveRecord::Migration[7.0]
     create_table :calendars, id: :serial do |t|
       t.integer :display_id, null: false
       t.integer :account_id, null: false
-      t.integer :worker_id, null: false
+      t.integer :worker_id, null: true
       t.uuid :uuid, default: -> { 'gen_random_uuid()' }, null: false
       t.uuid :conversation_uuid
       t.string :title
       t.string :description
       t.integer :status, default: 0, null: false
+      t.boolean :is_default, null: false, default: false
 
       t.timestamps
     end
@@ -18,8 +19,8 @@ class CreateCalendars < ActiveRecord::Migration[7.0]
     add_index :calendars, :conversation_uuid, name: 'index_calendars_on_conversation_uuid'
     add_index :calendars, :uuid, unique: true, name: 'index_calendars_on_uuid'
 
-    create_trigger('calendars_before_insert_row_tr', generated: true, compatibility: 1).
-      on('calendars').before(:insert).for_each(:row) do
+    create_trigger('calendars_before_insert_row_tr', generated: true, compatibility: 1)
+      .on('calendars').before(:insert).for_each(:row) do
         "NEW.display_id := nextval('conv_dpid_seq_' || NEW.account_id);"
       end
   end

@@ -45,6 +45,7 @@
     "UNMUTED_SUCCESS": "Este contato foi desbloqueado com sucesso.",
     "SEND_TRANSCRIPT": "Enviar Transcrição",
     "EDIT_LABEL": "Alterar",
+    "MUTED": {"LABEL": "Bloqueado"},
     "SIDEBAR_SECTIONS": {
       "CUSTOM_ATTRIBUTES": "Atributos Personalizados",
       "CONTACT_LABELS": "Etiquetas de contato",

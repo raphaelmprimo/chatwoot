@@ -3,6 +3,7 @@
 # Table name: schedules
 #
 #  id                :bigint           not null, primary key
+#  color             :string           default("#9bbef5")
 #  conversation_uuid :uuid
 #  description       :string
 #  end_time          :datetime
@@ -20,20 +21,25 @@
 #  updated_at        :datetime         not null
 #  account_id        :integer          not null
 #  calendar_id       :integer          not null
+#  label_id          :integer
 #  resource_id       :integer
 #  room_id           :integer
 #  worker_id         :integer          not null
 #
 class Schedule < ApplicationRecord
   belongs_to :account
-  belongs_to :worker, class_name: 'User', inverse_of: :schedules
-  belongs_to :conversation, primary_key: :uuid, foreign_key: :conversation_uuid, inverse_of: :schedules, optional: true
-  belongs_to :calendar
+  belongs_to :worker, class_name: 'User', inverse_of: :schedules, optional: true
+  belongs_to :conversation, primary_key: :uuid, foreign_key: :conversation_uuid, inverse_of: :schedule, optional: true
+  belongs_to :calendar, class_name: 'Calendar', inverse_of: :schedules
   belongs_to :room, optional: true
   belongs_to :resource, optional: true
+  belongs_to :label, optional: true
 
   has_many :schedule_guests, dependent: :destroy
   has_many :guests, through: :schedule_guests, source: :user
+
+  scope :in_label, ->(label_id) { where(label_id: label_id) }
+  scope :of_conversation, ->(conversation_uuid) { where(conversation_uuid: conversation_uuid) }
 
   enum status: {
     scheduled: 0,

@@ -117,3 +117,8 @@ export const SLA_EVENTS = Object.freeze({
   UPDATE: 'Updated an SLA',
   DELETED: 'Deleted an SLA',
 });
+
+export const KANBAN_EVENTS = Object.freeze({
+  UPDATE: 'Updated a kanban Card Attributes Visibility',
+  DELETED: 'Deleted a kanban',
+});

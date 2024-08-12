@@ -1,5 +1,14 @@
 // custom styles for the dashboard
-
+@import '@syncfusion/ej2-base/styles/material3.css';
+@import '@syncfusion/ej2-buttons/styles/material3.css';
+@import '@syncfusion/ej2-layouts/styles/material3.css';
+@import '@syncfusion/ej2-dropdowns/styles/material3.css';
+@import '@syncfusion/ej2-navigations/styles/material3.css';
+@import '@syncfusion/ej2-popups/styles/material3.css';
+@import '@syncfusion/ej2-vue-kanban/styles/tailwind.css';
+@import '@syncfusion/ej2-vue-inputs/styles/bootstrap.css';
+@import '@syncfusion/ej2-vue-grids/styles/tailwind.css';
+@import '@syncfusion/ej2-vue-treegrid/styles/material3.css';
 .feature-cell {
   background: $color-extra-light-blue;
   border-radius: 10px;

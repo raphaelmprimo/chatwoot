@@ -82,6 +82,41 @@ const actions = {
     }
   },
 
+  fetchSchedulesLabel: async ({ commit }, { calendarID, labelID }) => {
+    commit(types.SET_SCHEDULES_UI_FLAG, {
+      isFetching: true,
+    });
+
+    try {
+      const response = await CalendarApi.getSchedulesLabel(calendarID, labelID);
+      commit(types.SET_SCHEDULES, response.data);
+    } catch (error) {
+      // Handle error
+    } finally {
+      commit(types.SET_SCHEDULES_UI_FLAG, {
+      isFetching: false,
+    });
+    }
+  },
+
+
+    fetchSchedules: async({ commit }, calendarID) => {
+    commit(types.SET_SCHEDULES_UI_FLAG, {
+      isFetching: true,
+    });
+
+    try {
+      const response = await CalendarApi.getSchedules(calendarID);
+      commit(types.SET_SCHEDULES, response.data);
+    } catch (error) {
+      // Handle error
+    } finally {
+      commit(types.SET_SCHEDULES_UI_FLAG, {
+      isFetching: false,
+    });
+    }
+  },
+
   async createCalendar({ commit }, calendar) {
     commit(types.SET_CALENDARS_UI_FLAG, {
       isCreating: true

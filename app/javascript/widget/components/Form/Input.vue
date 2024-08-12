@@ -9,7 +9,7 @@
     </div>
     <input
       :type="type"
-      class="border rounded w-full py-2 px-3 leading-tight outline-none"
+      class="border rounded w-full py-2 px-3 leading-tight outline-none text-sm"
       :class="inputHasError"
       :placeholder="placeholder"
       :value="value"

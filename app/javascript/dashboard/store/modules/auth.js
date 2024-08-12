@@ -12,6 +12,7 @@ const initialState = {
     email: null,
     name: null,
     token_typebot: null,
+    color_for_schedule: null,
   },
   uiFlags: {
     isFetching: true,

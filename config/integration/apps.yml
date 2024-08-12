@@ -128,6 +128,43 @@ google_translate:
     },
   ]
   visible_properties: ['project_id']
+google_calendar:
+  id: google_calendar
+  logo: google_calendar.png
+  i18n_key: google_calendar
+  action: /google_calendar
+  hook_type: account
+  allow_multiple_hooks: false
+  settings_json_schema: {
+    "type": "object",
+    "properties": {
+      "project_id": { "type": "string" },
+      "credentials": { "type": "object" },
+    },
+    "required": ["project_id", "credentials"],
+    "additionalProperties": false,
+  }
+  settings_form_schema: [
+    {
+      "label": "Google Cloud Project ID",
+      "type": "text",
+      "name": "project_id",
+      "validation": "required",
+      "validationName": "Project Id",
+    },
+    {
+      "label": "Google Cloud Project Key File",
+      "type": "textarea",
+      "name": "credentials",
+      "validation": "required|JSON",
+      "validationName": "Credentials",
+      "validation-messages": {
+        "JSON": "Invalid JSON",
+        "required": "Credentials is required"
+      },
+    },
+  ]
+  visible_properties: ['project_id']
 openai:
   id: openai
   logo: openai.png

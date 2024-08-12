@@ -23,6 +23,9 @@
 #
 class CustomAttributeDefinition < ApplicationRecord
   scope :with_attribute_model, ->(attribute_model) { attribute_model.presence && where(attribute_model: attribute_model) }
+
+  scope :conversation_only, -> { where(attribute_model: :conversation_attribute) }
+
   validates :attribute_display_name, presence: true
 
   validates :attribute_key,
@@ -36,6 +39,7 @@ class CustomAttributeDefinition < ApplicationRecord
   enum attribute_display_type: { text: 0, number: 1, currency: 2, percent: 3, link: 4, date: 5, list: 6, checkbox: 7 }
 
   belongs_to :account
+  has_many :label_attributes, dependent: :destroy
   after_update :update_widget_pre_chat_custom_fields
   after_destroy :sync_widget_pre_chat_custom_fields
 
