@@ -1,10 +1,10 @@
 class AccountPolicy < ApplicationPolicy
   def show?
-    @account_user.administrator? || @account_user.agent?
+    @account_user.administrator? || @account_user.agent? || @account_user.worker?
   end
 
   def cache_keys?
-    @account_user.administrator? || @account_user.agent?
+    @account_user.administrator? || @account_user.agent? || @account_user.worker?
   end
 
   def limits?

@@ -9,13 +9,13 @@
         class="label-wrap"
         @keyup.esc="closeDropdownLabel"
       >
-        <add-label @add="toggleLabels" v-if="activeLabels.length < 1" />
+        <add-label v-if="activeLabels.length < 1" @add="toggleLabels" />
         <woot-label
           v-for="label in activeLabels"
           :key="label.id"
           :title="label.title"
           :description="label.description"
-          :show-close="true"
+          :show-close="false"
           :color="label.color"
           variant="smooth"
           class="max-w-[calc(100%-0.5rem)]"

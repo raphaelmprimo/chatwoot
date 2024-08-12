@@ -26,6 +26,7 @@
 #  contact_inbox_id       :bigint
 #  display_id             :integer          not null
 #  inbox_id               :integer          not null
+#  label_id               :integer
 #  sla_policy_id          :bigint
 #  team_id                :bigint
 #
@@ -41,6 +42,7 @@
 #  index_conversations_on_first_reply_created_at      (first_reply_created_at)
 #  index_conversations_on_id_and_account_id           (account_id,id)
 #  index_conversations_on_inbox_id                    (inbox_id)
+#  index_conversations_on_label_id                    (label_id)
 #  index_conversations_on_last_activity_at            (last_activity_at)
 #  index_conversations_on_priority                    (priority)
 #  index_conversations_on_status_and_account_id       (status,account_id)
@@ -98,13 +100,16 @@ class Conversation < ApplicationRecord
   belongs_to :contact_inbox
   belongs_to :team, optional: true
   belongs_to :campaign, optional: true
+  belongs_to :label, optional: true
 
   has_many :mentions, dependent: :destroy_async
   has_many :messages, dependent: :destroy_async, autosave: true
-  has_one :csat_survey_response, dependent: :destroy_async
+  has_one  :csat_survey_response, dependent: :destroy_async
   has_many :conversation_participants, dependent: :destroy_async
   has_many :notifications, as: :primary_actor, dependent: :destroy_async
   has_many :attachments, through: :messages
+  has_one  :schedule, class_name: 'Schedule', primary_key: :uuid, foreign_key: :conversation_uuid, dependent: :destroy_async,
+                      inverse_of: :conversation
 
   before_save :ensure_snooze_until_reset
   before_create :determine_conversation_status
@@ -179,21 +184,28 @@ class Conversation < ApplicationRecord
   end
 
   def color
-    return '#A1B7BF' if cached_label_list.nil? || cached_label_list.to_sym == :open || !cached_label_list.present?
+    return '#A1B7BF' if label.present?
 
-    label = Label.find_by(title: cached_label_list)
     label.present? ? label.color : '#A1B7BF'
   end
-
-  def label
-    label = Label.find_by(title: cached_label_list)
+  
+  def label_title
     label.present? ? label.title : 'open'
   end
 
-  def get_team_id
-    return team.id if team.present?
+  def can_schedule
+    label.present? ? label.can_add_schedule : false
+  end
 
-    0
+  def label_attributes
+    return [] if label.blank?
+
+    label.attributes_requireds_keys
+  end
+
+  def get_team_id
+    return 0 if team.blank?
+    team.id
   end
 
   def notifiable_assignee_change?

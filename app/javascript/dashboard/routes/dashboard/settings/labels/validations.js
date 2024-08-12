@@ -8,6 +8,12 @@ export default {
     minLength: minLength(2),
     validLabelCharacters,
   },
+  property: {
+    name: {
+      required,
+      minLength: minLength(2),
+  },
+  },
   description: {},
   color: {
     required,

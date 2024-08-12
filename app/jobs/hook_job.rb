@@ -11,6 +11,8 @@ class HookJob < ApplicationJob
       process_dialogflow_integration(hook, event_name, event_data)
     when 'google_translate'
       google_translate_integration(hook, event_name, event_data)
+    when 'google_calendar'
+      google_translate_integration(hook, event_name, event_data)
     end
   rescue StandardError => e
     Rails.logger.error e

@@ -33,6 +33,14 @@
       "SHOW_ON_SIDEBAR": {
         "LABEL": "Show label on sidebar"
       },
+      "PROPERTY_NAME": {
+        "LABEL": "Field Name",
+        "PLACEHOLDER": "Enter the Field name"
+      },
+      "PROPERTY_VALUE": {
+        "LABEL": "Type Field",
+        "PLACEHOLDER": "Enter the Field type"
+      },
       "EDIT": "Edit",
       "CREATE": "Create",
       "DELETE": "Delete",

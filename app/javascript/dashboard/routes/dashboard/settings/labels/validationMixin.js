@@ -10,6 +10,8 @@ export default {
         errorMessage = this.$t('LABEL_MGMT.FORM.NAME.MINIMUM_LENGTH_ERROR');
       } else if (!this.$v.title.validLabelCharacters) {
         errorMessage = this.$t('LABEL_MGMT.FORM.NAME.VALID_ERROR');
+      } else if (!this.$v.property.name.required) {
+        errorMessage = this.$t('LABEL_MGMT.FORM.NAME.REQUIRED_ERROR');
       }
       return errorMessage;
     },

@@ -25,13 +25,13 @@ export default {
         ...searchRoutes,
         ...notificationRoutes,
         ...botRoutes,
-        ...evolutionRoutes
+        ...evolutionRoutes,
       ],
     },
     {
       path: frontendURL('accounts/:accountId/suspended'),
       name: 'account_suspended',
-      roles: ['administrator', 'agent'],
+      roles: ['administrator', 'agent', 'worker'],
       component: Suspended,
     },
   ],

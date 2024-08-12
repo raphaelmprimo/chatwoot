@@ -19,7 +19,6 @@
         :placeholder="$t('LABEL_MGMT.FORM.DESCRIPTION.PLACEHOLDER')"
         @input="$v.description.$touch"
       />
-
       <div class="w-full">
         <label>
           {{ $t('LABEL_MGMT.FORM.COLOR.LABEL') }}
@@ -31,6 +30,37 @@
         <label for="conversation_creation">
           {{ $t('LABEL_MGMT.FORM.SHOW_ON_SIDEBAR.LABEL') }}
         </label>
+      </div>
+      <div class="w-full flex items-center gap-2">
+        <input v-model="canAddSchedule" type="checkbox" :value="false" />
+        <label for="conversation_creation">
+          {{ $t('LABEL_MGMT.FORM.CAN_ADD_SCHEDULE.LABEL') }}
+        </label>
+      </div>
+      <div class="w-full flex items-center gap-2">
+        <input v-model="isFinalStep" type="checkbox" :value="false" />
+        <label for="conversation_creation">
+          {{ $t('LABEL_MGMT.FORM.IS_FINAL_STEP.LABEL') }}
+        </label>
+      </div>
+
+      <div id="checklist-wrapper" class="mt-4 mb-2">
+        <div id="flat-list">
+          <p>Campos Disponíveis</p>
+          <span v-for="attribute in attributes" :key="attribute.id">
+            <label :for="`attribute-${attribute.id}`">
+              <input
+                type="checkbox"
+                :value="attribute.id"
+                :id="`attribute-${attribute.id}`"
+                v-model="selectedAttributes"
+                class="mr-2"
+              />
+              {{ attribute.attribute_display_name }} -
+              {{ translatedTypes[attribute.attribute_display_type] }}
+            </label>
+          </span>
+        </div>
       </div>
       <div class="flex justify-end items-center py-2 px-0 gap-2 w-full">
         <woot-button
@@ -52,6 +82,7 @@ import { mapGetters } from 'vuex';
 import alertMixin from 'shared/mixins/alertMixin';
 import validationMixin from './validationMixin';
 import validations from './validations';
+import { properties } from '@syncfusion/ej2-vue-treegrid/src/treegrid/treegrid.component';
 
 export default {
   mixins: [alertMixin, validationMixin],
@@ -60,19 +91,35 @@ export default {
       type: Object,
       default: () => {},
     },
+    propertiesLabel: {
+      type: Array,
+      default: () => [],
+    },
   },
   data() {
     return {
       title: '',
       description: '',
       showOnSidebar: true,
+      canAddSchedule: false,
+      isFinalStep: false,
       color: '',
+      selectedAttributes: [],
+      translatedTypes: {
+        text: 'Texto',
+        number: 'Número',
+        link: 'Link',
+        date: 'Data',
+        list: 'Lista',
+        checkbox: 'Sim/Não',
+      },
     };
   },
   validations,
   computed: {
     ...mapGetters({
       uiFlags: 'labels/getUIFlags',
+      attributes: 'attributes/getAttributes',
     }),
     pageTitle() {
       return `${this.$t('LABEL_MGMT.EDIT.TITLE')} - ${
@@ -82,6 +129,7 @@ export default {
   },
   mounted() {
     this.setFormValues();
+    this.$store.dispatch('attributes/fetchAllAttributes');
   },
   methods: {
     onClose() {
@@ -92,6 +140,10 @@ export default {
       this.description = this.selectedResponse.description;
       this.showOnSidebar = this.selectedResponse.show_on_sidebar;
       this.color = this.selectedResponse.color;
+      this.properties = this.propertiesLabel || [];
+      this.final_step = this.selectedResponse.final_step;
+      this.can_add_schedule = this.selectedResponse.can_add_schedule;
+      this.selectedAttributes = this.selectedResponse.attribute_ids;
     },
     editLabel() {
       this.$store
@@ -101,6 +153,9 @@ export default {
           description: this.description,
           title: this.title.toLowerCase(),
           show_on_sidebar: this.showOnSidebar,
+          final_step: this.isFinalStep,
+          can_add_schedule: this.canAddSchedule,
+          attribute_ids: this.selectedAttributes,
         })
         .then(() => {
           this.showAlert(this.$t('LABEL_MGMT.EDIT.API.SUCCESS_MESSAGE'));
@@ -109,6 +164,12 @@ export default {
         .catch(() => {
           this.showAlert(this.$t('LABEL_MGMT.EDIT.API.ERROR_MESSAGE'));
         });
+    },
+    addProperty() {
+      this.properties.push({ name: '', property_type: 'TextValue' });
+    },
+    removeProperty(index) {
+      this.properties.splice(index, 1);
     },
   },
 };

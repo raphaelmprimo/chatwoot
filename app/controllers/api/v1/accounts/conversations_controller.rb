@@ -3,7 +3,7 @@ class Api::V1::Accounts::ConversationsController < Api::V1::Accounts::BaseContro
   include DateRangeHelper
   include HmacConcern
 
-  before_action :conversation, except: [:index, :meta, :search, :create, :filter, :update_label]
+  before_action :conversation, except: [:index, :meta, :search, :create, :filter, :update_label, :properties]
   before_action :inbox, :contact, :contact_inbox, only: [:create]
 
   def index
@@ -27,8 +27,7 @@ class Api::V1::Accounts::ConversationsController < Api::V1::Accounts::BaseContro
     @attachments = @conversation.attachments
   end
 
-  def show
-  end
+  def show; end
 
   def create
     ActiveRecord::Base.transaction do
@@ -43,8 +42,15 @@ class Api::V1::Accounts::ConversationsController < Api::V1::Accounts::BaseContro
 
   def update_label
     @conversation = Conversation.find_by(uuid: params[:conversation][:uuid])
-    status = params[:conversation][:status]
-    @conversation.update!(cached_label_list: status, label_list: status)
+    label = Label.find_by(title: params[:conversation][:status])
+    @conversation.label = label
+    @conversation.save!
+
+    head :ok
+  end
+
+  def properties
+    @conversation = Conversation.find_by(uuid: params[:conversation_id])
   end
 
   def filter
@@ -52,8 +58,8 @@ class Api::V1::Accounts::ConversationsController < Api::V1::Accounts::BaseContro
     @conversations = result[:conversations]
     @conversations_count = result[:count]
   rescue CustomExceptions::CustomFilter::InvalidAttribute,
-    CustomExceptions::CustomFilter::InvalidOperator,
-    CustomExceptions::CustomFilter::InvalidValue => e
+         CustomExceptions::CustomFilter::InvalidOperator,
+         CustomExceptions::CustomFilter::InvalidValue => e
     render_could_not_create_error(e.message)
   end
 
@@ -68,7 +74,7 @@ class Api::V1::Accounts::ConversationsController < Api::V1::Accounts::BaseContro
   end
 
   def transcript
-    render json: {error: "email param missing"}, status: :unprocessable_entity and return if params[:email].blank?
+    render json: { error: 'email param missing' }, status: :unprocessable_entity and return if params[:email].blank?
 
     ConversationReplyMailer.with(account: @conversation.account).conversation_transcript(@conversation, params[:email])&.deliver_later
     head :ok
@@ -90,11 +96,11 @@ class Api::V1::Accounts::ConversationsController < Api::V1::Accounts::BaseContro
   def pending_to_open_by_bot?
     return false unless Current.user.is_a?(AgentBot)
 
-    @conversation.status == "pending" && params[:status] == "open"
+    @conversation.status == 'pending' && params[:status] == 'open'
   end
 
   def should_assign_conversation?
-    @conversation.status == "open" && Current.user.is_a?(User) && Current.user&.agent?
+    @conversation.status == 'open' && Current.user.is_a?(User) && Current.user&.agent?
   end
 
   def toggle_priority
@@ -178,7 +184,7 @@ class Api::V1::Accounts::ConversationsController < Api::V1::Accounts::BaseContro
     @contact_inbox ||= ::ContactInbox.find_by!(source_id: params[:source_id])
     authorize @contact_inbox.inbox, :show?
   rescue ActiveRecord::RecordNotUnique
-    render json: {error: "source_id should be unique"}, status: :unprocessable_entity
+    render json: { error: 'source_id should be unique' }, status: :unprocessable_entity
   end
 
   def build_contact_inbox
@@ -201,4 +207,4 @@ class Api::V1::Accounts::ConversationsController < Api::V1::Accounts::BaseContro
   end
 end
 
-Api::V1::Accounts::ConversationsController.prepend_mod_with("Api::V1::Accounts::ConversationsController")
+Api::V1::Accounts::ConversationsController.prepend_mod_with('Api::V1::Accounts::ConversationsController')

@@ -3,6 +3,8 @@
 json.id conversation.display_id
 json.uuid conversation.uuid
 json.created_at conversation.created_at.to_i
+json.custom_attributes conversation.custom_attributes
+json.label_attributes conversation.label_attributes
 json.contact do
   json.id conversation.contact.id
   json.name conversation.contact.name

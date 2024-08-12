@@ -3,6 +3,10 @@ export const frontendURL = (path, params) => {
   return `/app/${path}${stringifiedParams}`;
 };
 
+export const apiURL = (path) => {
+  return `/api/v1/${path}`;
+};
+
 export const conversationUrl = ({
   accountId,
   activeInbox,
@@ -56,6 +60,17 @@ export const conversationListPageURL = ({
     url = `accounts/${accountId}/${urlMap[conversationType]}`;
   }
   return frontendURL(url);
+};
+
+export const calendarsURL = ({
+  accountId,
+  calendarId,
+}) => {
+  let url = `accounts/${accountId}/calendars`;
+  if (calendarId) {
+    url = `accounts/${accountId}/calendars/${calendarId}/schedules`;
+  }
+  return apiURL(url);
 };
 
 export const isValidURL = value => {

@@ -39,8 +39,21 @@ module UserAttributeHelpers
     current_account_user&.agent?
   end
 
+  def worker?
+    current_account_user&.worker?
+  end
+
   def role
     current_account_user&.role
+  end
+
+  def roles
+    roles = []
+    roles.push('Agent') if agent?
+    roles.push('Administrator') if administrator?
+    roles.push('Worker') if worker?
+
+    roles.join(', ')
   end
 
   # Used internally for Chatwoot in Chatwoot

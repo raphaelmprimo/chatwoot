@@ -38,6 +38,38 @@
           {{ $t('LABEL_MGMT.FORM.SHOW_ON_SIDEBAR.LABEL') }}
         </label>
       </div>
+      <div class="w-full flex items-center gap-2">
+        <input v-model="canAddSchedule" type="checkbox" :value="false" />
+        <label for="conversation_creation">
+          {{ $t('LABEL_MGMT.FORM.CAN_ADD_SCHEDULE.LABEL') }}
+        </label>
+      </div>
+      <div class="w-full flex items-center gap-2">
+        <input v-model="isFinalStep" type="checkbox" :value="false" />
+        <label for="conversation_creation">
+          {{ $t('LABEL_MGMT.FORM.IS_FINAL_STEP.LABEL') }}
+        </label>
+      </div>
+
+      <div id="checklist-wrapper" class="mt-4 mb-2" v-if="attributes">
+        <div id="flat-list">
+          <p>Campos Disponíveis</p>
+          <span v-for="attribute in attributes" :key="attribute.id">
+            <label :for="`attribute-${attribute.id}`">
+              <input
+                type="checkbox"
+                :value="attribute.id"
+                :id="`attribute-${attribute.id}`"
+                v-model="selectedAttributes"
+                class="mr-2"
+              />
+              {{ attribute.attribute_display_name }} -
+              {{ translatedTypes[attribute.attribute_display_type] }}
+            </label>
+          </span>
+        </div>
+      </div>
+
       <div class="flex justify-end items-center py-2 px-0 gap-2 w-full">
         <woot-button
           :is-disabled="$v.title.$invalid || uiFlags.isCreating"
@@ -60,8 +92,12 @@ import validationMixin from './validationMixin';
 import { mapGetters } from 'vuex';
 import validations from './validations';
 import { getRandomColor } from 'dashboard/helper/labelColor';
+import { ListViewComponent } from '@syncfusion/ej2-vue-lists';
 
 export default {
+  components: {
+    'ejs-listview': ListViewComponent,
+  },
   mixins: [alertMixin, validationMixin],
   props: {
     prefillTitle: {
@@ -75,21 +111,41 @@ export default {
       description: '',
       title: '',
       showOnSidebar: true,
+      canAddSchedule: false,
+      isFinalStep: false,
+      properties: [],
+      selectedAttributes: [],
+      translatedTypes: {
+        text: 'Texto',
+        number: 'Número',
+        link: 'Link',
+        date: 'Data',
+        list: 'Lista',
+        checkbox: 'Sim/Não',
+      },
     };
   },
   validations,
   computed: {
     ...mapGetters({
       uiFlags: 'labels/getUIFlags',
+      attributes: 'attributes/getAttributes',
     }),
   },
   mounted() {
     this.color = getRandomColor();
     this.title = this.prefillTitle.toLowerCase();
+    this.$store.dispatch('attributes/fetchAllAttributes');
   },
   methods: {
     onClose() {
       this.$emit('close');
+    },
+    addProperty() {
+      this.properties.push({ name: '', property_type: 'TextValue' });
+    },
+    removeProperty(index) {
+      this.properties.splice(index, 1);
     },
     async addLabel() {
       try {
@@ -98,6 +154,9 @@ export default {
           description: this.description,
           title: this.title.toLowerCase(),
           show_on_sidebar: this.showOnSidebar,
+          final_step: this.isFinalStep,
+          can_add_schedule: this.canAddSchedule,
+          attribute_ids: this.selectedAttributes,
         });
         this.showAlert(this.$t('LABEL_MGMT.ADD.API.SUCCESS_MESSAGE'));
         this.onClose();
@@ -111,11 +170,34 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+.checklist #flat-list .displayText {
+  padding-left: 15px;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.1;
+}
+
 // Label API supports only lowercase letters
 .label-name--input {
   ::v-deep {
     input {
       @apply lowercase;
+    }
+  }
+}
+
+.attrs__node-drag-handle {
+  @apply cursor-move -left-8 absolute;
+}
+.attrs__node-action-container {
+  @apply w-full min-w-0 basis-full items-center flex relative;
+
+  .attrs__node-action-item {
+    @apply flex-grow bg-white dark:bg-slate-700 p-2 mr-2 rounded-md shadow-sm;
+
+    &.has-error {
+      animation: shake 0.3s ease-in-out 0s 2;
+      @apply bg-red-50 dark:bg-red-800;
     }
   }
 }
