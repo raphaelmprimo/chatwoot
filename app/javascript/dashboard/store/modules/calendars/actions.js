@@ -45,7 +45,7 @@ const actions = {
     }
   },
 
-  getDefaultCalendarId: ({ commit }) => {
+  getDefaultCalendarId: async ({ commit }) => {
     commit(types.SET_CALENDARS_UI_FLAG, {
       isFetching: true,
     });
@@ -55,8 +55,13 @@ const actions = {
     try {
       if (idCal !== null) {
         commit(types.SET_CALENDARS_DEFAULT, parseInt(idCal, 10));
+      } else {
+        const response = await CalendarApi.get();
+        const id = response.data.payload[0].id;
+        commit(types.SET_CALENDARS_DEFAULT, parseInt(idCal, 10));
+        LocalStorage.set(LOCAL_STORAGE_KEYS.DEFAULT_CALENDAR_ID, id);
       }
-    }catch (error) {
+    } catch (error) {
       // Handle error
     } finally {
       commit(types.SET_CALENDARS_UI_FLAG, {

@@ -23,10 +23,11 @@
 #  index_calendars_on_worker_id          (worker_id)
 #
 class Calendar < ApplicationRecord
+  default_scope { where(is_default: true) }
+
   belongs_to :account
   belongs_to :worker, class_name: 'User', inverse_of: :calendarss, optional: true
   belongs_to :conversation, primary_key: :uuid, foreign_key: :conversation_uuid, inverse_of: :calendars, optional: true
-  default_scope { where(is_default: true) }
 
   has_many :schedules, class_name: 'Schedule', dependent: :destroy_async
 

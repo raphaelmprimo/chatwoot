@@ -11,6 +11,10 @@ class CalendarPolicy < ApplicationPolicy
     index?
   end
 
+  def default_calendar?
+    index?
+  end
+
   def create?
     index?
   end

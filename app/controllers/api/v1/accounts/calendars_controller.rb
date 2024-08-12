@@ -1,6 +1,6 @@
 class Api::V1::Accounts::CalendarsController < Api::V1::Accounts::BaseController
   before_action :current_account
-  before_action :fetch_calendar, except: [:index, :create]
+  before_action :fetch_calendar, except: [:index, :create, :default_calendar]
   before_action :check_authorization
 
   def index
@@ -8,6 +8,10 @@ class Api::V1::Accounts::CalendarsController < Api::V1::Accounts::BaseController
   end
 
   def show; end
+
+  def default_calendar
+    @calendar = Current.account.calendars.first
+  end
 
   def create
     @calendar = Current.user.calendars.create!(permitted_params, account: Current.account)
