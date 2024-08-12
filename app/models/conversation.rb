@@ -73,8 +73,8 @@ class Conversation < ApplicationRecord
   enum priority: { low: 0, medium: 1, high: 2, urgent: 3 }
 
   scope :unassigned, -> { where(assignee_id: nil) }
-  scope :with_label, ->(label) {where(cached_label_list: label)}
-  scope :with_labels, ->(labels) {where(cached_label_list: labels)}
+  scope :with_label, ->(label) { where(cached_label_list: label) }
+  scope :with_labels, ->(labels) { where(cached_label_list: labels) }
   scope :assigned, -> { where.not(assignee_id: nil) }
   scope :assigned_to, ->(agent) { where(assignee_id: agent.id) }
   scope :unattended, -> { where(first_reply_created_at: nil).or(where.not(waiting_since: nil)) }
@@ -178,20 +178,21 @@ class Conversation < ApplicationRecord
     (cached_label_list || '').split(',').map(&:strip)
   end
 
-  def color 
-    return "#A1B7BF" if (cached_label_list.to_sym == :open or !cached_label_list.present?)
-    
+  def color
+    return '#A1B7BF' if cached_label_list.nil? || cached_label_list.to_sym == :open || !cached_label_list.present?
+
     label = Label.find_by(title: cached_label_list)
-    label.present? ? label.color : "#A1B7BF"
+    label.present? ? label.color : '#A1B7BF'
   end
 
-  def label 
+  def label
     label = Label.find_by(title: cached_label_list)
-    label.present? ? label.title : "open"
+    label.present? ? label.title : 'open'
   end
 
   def get_team_id
-    return team.id unless !team.present?
+    return team.id if team.present?
+
     0
   end
 

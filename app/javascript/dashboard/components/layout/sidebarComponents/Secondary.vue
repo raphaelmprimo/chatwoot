@@ -29,6 +29,7 @@ import SecondaryNavItem from './SecondaryNavItem.vue';
 import AccountContext from './AccountContext.vue';
 import { mapGetters } from 'vuex';
 import { FEATURE_FLAGS } from '../../../featureFlags';
+import Inboxes from '../../../api/inboxes';
 
 export default {
   components: {
@@ -69,6 +70,16 @@ export default {
       default: false,
     },
   },
+  data() {
+    return {
+      inboxesAll: [],
+    };
+  },
+  async mounted() {
+    const response = await Inboxes.getAllInboxes();
+    console.log(response.data, "@@@ response")
+    this.inboxesAll = response.data.payload
+  },
   computed: {
     ...mapGetters({
       isFeatureEnabledonAccount: 'accounts/isFeatureEnabledonAccount',
@@ -107,7 +118,7 @@ export default {
         toState: frontendURL(`accounts/${this.accountId}/settings/inboxes/new`),
         toStateName: 'settings_inbox_new',
         newLinkRouteName: 'settings_inbox_new',
-        children: this.inboxes
+        children: this.inboxesAll
           .map(inbox => ({
             id: inbox.id,
             label: inbox.name,

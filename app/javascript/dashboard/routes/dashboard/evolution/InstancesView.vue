@@ -232,6 +232,7 @@ export default {
             sign_msg: false,
             enabled: true,
             reopen_conversation: true,
+            auto_create: true,
             conversation_pending: false,
             url: 'https://dev.zapclick.digital',
           },
