@@ -113,25 +113,30 @@
       <ejs-kanban
         id="kanban"
         ref="KanbanObj"
-        css-class="kanban-card-default"
-        key-field="status"
+        cssClass="kanban-overview"
+        key-field="label_title"
         :data-source="conversationList"
-        :card-settings="cardSettings"
+        :cardSettings="cardSettings"
         :card-click="onCardClick"
         :allow-toggle="allowToggle"
         :drag-start="dragStart"
         :drag-stop="dragStop"
+        :actionComplete="onActionComplete"
       >
         <e-columns>
-          <e-column header-text="Não Atribuídas" key-field="open" />
+          <e-column
+            headerText="Não Atribuídas"
+            keyField="open"
+            :allowToggle="allowToggle"
+          ></e-column>
 
           <e-column
             v-for="label in labelsList"
-            :key="label.id"
-            :header-text="label.description"
-            :allow-toggle="allowToggle"
-            :key-field="label.title"
-          />
+            :key="label.title"
+            :headerText="label.description"
+            :keyField="label.title"
+            :allowToggle="allowToggle"
+          ></e-column>
         </e-columns>
       </ejs-kanban>
     </div>
@@ -142,80 +147,8 @@
       :w60="true"
     >
       <div class="h-[82vh] w-full px-4 pt-16">
-        <h2 class="text-xl font-semibold mb-8">Configurar Etapas</h2>
-        <ejs-grid
-          :data-source="data"
-          :edit-settings="editSettings"
-          :cell-edit="rowSelected"
-        >
-          <e-columns>
-            <e-column
-              field="nomeEtapa"
-              header-text="Etapas do Funil"
-              text-align="center"
-            />
-            <e-column
-              field="camposObrigatorios"
-              header-text="Campos Obrigatórios"
-              text-align="center"
-              edit-type="booleanedit"
-              display-as-check-box="true"
-              type="boolean"
-            />
-            <e-column
-              field="campoValor"
-              header-text="Campo de Valor"
-              text-align="center"
-              edit-type="booleanedit"
-              display-as-check-box="true"
-              type="boolean"
-            />
-            <e-column
-              header-text="Etapa Final"
-              text-align="center"
-              field="etapaFinal"
-              edit-type="booleanedit"
-              display-as-check-box="true"
-              type="boolean"
-            />
-          </e-columns>
-        </ejs-grid>
-        <woot-button
-          type="button"
-          class="button-visualization mt-4"
-          @click="() => pushTable()"
-        >
-          Adicionar etapa
-        </woot-button>
-        <hr />
-        <h2 class="text-xl font-semibold my-8">
-          Campos que vão aparecer no card
-        </h2>
-        <div class="w-[350px] pb-8">
-          <ejs-grid
-            :data-source="[
-              { nomeCampo: 'Campo 1', campoSelecionado: false },
-              { nomeCampo: 'Tag 1', campoSelecionado: false },
-            ]"
-            :edit-settings="editSettings"
-          >
-            <e-columns>
-              <e-column
-                field="nomeCampo"
-                header-text="Nome do campo"
-                text-align="center"
-              />
-              <e-column
-                field="campoSelecionado"
-                header-text=""
-                text-align="center"
-                edit-type="booleanedit"
-                display-as-check-box="true"
-                type="boolean"
-              />
-            </e-columns>
-          </ejs-grid>
-        </div>
+        <h2 class="text-xl font-semibold mb-4">Configurar Etapas</h2>
+        <config-funnel />
       </div>
     </Modal>
 
@@ -256,12 +189,18 @@ import { mapGetters, mapActions } from 'vuex';
 import uiSettingsMixin from 'dashboard/mixins/uiSettings';
 import conversationMixin from '../../../mixins/conversations';
 import { Query } from '@syncfusion/ej2-data';
+import AddLabelModal from 'dashboard/routes/dashboard/settings/labels/AddLabel.vue';
+import ConfigFunnel from './funnel/ConfigFunnel.vue';
+import { actionBegin } from '@syncfusion/ej2-vue-treegrid';
+import cardTemplate from './templates/kanban/card.vue';
+import bodyColumn from './templates/kanban/column.vue';
 
 Vue.use(KanbanPlugin);
 Vue.use(TextBoxPlugin);
 Vue.use(ButtonPlugin);
 Vue.use(GridPlugin);
-
+let CardComponent = Vue.extend(cardTemplate);
+let ColumnComponent = Vue.extend(bodyColumn);
 export default {
   components: {
     'ejs-kanban': KanbanComponent,
@@ -271,6 +210,8 @@ export default {
     'ejs-grid': GridComponent,
     Modal: Modal,
     ConversationBox,
+    AddLabelModal,
+    ConfigFunnel,
   },
   mixins: [uiSettingsMixin, conversationMixin],
   provide: {
@@ -299,14 +240,34 @@ export default {
     return {
       kanbanData: extend([], kanbanData, null, true),
       cardSettings: {
+        id: 'id',
         teamId: 'team_id',
         contentField: 'name',
         headerField: 'agent_name',
         tagsField: 'status',
         grabberField: 'color',
         Assignee: 'agent_name',
-        PrimaryKey: 'team_id',
+        PrimaryKey: 'id',
+        Type: 'uuid',
+        Color: 'color',
+        template: function () {
+          return {
+            template: {
+              parent: this,
+              extends: CardComponent,
+            },
+          };
+        },
       },
+      columnsTemplate: function () {
+        return {
+          template: {
+            parent: this,
+            extends: ColumnComponent,
+          },
+        };
+      },
+
       allowToggle: true,
       showModalFunil: false,
       showModalChat: false,
@@ -314,6 +275,8 @@ export default {
       data: [],
       statusOnStartDrag: '',
       selectedChat: [],
+      showAddLabelModal: false,
+      kanbanItem: {},
     };
   },
   watch: {
@@ -324,17 +287,39 @@ export default {
   mounted() {
     this.$store.dispatch('agents/get');
     this.$store.dispatch('labels/get');
+    this.$store.dispatch('kanban/get');
     this.initializeKanban();
     this.initialize();
   },
+
   beforeMount: function () {
-    this.getProcessedListLabels();
     this.updateUISettings({
       show_secondary_sidebar: false,
       previously_used_sidebar_view: false,
     });
   },
+
   methods: {
+    attributesMissing(required_attributes, registered_attributes) {
+      if (required_attributes && required_attributes.length > 0) {
+        const missingKeys = required_attributes.filter(
+          attribute => !(attribute['attribute_key'] in registered_attributes)
+        );
+        const allKeysFound = missingKeys.length === 0;
+        const missingKeysNames = missingKeys.map(key => key['attribute_name']);
+        return [allKeysFound, missingKeysNames];
+      } else {
+        return [true, []];
+      }
+    },
+    onActionComplete(args) {
+      var kanbanInstance = this.$refs.KanbanObj.ej2Instances;
+      if (args.requestType === 'cardChanged') {
+        setTimeout(function () {
+          kanbanInstance.refresh();
+        }, 300);
+      }
+    },
     async getProcessedListLabels() {
       await this.$store.dispatch('labels/get');
       this.localLabels = this.labels.map(label => ({
@@ -393,7 +378,7 @@ export default {
     initialize() {
       const filtersToFetchAllConversations = {
         assigneeType: 'me',
-        status: 'open',
+        label_tile: 'open',
         sortBy: 'last_activity_at_desc',
         page: 1,
       };
@@ -403,6 +388,7 @@ export default {
       );
     },
     onCardClick: function (_args) {
+      this.kanbanItem = this.$refs.KanbanObj.ej2Instances;
       let filtredSelectedChat = this.selectedChat.filter(
         chat => _args?.data?.id === chat?.id
       );
@@ -410,6 +396,7 @@ export default {
         data: filtredSelectedChat[0],
         after: 1,
       });
+      console.log('CARDSSSS', filtredSelectedChat[0]);
       this.toggleModalChat('open');
     },
     redirectToDashboard() {
@@ -417,8 +404,10 @@ export default {
     },
     toggleModalFunil(action) {
       if (action == 'open') {
+        this.$store.dispatch('labels/get');
         this.showModalFunil = true;
       } else {
+        this.$store.dispatch('kanban/get');
         this.showModalFunil = false;
       }
     },
@@ -444,21 +433,46 @@ export default {
       });
     },
     dragStart(event) {
+      const conversation = event?.data[0];
+      const labelAttributes = conversation.label_attributes;
+      const customAttributes = conversation.custom_attributes;
+      const can_change = this.attributesMissing(
+        labelAttributes,
+        customAttributes
+      );
+      if (!can_change[0]) {
+        this.showAlert(
+          `Campos obrigatórios não preenchidos: <b>${can_change[1].join(', ')}</b>`,
+          conversation.id
+        );
+        event.cancel = true;
+        return;
+      }
+
       this.statusOnStartDrag = event?.data[0]?.Status;
     },
     async dragStop(event) {
+      const kanbanInstance = document.getElementById('kanban').ej2_instances[0];
       const conversation = {
         id: event?.data[0].id,
         uuid: event?.data[0].uuid,
-        status: event?.data[0].status,
+        status: event?.data[0].label_title,
+        can_schedule: event?.data[0].can_schedule,
       };
       try {
-        await this.$store.dispatch('conversationLabels/updateLabel', {
-          conversationId: conversation.id,
-          conversation: conversation,
-        });
+        await this.$store
+          .dispatch('conversationLabels/updateLabel', {
+            conversationId: conversation.id,
+            conversation: conversation,
+          })
+          .then(() => {
+            this.$store.dispatch('labels/get');
+          });
       } catch (error) {
         //
+      } finally {
+        this.conversationList;
+        kanbanInstance.refresh();
       }
     },
     conversationListFormatter(conversationList) {
@@ -466,22 +480,69 @@ export default {
 
       conversationList.map(conversation => {
         let getData = {
-          id: conversation?.id,
+          id: conversation.id,
           uuid: conversation?.uuid,
-          name: conversation?.meta.sender.name.replace(
+          name: conversation.meta.sender.name.replace(
             /(^\w{1})|(\s+\w{1})/g,
             letter => letter.toUpperCase()
           ),
-          team_id: conversation?.team_id,
-          status: conversation?.label,
+          label_title: conversation?.label_title,
+          teamId: conversation?.team_id,
+          status: conversation?.status,
           agent_name: conversation?.meta.assignee.name,
           image_agent: conversation?.meta.assignee.thumbnail,
           color: conversation?.color,
+          schedule: conversation?.schedule,
+          can_schedule: conversation?.can_schedule,
+          custom_attributes: conversation?.custom_attributes,
+          label_attributes: conversation?.label_attributes,
+          can_schedule: conversation?.can_schedule,
+          agent_last_seen_at: conversation?.agent_last_seen_at,
+          assignee_last_seen_at: conversation?.assignee_last_seen_at,
+          contact_last_seen_at: conversation?.contact_last_seen_at,
+          custom_attributes: conversation?.custom_attributes,
+          muted: conversation?.muted,
+          snoozed_until: conversation?.snoozed_until,
+          created_at: conversation?.created_at,
+          timestamp: conversation?.timestamp,
+          first_reply_created_at: conversation?.first_reply_created_at,
+          last_activity_at: conversation?.last_activity_at,
+          priority: conversation?.priority,
+          waiting_since: conversation?.waiting_since,
         };
         formatedConversationList.push(getData);
       });
       this.selectedChat = conversationList;
       return formatedConversationList;
+    },
+    showAlert(message, conversationID) {
+      this.$swal({
+        title: 'Aviso!',
+        html: `
+        <p class="text-gray-500 dark:text-gray-400"> ${message}.</p>
+        <p class="text-gray-500 dark:text-gray-400">Você precisa abrir a conversa e preencher os campos para continuar.</p>
+
+        `,
+        icon: 'error',
+        showCancelButton: true,
+        showConfirmButton: true,
+        confirmButtonText: 'Abrir conversa',
+        cancelButtonText: 'Fechar',
+      }).then(result => {
+        if (result.isConfirmed) {
+          this.abrirConversa(conversationID); // Chama o método quando o botão for confirmado
+        }
+      });
+    },
+    abrirConversa(coversationID) {
+      let filtredSelectedChat = this.selectedChat.filter(
+        chat => coversationID === chat?.id
+      );
+      this.$store.dispatch('setActiveChat', {
+        data: filtredSelectedChat[0],
+        after: 1,
+      });
+      this.toggleModalChat('open');
     },
   },
   computed: {
@@ -492,7 +553,9 @@ export default {
       currentUser: 'getCurrentUser',
       labelsList: 'labels/getLabels',
       agentList: 'agents/getAgents',
+      cardAttributes: 'kanban/getAttributes',
     }),
+
     ...mapActions('labels', ['getAllLabels']),
 
     labels() {
@@ -521,15 +584,16 @@ export default {
 };
 </script>
 <style>
-@import '../../../../../../node_modules/@syncfusion/ej2-base/styles/material.css';
-@import '../../../../../../node_modules/@syncfusion/ej2-buttons/styles/material.css';
-@import '../../../../../../node_modules/@syncfusion/ej2-layouts/styles/material.css';
-@import '../../../../../../node_modules/@syncfusion/ej2-dropdowns/styles/material.css';
-@import '../../../../../../node_modules/@syncfusion/ej2-navigations/styles/material.css';
-@import '../../../../../../node_modules/@syncfusion/ej2-popups/styles/material.css';
-@import '../../../../../../node_modules/@syncfusion/ej2-vue-kanban/styles/material.css';
-@import '../../../../../../node_modules/@syncfusion/ej2-vue-inputs/styles/bootstrap.css';
-@import '../../../../../../node_modules/@syncfusion/ej2-vue-grids/styles/tailwind.css';
+@import '@syncfusion/ej2-base/styles/material3.css';
+@import '@syncfusion/ej2-buttons/styles/material3.css';
+@import '@syncfusion/ej2-layouts/styles/material3.css';
+@import '@syncfusion/ej2-dropdowns/styles/material3.css';
+@import '@syncfusion/ej2-navigations/styles/material3.css';
+@import '@syncfusion/ej2-popups/styles/material3.css';
+@import '@syncfusion/ej2-vue-kanban/styles/tailwind.css';
+@import '@syncfusion/ej2-vue-inputs/styles/bootstrap.css';
+@import '@syncfusion/ej2-vue-grids/styles/tailwind.css';
+@import '@syncfusion/ej2-vue-treegrid/styles/material3.css';
 
 .e-kanban.kanban-card-default .e-card-footer-css {
   align-self: center;

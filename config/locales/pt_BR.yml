@@ -84,6 +84,7 @@ pt_BR:
       label_title: Nome do campo
       conversations_count: Nº de Conversas
       avg_first_response_time: Tempo médio de primeira resposta
+      avg_properties: Propriedades
       avg_resolution_time: Tempo médio de resolução
     team_csv:
       team_name: Nome do departamento
@@ -202,6 +203,9 @@ pt_BR:
     google_translate:
       name: "Tradutor do Google"
       description: "Torne isso mais fácil para agentes traduzirem mensagens adicionando uma integração com o Tradutor do Google. O Tradutor do Google ajuda a identificar automaticamente o idioma e convertê-lo para o idioma escolhido pelo administrador de conta/agente."
+    google_calendar:
+      name: "Calendário do Google"
+      description: "Facilite a gestão de compromissos e eventos para os agentes adicionando uma integração com o Google Calendário. O Google Calendário ajuda a sincronizar automaticamente os eventos e compromissos, permitindo que os agentes visualizem, criem e atualizem eventos diretamente dentro do Funil. A integração possibilita que os agentes gerenciem suas agendas de forma eficiente, garantindo que nenhum compromisso seja perdido."
     openai:
       name: "OpenAI"
       description: "Integre os poderosos recursos de IA ao Chatwoot aproveitando os modelos GPT da OpenAI."

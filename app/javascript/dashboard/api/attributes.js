@@ -9,6 +9,12 @@ class AttributeAPI extends ApiClient {
   getAttributesByModel() {
     return axios.get(this.url);
   }
+  getAllAttributes() {
+    return axios.get(`${this.url}/all_for_conversation`);
+  }
+  getAllAttributesRequireds() {
+    return axios.get(`${this.url}/only_requireds`);
+  }
 }
 
 export default new AttributeAPI();

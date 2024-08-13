@@ -9,6 +9,10 @@ class LabelsAPI extends CacheEnabledApiClient {
   get cacheModelName() {
     return 'label';
   }
+
+  updatePosition(labelId,position) {
+    return axios.patch(`${this.url}/${labelId}/update_position/${position}`);
+  }
 }
 
 export default new LabelsAPI();

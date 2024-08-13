@@ -74,6 +74,7 @@ class ReportsAPI extends ApiClient {
   }
 
   getInboxReports({ from: since, to: until, businessHours }) {
+    console.log("chamou o inbox?")
     return axios.get(`${this.url}/inboxes`, {
       params: { since, until, business_hours: businessHours },
     });

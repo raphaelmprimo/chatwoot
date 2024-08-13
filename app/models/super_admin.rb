@@ -5,6 +5,7 @@
 #  id                     :integer          not null, primary key
 #  api_token_typebot      :string
 #  availability           :integer          default("online")
+#  color_for_schedule     :string
 #  confirmation_sent_at   :datetime
 #  confirmation_token     :string
 #  confirmed_at           :datetime

@@ -45,6 +45,8 @@ import userNotificationSettings from './modules/userNotificationSettings';
 import webhooks from './modules/webhooks';
 import draftMessages from './modules/draftMessages';
 import SLAReports from './modules/SLAReports';
+import calendars from './modules/calendars';
+import kanban from './modules/kanban';
 
 const plugins = [];
 
@@ -95,6 +97,8 @@ export default new Vuex.Store({
     draftMessages,
     sla,
     slaReports: SLAReports,
+    calendars,
+    kanban,
   },
   plugins,
 });

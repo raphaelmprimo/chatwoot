@@ -2,17 +2,25 @@
   <div class="h-full schedule-vue-sample bg-white">
     <section class="flex flex-col w-full h-full">
       <section
-        class="min-h-[64px] flex w-full justify-between items-center py-[8px] px-8 border-custom"
         id="scheduleHeader"
+        class="min-h-[64px] flex w-full justify-between items-center py-[8px] px-8 border-custom"
       >
         <div class="h-full flex gap-4 items-center">
           <div id="btnsChevron">
-            <woot-button type="button" class="chevron-button" @click="prevMonthDate">
+            <woot-button
+              type="button"
+              class="chevron-button"
+              @click="prevMonthDate"
+            >
               <span class="flex items-center gap-0.5">
                 <fluent-icon icon="chevron-left" size="24" />
               </span>
             </woot-button>
-            <woot-button type="button" class="chevron-button" @click="nextMonthDate">
+            <woot-button
+              type="button"
+              class="chevron-button"
+              @click="nextMonthDate"
+            >
               <span class="flex items-center gap-0.5">
                 <fluent-icon icon="chevron-right" size="24" />
               </span>
@@ -44,14 +52,15 @@
             <option value="WorkWeek" selected>Semana</option>
             <option value="Month">Mês</option>
             <option value="Year">Ano</option>
+            <option value="Agenda">Agenda</option>
           </select>
         </div>
       </section>
 
-      <div class="h-full col-md-12 control-section">
+      <div class="h-full col-md-12 control-section template-accordion">
         <div class="h-full content-wrapper flex">
-          <section class="w-[300px] py-4 px-8 flex flex-col items-center gap-8">
-            <ejs-menu :items="menuItems" :select="insertActivityOrEvent"/>
+          <section class="w-[300px] py-4 px-4 flex flex-col items-center gap-8">
+            <ejs-menu :items="menuItems" :select="insertActivityOrEvent" />
 
             <ejs-calendar id="calendar" :change="onDateChange" />
 
@@ -61,47 +70,74 @@
                 :data-source="names"
                 :placeholder="'Buscar por ṕessoa'"
               />
-
-              <ejs-accordion ref="Accordion_Nested">
-                <e-accordionitems>
-                  <e-accordionitem
-                    header="Meus calendários"
-                    :content="getMyCalendars()"
-                    expanded="true"
-                  />
-                  <e-accordionitem
-                    header="Outros calendários"
-                    :content="getOtherCalendars()"
-                    expanded="true"
-                  />
-                </e-accordionitems>
-              </ejs-accordion>
+              <transition-group>
+                <div
+                  v-for="calendar in calendars"
+                  v-bind:key="calendar.id"
+                  class="bg-white dark:bg-gray-800 w-full"
+                >
+                  <accordion-item
+                    title="Meus Calendários"
+                    :compact="true"
+                    :is-open="open"
+                    @click="value => onPanelToggle(value)"
+                  >
+                    <div class="grid grid-cols-3">
+                      <div class="col-span-2">
+                        <label
+                          :for="'calendar-' + calendar.id"
+                          class="cursor-pointer"
+                        >
+                          <input
+                            type="radio"
+                            :id="'calendar-' + calendar.id"
+                            :name="'calendar-item-' + calendar.id"
+                            @change="setCalendarId(calendar.id)"
+                            checked="calendar.id === this.calendarId"
+                            class="me-2"
+                          />
+                          {{ calendar.description }}
+                        </label>
+                      </div>
+                      <div class="col-span-1">
+                        <ejs-menu
+                          ref="menu"
+                          id="menu"
+                          :items="exportMenuItems"
+                          :select="exportCalendar"
+                          icsIcon="e-icons e-ics-icon"
+                        ></ejs-menu>
+                      </div>
+                    </div>
+                  </accordion-item>
+                </div>
+              </transition-group>
             </div>
           </section>
+
           <ejs-schedule
             id="Schedule"
+            ref="scheduleObj"
             :height="'800px'"
             :css-class="cssClass"
             :selected-date="selectedDate"
             :event-settings="eventSettings"
-            :group="group"
             :current-view="currentView"
             :resource-header-template="'resourceHeaderTemplate'"
             :timezone="timezone"
             :show-header-bar="false"
-            ref="scheduleObj"
+            :group="group"
+            @actionBegin="onActionBegin"
           >
             <template #resourceHeaderTemplate="{ data }">
               <div class="template-wrap">
                 <div class="resource-image">
-                  <img
-                    class="resource-image"
-                    :src="getImage(data)"
-                    :alt="getImage(data)"
-                  />
+                  <thumbnail :src="getEmployeeImage(data)" size="48px" />
                 </div>
                 <div class="resource-details">
-                  <div class="resource-name">{{ getEmployeeName(data) }}</div>
+                  <div class="resource-name">
+                    {{ getEmployeeName(data) }}
+                  </div>
                   <div class="resource-designation">
                     {{ getEmployeeDesignation(data) }}
                   </div>
@@ -113,17 +149,22 @@
               <e-view option="WorkWeek" />
               <e-view option="Month" :event-template="monthEventTemplate" />
               <e-view option="TimelineWeek" />
+              <e-view
+                option="Agenda"
+                :allowVirtualScrolling="virtualscroll"
+              ></e-view>
             </e-views>
             <e-resources>
               <e-resource
-                field="ConferenceId"
+                field="WorkerIds"
                 title="Attendees"
                 name="Conferences"
                 :allow-multiple="allowMultiple"
                 :data-source="resourceDataSource"
-                text-field="Text"
+                text-field="Name"
                 id-field="Id"
                 color-field="Color"
+                roles-field="Roles"
               />
             </e-resources>
           </ejs-schedule>
@@ -133,8 +174,9 @@
   </div>
 </template>
 <script>
-import { extend } from '@syncfusion/ej2-base';
-import { resourceConferenceData } from './dataSourceSchedule';
+import { LOCAL_STORAGE_KEYS } from 'dashboard/constants/localStorage';
+import Thumbnail from '../../../components/widgets/Thumbnail.vue';
+import { LocalStorage } from 'shared/helpers/localStorage';
 import {
   ScheduleComponent,
   ViewDirective,
@@ -142,23 +184,33 @@ import {
   ResourceDirective,
   ResourcesDirective,
   Day,
+  Agenda,
   WorkWeek,
   Month,
+  Year,
   TimelineViews,
   Resize,
   DragAndDrop,
+  ICalendarExport,
+  ExcelExport,
 } from '@syncfusion/ej2-vue-schedule';
 import { CalendarComponent } from '@syncfusion/ej2-vue-calendars';
 import { AutoCompleteComponent } from '@syncfusion/ej2-vue-dropdowns';
 import {
+  MenuComponent,
   AccordionComponent,
   AccordionItemDirective,
   AccordionItemsDirective,
 } from '@syncfusion/ej2-vue-navigations';
-import { MenuComponent } from '@syncfusion/ej2-vue-navigations';
 import uiSettingsMixin from 'dashboard/mixins/uiSettings';
+import { mapGetters, mapActions } from 'vuex';
+import { parse } from 'date-fns';
+import { apiURL, calendarsURL } from '../../../helper/URLHelper';
+import calendars from '../../../api/calendars';
+import { id } from 'date-fns/locale';
+import AccordionItem from 'dashboard/components/Accordion/AccordionItem.vue';
+import Spinner from 'shared/components/Spinner.vue';
 
-// eslint-disable-next-line vue/one-component-per-file
 export default {
   components: {
     'ejs-schedule': ScheduleComponent,
@@ -172,21 +224,28 @@ export default {
     'e-accordionitem': AccordionItemDirective,
     'e-accordionitems': AccordionItemsDirective,
     'ejs-menu': MenuComponent,
+    AccordionItem,
+    Thumbnail,
+    Spinner,
   },
   mixins: [uiSettingsMixin],
-  provide: {
-    schedule: [Day, WorkWeek, Month, TimelineViews, Resize, DragAndDrop],
+  props: {
+    isOpen: {
+      type: Boolean,
+      default: false,
+    },
+    onToggle: {
+      type: Function,
+      default: () => {
+        !this.isOpen;
+      },
+    },
   },
   data() {
     return {
+      readonly: false,
       eventSettings: {
-        dataSource: extend([], resourceConferenceData, null, true),
-        fields: {
-          subject: { title: 'Conference Name', name: 'Subject' },
-          description: { title: 'Summary', name: 'Description' },
-          startTime: { title: 'From', name: 'StartTime' },
-          endTime: { title: 'To', name: 'EndTime' },
-        },
+        dataSource: [],
       },
       selectedDate: new Date(),
       currentView: 'WorkWeek',
@@ -195,58 +254,253 @@ export default {
         allowGroupEdit: true,
         resources: ['Conferences'],
       },
-      resourceDataSource: [
-        { Text: 'Margaret', Id: 1, Color: '#1aaa55' },
-        { Text: 'Robert', Id: 2, Color: '#357cd2' },
-        { Text: 'Laura', Id: 3, Color: '#7fa900' },
-      ],
+      resourceDataSource: [],
       allowMultiple: true,
-      names: ['Margaret', 'Robert', 'Laura'],
+      resources: [
+        {
+          field: 'WorkerId',
+          title: 'Worker',
+          name: 'Workers',
+          allowMultiple: false,
+          dataSource: [],
+          textField: 'Name',
+          idField: 'Id',
+          colorField: 'Color',
+        },
+      ],
+      names: ['Guilherme', 'John'],
       menuItems: [
         {
           text: 'Adicionar',
-          items: [{ text: 'Evento', id: 0 }, { text: 'Atividade', id: 1 }],
+          items: [
+            { text: 'Evento', id: 'event' },
+            { text: 'Atividade', id: 'activity' },
+          ],
+        },
+      ],
+      exportMenuItems: [
+        {
+          text: '',
+          iconCss: 'horizontaldot e-icons',
+          cssClass: 'e-flat',
+          items: [
+            { text: 'Exportar para iCalendar', id: 'ical' },
+            { text: 'exportar para Excel', id: 'xlsx' },
+          ],
         },
       ],
       timezone: 'America/Sao_Paulo',
+      selectedCalendarId: null,
+      virtualscroll: false,
+      open: true,
+      googleCalendar: null,
     };
   },
+  provide: {
+    schedule: [
+      Day,
+      WorkWeek,
+      Month,
+      Year,
+      TimelineViews,
+      Resize,
+      DragAndDrop,
+      Agenda,
+      ICalendarExport,
+      ExcelExport,
+    ],
+  },
   computed: {
-    getImage() {
+    ...mapGetters({
+      accountId: 'getCurrentAccountId',
+      currentUser: 'getCurrentUser',
+      calendars: 'calendars/getAllCalendars',
+      calendarId: 'calendars/getDefaultCalendarId',
+      agents: 'agents/getVerifiedAgents',
+    }),
+
+    scheduleUrl() {
+      return [
+        calendarsURL({
+          accountId: this.accountId,
+          calendarId: 1,
+        }),
+        this.currentUser.access_token,
+      ];
+    },
+    schedules() {
+      return this.$store.getters['calendars/getAllSchedules'];
+    },
+    monthEventTemplate() {
       return data => {
         return (
-          'https://ej2.syncfusion.com/vue/demos/source/schedule/images/' +
-          this.getEmployeeImage(data) +
-          '.png'
+          '<div class="template-wrap">' +
+          '<div class="subject" style="font-weight: 500;">' +
+          data.Subject +
+          '</div>' +
+          '<div class="time">' +
+          this.getEmployeeName(data) +
+          '</div>' +
+          '</div>'
         );
       };
     },
   },
+
   beforeMount() {
+    this.$store.dispatch('calendars/get');
+    this.$store.dispatch('calendars/getDefaultCalendarId');
+    this.$store.dispatch('agents/get');
     this.updateUISettings({
       show_secondary_sidebar: true,
       previously_used_sidebar_view: true,
     });
   },
+  mounted() {
+    this.$refs.scheduleObj = this.$refs.scheduleObj.$el.ej2_instances[0];
+    this.fetchEvents();
+    this.fetchWorkers();
+  },
   methods: {
+    ...mapActions([
+      'calendars/fetchCalendars',
+      'calendars/fetchSchedules',
+      'calendars/setCurrentCalendar',
+      'calendars/addSchedule',
+      'calendars/removeSchedule',
+    ]),
+    onPanelToggle(value) {
+      this.open = !this.open;
+    },
+    onActionBegin(args) {
+      if (args.requestType === 'eventCreate') {
+        this.createEvent(args.data[0]);
+      } else if (args.requestType === 'eventChange') {
+        this.updateEvent(args.data);
+      } else if (args.requestType === 'eventRemove') {
+        this.deleteEvent(args.data[0]);
+      }
+    },
+    createEvent(event) {
+      axios
+        .post(
+          apiURL(
+            `accounts/${this.accountId}/calendars/${this.calendarId}/schedules`
+          ),
+          {
+            subject: event.Subject,
+            start_time: event.StartTime,
+            end_time: event.EndTime,
+            description: event.Description,
+            location: event.Location,
+            user_ids: event.WorkerIds,
+          }
+        )
+        .then(response => {
+          this.fetchEvents();
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    },
+    updateEvent(event) {
+      axios
+        .put(
+          apiURL(
+            `accounts/${this.accountId}/calendars/${this.calendarId}/schedules/${event.Id}`
+          ),
+          {
+            subject: event.Subject,
+            start_time: event.StartTime,
+            end_time: event.EndTime,
+            description: event.Description,
+            location: event.Location,
+            user_ids: event.WorkerIds,
+          }
+        )
+        .then(response => {
+          this.fetchEvents();
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    },
+    deleteEvent(event) {
+      axios
+        .delete(
+          apiURL(
+            `accounts/${this.accountId}/calendars/${this.calendarId}/schedules/${event.Id}`
+          )
+        )
+        .then(response => {
+          this.fetchEvents();
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    },
+    fetchEvents() {
+      const calId = this.calendarId;
+      const accountId = this.accountId;
+      axios
+        .get(apiURL(`accounts/${this.accountId}/calendars/${calId}/schedules`))
+        .then(response => {
+          const mappedData = response.data.map(event => ({
+            Id: event.Id,
+            Subject: event.Subject,
+            Description: event.Description,
+            Location: event.Location,
+            StartTime: new Date(event.StartTime),
+            EndTime: new Date(event.EndTime),
+            IsAllDay: event.IsAllDay,
+            IsBlock: event.IsBlock,
+            IsReadonly: event.IsReadonly,
+            RoomId: event.RoomId,
+            ResourceId: event.ResourceId,
+            CalendarId: event.CalendarId,
+            WorkerIds: event.WorkerIds,
+          }));
+          this.eventSettings = {
+            ...this.eventSettings,
+            dataSource: mappedData,
+          };
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    },
+    fetchWorkers() {
+      axios
+        .get(apiURL(`accounts/${this.accountId}/agents`))
+        .then(response => {
+          const workers = response.data.map(worker => ({
+            Id: worker.id,
+            Name: worker.name,
+            Color: worker.color,
+            Roles: worker.roles,
+          }));
+          this.resourceDataSource = workers;
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    },
     insertActivityOrEvent(event) {
-      if (event?.item.text === 'Evento') { 
-        let scheduleObj = this.$refs.scheduleObj.ej2Instances;
+      if (event?.item.id === 'event') {
+        let scheduleObj = this.$refs.scheduleObj;
         let endDate = new Date(this.selectedDate.getTime());
         endDate.setMinutes(this.selectedDate.getMinutes() + 30);
-
         let eventData = {
-            Id: 4,
-            Subject: '',
-            StartTime: this.selectedDate,
-            EndTime: endDate
+          Id: 4,
+          Subject: '',
+          StartTime: this.selectedDate,
+          EndTime: endDate,
         };
-
-        scheduleObj.openEditor(eventData, 'Save');
+        scheduleObj.openEditor(eventData, 'Add', true, 0);
       }
     },
     nextMonthDate() {
-      let scheduleObj = this.$refs.scheduleObj.ej2Instances;
+      let scheduleObj = this.$refs.scheduleObj;
       let nextDate = new Date(this.selectedDate.getTime());
       nextDate.setMonth(nextDate.getMonth() + 1);
       this.selectedDate = nextDate;
@@ -254,7 +508,7 @@ export default {
       scheduleObj.refresh();
     },
     prevMonthDate() {
-      let scheduleObj = this.$refs.scheduleObj.ej2Instances;
+      let scheduleObj = this.$refs.scheduleObj;
       let prevDate = new Date(this.selectedDate.getTime());
       prevDate.setMonth(prevDate.getMonth() - 1);
       this.selectedDate = prevDate;
@@ -269,16 +523,18 @@ export default {
     },
     getEmployeeImage(data) {
       let resourceName = this.getEmployeeName(data);
-      return resourceName.toLowerCase();
+
+      const avatar_url = this.agents.find(
+        agent => agent.name === resourceName
+      )?.thumbnail;
+      return `${avatar_url}` || 'user';
     },
     getEmployeeDesignation(data) {
       let resourceName = this.getEmployeeName(data);
-      const resourceRoles = new Map([
-        ['Margaret', 'Sales Representative'],
-        ['Robert', 'Vice President, Sales'],
-      ]);
-
-      return resourceRoles.get(resourceName) || 'Inside Sales Coordinator';
+      const resourceRoles = this.agents.find(
+        agent => agent.name === resourceName
+      )?.roles;
+      return resourceRoles || 'Inside Sales Coordinator';
     },
     onDateChange(args) {
       this.selectedDate = args?.value;
@@ -287,18 +543,18 @@ export default {
       this.selectedDate = new Date();
     },
     getMyCalendars() {
-      return `
-        <div>
-          <span class='flex items-center gap-4'>
-            <input type='checkbox' id='nome'>
-            <label for='nome'>Nome</label>
-          </span>
-          <span class='flex items-center gap-4'>
-            <input type='checkbox' id='atividade'>
-            <label for='atividade'>Atividade</label>
-          </span>
-        </div>
-      `;
+      const parseCalendars = JSON.parse(JSON.stringify(this.calendars));
+      return parseCalendars;
+    },
+
+    loadCalendarId() {
+      const calendarId = LocalStorage.get(
+        LOCAL_STORAGE_KEYS.DEFAULT_CALENDAR_ID || 0
+      );
+      if (calendarId && calendarId !== this.calendarId) {
+        this.selectedCalendarId = parseInt(calendarId, 10);
+        this.setCalendarId(calendarId);
+      }
     },
     getOtherCalendars() {
       return `
@@ -317,20 +573,50 @@ export default {
     currentViewChange(event) {
       this.currentView = event?.target.value;
     },
+
+    setCalendarId(calendarId) {
+      if (calendarId === this.calendarId) return;
+      this.$store.dispatch('calendars/setDefaultCalendarId', calendarId);
+      this.$store.dispatch('calendars/getDefaultCalendarId');
+      this.fetchEvents();
+    },
+    exportCalendar(event) {
+      let exportFields = [
+        { name: 'Id', text: 'Id' },
+        { name: 'Subject', text: 'Assunto' },
+        { name: 'StartTime', text: 'Data Inicial' },
+        { name: 'EndTime', text: 'Data Final' },
+        { name: 'Location', text: 'Local' },
+      ];
+      let exportValues = { fieldsInfo: exportFields };
+      if (event.item.id === 'xlsx') {
+        this.$refs.scheduleObj.exportToExcel(exportValues);
+      } else if (event.item.id === 'ical') {
+        this.$refs.scheduleObj.exportToICalendar();
+      }
+    },
+    getGoogleCalendar() {
+      this.googleCalendar =
+        this.$store.getters['integrations/getIntegration']('google_calendar');
+    },
   },
 };
 </script>
 
 <style>
-@import '../../../../../../node_modules/@syncfusion/ej2-base/styles/material.css';
-@import '../../../../../../node_modules/@syncfusion/ej2-buttons/styles/material.css';
-@import '../../../../../../node_modules/@syncfusion/ej2-calendars/styles/material.css';
-@import '../../../../../../node_modules/@syncfusion/ej2-dropdowns/styles/material.css';
-@import '../../../../../../node_modules/@syncfusion/ej2-inputs/styles/material.css';
-@import '../../../../../../node_modules/@syncfusion/ej2-navigations/styles/material.css';
-@import '../../../../../../node_modules/@syncfusion/ej2-popups/styles/material.css';
-@import '../../../../../../node_modules/@syncfusion/ej2-vue-schedule/styles/material.css';
+@import '@syncfusion/ej2-base/styles/material3.css';
+@import '@syncfusion/ej2-layouts/styles/material3.css';
+@import '@syncfusion/ej2-buttons/styles/material3.css';
+@import '@syncfusion/ej2-calendars/styles/material3.css';
+@import '@syncfusion/ej2-dropdowns/styles/material3.css';
+@import '@syncfusion/ej2-inputs/styles/material3.css';
+@import '@syncfusion/ej2-navigations/styles/material3.css';
+@import '@syncfusion/ej2-popups/styles/material3.css';
+@import '@syncfusion/ej2-vue-schedule/styles/material3.css';
 
+.horizontaldot.e-icons::before {
+  content: '\eb04';
+}
 .schedule-vue-sample {
   width: 100%;
   height: 100%;

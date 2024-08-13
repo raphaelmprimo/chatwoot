@@ -205,7 +205,7 @@
     }
   },
   "SIDEBAR": {
-    "EVOLUTION": "Evolution",
+    "EVOLUTION": "Instâncias",
     "CURRENTLY_VIEWING_ACCOUNT": "Visualização atual:",
     "SWITCH": "Trocar",
     "INBOX_VIEW": "",
@@ -238,10 +238,10 @@
     "CUSTOM_VIEWS_FOLDER": "Pastas",
     "CUSTOM_VIEWS_SEGMENTS": "Segmentos",
     "ALL_CONTACTS": "Todos os Contatos",
-    "FLOW_DEVBOT": "Fluxo Typebot",
+    "FLOW_DEVBOT": "Fluxos",
     "INSTANCES_FLOW": "Instâncias",
     "DEVBOTS": "DevBot",
-    "BOT": "Fluxo Typebot",
+    "BOT": "Fluxos",
     "TAGGED_WITH": "Marcado com",
     "NEW_LABEL": "Nova etiqueta",
     "NEW_TEAM": "Novo time",

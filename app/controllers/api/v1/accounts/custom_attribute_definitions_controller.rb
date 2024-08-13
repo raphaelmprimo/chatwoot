@@ -1,11 +1,19 @@
 class Api::V1::Accounts::CustomAttributeDefinitionsController < Api::V1::Accounts::BaseController
-  before_action :fetch_custom_attributes_definitions, except: [:create]
+  before_action :fetch_custom_attributes_definitions, except: [:create, :only_requireds]
   before_action :fetch_custom_attribute_definition, only: [:show, :update, :destroy]
   DEFAULT_ATTRIBUTE_MODEL = 'conversation_attribute'.freeze
 
   def index; end
 
   def show; end
+
+  def only_requireds
+    @custom_attribute_definitions = Current.account.custom_attribute_definitions.conversation_only_required
+  end
+
+  def all_for_conversation
+    @custom_attribute_definitions = Current.account.custom_attribute_definitions.conversation_only
+  end
 
   def create
     @custom_attribute_definition = Current.account.custom_attribute_definitions.create!(

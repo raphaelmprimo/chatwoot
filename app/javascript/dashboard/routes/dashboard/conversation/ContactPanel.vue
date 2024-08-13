@@ -5,6 +5,7 @@
     <contact-info
       :contact="contact"
       :channel-type="channelType"
+      :uuid="uuid"
       @toggle-panel="onPanelToggle"
     />
     <draggable
@@ -163,6 +164,10 @@ export default {
     conversationId: {
       type: [Number, String],
       required: true,
+    },
+    uuid: {
+      type: String,
+      default: '',
     },
     inboxId: {
       type: Number,

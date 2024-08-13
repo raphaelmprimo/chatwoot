@@ -5,7 +5,7 @@
         <woot-sidemenu-icon />
       </div>
       <div>
-        <h1 id="title">Fluxo Typebot</h1>
+        <h1 id="title">Fluxos</h1>
       </div>
     </header>
 
@@ -223,7 +223,7 @@ export default {
                     width: '150px',
                   }}
                   onClick={() => this.openModal(row)}
-                  disabled={!row.isPublished || !this.selectedInstance}
+                  disabled={!row.isPublished}
                 >
                   {this.loading.loadingUnpublished && this.loading.id === row.id
                     ? '...'
@@ -331,7 +331,7 @@ export default {
           if (instance.chatwoot)
             return instance.chatwoot.account_id === String(account_id);
         });
-
+        
         const instancesStatusOpen = instancesByAccountId.filter(
           ({ instance }) => instance.status === 'open'
         );
@@ -431,7 +431,7 @@ export default {
       );
 
       if (findInstance && !!findInstance.typebot) {
-        this.flowTypebotNameOld =
+        this.flowTypebotNameOld = !!this.flowInstanceExists.length && 
           this.flowInstanceExists.find(
             int => int.typebot === findInstance.typebot
           ).name || '';

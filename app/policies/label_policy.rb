@@ -1,6 +1,6 @@
 class LabelPolicy < ApplicationPolicy
   def index?
-    @account_user.administrator? || @account_user.agent?
+    @account_user.administrator? || @account_user.agent? || @account_user.worker?
   end
 
   def update?
@@ -8,6 +8,10 @@ class LabelPolicy < ApplicationPolicy
   end
 
   def show?
+    @account_user.administrator?
+  end
+
+  def update_position?
     @account_user.administrator?
   end
 

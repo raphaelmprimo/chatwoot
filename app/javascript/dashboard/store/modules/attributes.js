@@ -38,7 +38,20 @@ export const actions = {
       commit(types.SET_CUSTOM_ATTRIBUTE_UI_FLAG, { isFetching: false });
     }
   },
-  create: async function createAttribute({ commit }, attributeObj) {
+
+   fetchAllAttributes: async({ commit }) => {
+    commit(types.SET_CUSTOM_ATTRIBUTE_UI_FLAG, { isFetching: true });
+    try {
+      const response = await AttributeAPI.getAllAttributes();
+      commit(types.SET_CUSTOM_ATTRIBUTE, response.data);
+    } catch (error) {
+      // Ignore error
+    } finally {
+      commit(types.SET_CUSTOM_ATTRIBUTE_UI_FLAG, { isFetching: false });
+    }
+  },
+
+  create: async function createAttribute ({ commit }, attributeObj) {
     commit(types.SET_CUSTOM_ATTRIBUTE_UI_FLAG, { isCreating: true });
     try {
       const response = await AttributeAPI.create(attributeObj);

@@ -5,6 +5,7 @@
 #  id                     :integer          not null, primary key
 #  api_token_typebot      :string
 #  availability           :integer          default("online")
+#  color_for_schedule     :string
 #  confirmation_sent_at   :datetime
 #  confirmation_token     :string
 #  confirmed_at           :datetime
@@ -79,6 +80,8 @@ class User < ApplicationRecord
   accepts_nested_attributes_for :account_users
 
   has_many :assigned_conversations, foreign_key: 'assignee_id', class_name: 'Conversation', dependent: :nullify, inverse_of: :assignee
+  has_many :calendars, class_name: 'Calendar', foreign_key: :worker_id, inverse_of: :worker, dependent: :nullify
+  has_many :schedules, class_name: 'Schedule', foreign_key: :worker_id, through: :calendars
   alias_attribute :conversations, :assigned_conversations
   has_many :csat_survey_responses, foreign_key: 'assigned_agent_id', dependent: :nullify, inverse_of: :assigned_agent
   has_many :conversation_participants, dependent: :destroy_async
@@ -162,6 +165,15 @@ class User < ApplicationRecord
 
   def self.from_email(email)
     find_by(email: email&.downcase)
+  end
+
+  def set_color_for_schedule
+    letters = %w[1 2 3 4 5 6 7 8 9 A B C D E]
+    color = '#'
+    1.upto(6).each do |_|
+      color += letters[rand(0..13)]
+    end
+    update_attribute(:color_for_schedule, color)
   end
 
   private

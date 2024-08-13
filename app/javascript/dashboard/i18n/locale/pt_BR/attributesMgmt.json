@@ -50,6 +50,9 @@
         },
         "ENABLE_REGEX": {
           "LABEL": "Habilitar validação do regex"
+        },
+        "REQUIRED": {
+          "LABEL": "Atributo Obrigatório"
         }
       },
       "API": {
@@ -115,6 +118,9 @@
       },
       "ENABLE_REGEX": {
         "LABEL": "Habilitar validação do regex"
+      },
+      "REQUIRED": {
+        "LABEL": "Atributo Obrigatório"
       }
     }
   }

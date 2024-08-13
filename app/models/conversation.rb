@@ -26,6 +26,7 @@
 #  contact_inbox_id       :bigint
 #  display_id             :integer          not null
 #  inbox_id               :integer          not null
+#  label_id               :integer
 #  sla_policy_id          :bigint
 #  team_id                :bigint
 #
@@ -41,6 +42,7 @@
 #  index_conversations_on_first_reply_created_at      (first_reply_created_at)
 #  index_conversations_on_id_and_account_id           (account_id,id)
 #  index_conversations_on_inbox_id                    (inbox_id)
+#  index_conversations_on_label_id                    (label_id)
 #  index_conversations_on_last_activity_at            (last_activity_at)
 #  index_conversations_on_priority                    (priority)
 #  index_conversations_on_status_and_account_id       (status,account_id)
@@ -73,8 +75,8 @@ class Conversation < ApplicationRecord
   enum priority: { low: 0, medium: 1, high: 2, urgent: 3 }
 
   scope :unassigned, -> { where(assignee_id: nil) }
-  scope :with_label, ->(label) {where(cached_label_list: label)}
-  scope :with_labels, ->(labels) {where(cached_label_list: labels)}
+  scope :with_label, ->(label) { where(cached_label_list: label) }
+  scope :with_labels, ->(labels) { where(cached_label_list: labels) }
   scope :assigned, -> { where.not(assignee_id: nil) }
   scope :assigned_to, ->(agent) { where(assignee_id: agent.id) }
   scope :unattended, -> { where(first_reply_created_at: nil).or(where.not(waiting_since: nil)) }
@@ -98,13 +100,16 @@ class Conversation < ApplicationRecord
   belongs_to :contact_inbox
   belongs_to :team, optional: true
   belongs_to :campaign, optional: true
+  belongs_to :label, optional: true
 
   has_many :mentions, dependent: :destroy_async
   has_many :messages, dependent: :destroy_async, autosave: true
-  has_one :csat_survey_response, dependent: :destroy_async
+  has_one  :csat_survey_response, dependent: :destroy_async
   has_many :conversation_participants, dependent: :destroy_async
   has_many :notifications, as: :primary_actor, dependent: :destroy_async
   has_many :attachments, through: :messages
+  has_one  :schedule, class_name: 'Schedule', primary_key: :uuid, foreign_key: :conversation_uuid, dependent: :destroy_async,
+                      inverse_of: :conversation
 
   before_save :ensure_snooze_until_reset
   before_create :determine_conversation_status
@@ -178,21 +183,29 @@ class Conversation < ApplicationRecord
     (cached_label_list || '').split(',').map(&:strip)
   end
 
-  def color 
-    return "#A1B7BF" if (cached_label_list.to_sym == :open or !cached_label_list.present?)
-    
-    label = Label.find_by(title: cached_label_list)
-    label.present? ? label.color : "#A1B7BF"
+  def color
+    return '#A1B7BF' if label.present?
+
+    label.present? ? label.color : '#A1B7BF'
+  end
+  
+  def label_title
+    label.present? ? label.title : 'open'
   end
 
-  def label 
-    label = Label.find_by(title: cached_label_list)
-    label.present? ? label.title : "open"
+  def can_schedule
+    label.present? ? label.can_add_schedule : false
+  end
+
+  def label_attributes
+    return [] if label.blank?
+
+    label.attributes_requireds_keys
   end
 
   def get_team_id
-    return team.id unless !team.present?
-    0
+    return 0 if team.blank?
+    team.id
   end
 
   def notifiable_assignee_change?

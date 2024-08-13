@@ -19,6 +19,10 @@ class ConversationApi extends ApiClient {
       conversation,
     });
   }
+
+  getProperties(uuid) {
+    return axios.get(`${this.url}/${uuid}/properties`);
+  }
 }
 
 export default new ConversationApi();

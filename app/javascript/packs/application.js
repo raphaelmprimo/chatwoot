@@ -32,6 +32,9 @@ import { domPurifyConfig } from '../shared/helpers/HTMLSanitizer';
 import AnalyticsPlugin from '../dashboard/helper/AnalyticsHelper/plugin';
 import resizeDirective from '../dashboard/helper/directives/resize.js';
 import { directive as onClickaway } from 'vue-clickaway';
+import VueSweetalert2 from 'vue-sweetalert2';
+import 'sweetalert2/dist/sweetalert2.min.css';
+
 
 Vue.config.env = process.env;
 
@@ -74,6 +77,7 @@ Vue.use(VTooltip, {
 });
 Vue.use(hljs.vuePlugin);
 Vue.use(AnalyticsPlugin);
+Vue.use(VueSweetalert2);
 
 Vue.component('multiselect', Multiselect);
 Vue.component('woot-switch', WootSwitch);

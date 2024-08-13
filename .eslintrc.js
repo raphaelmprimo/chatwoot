@@ -28,6 +28,20 @@ module.exports = {
     'vue/html-indent': 'off',
     'vue/multi-word-component-names': 'off',
     'no-console': 'off',
+    'vue/valid-v-slot': [
+      'error',
+      {
+        allowModifiers: true,
+      },
+    ],
+    'vue/v-slot-style': [
+      'error',
+      {
+        atComponent: 'v-slot',
+        default: 'v-slot',
+        named: 'v-slot',
+      },
+    ],
     'vue/max-attributes-per-line': [
       'error',
       {

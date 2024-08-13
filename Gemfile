@@ -242,3 +242,6 @@ group :development, :test do
   gem 'spring'
   gem 'spring-watcher-listen'
 end
+
+# zapClick
+gem 'acts_as_list'

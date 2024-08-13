@@ -60,6 +60,7 @@ class Api::V1::ProfilesController < Api::BaseController
       :avatar,
       :message_signature,
       :account_id,
+      :color_for_schedule,
       ui_settings: {}
     )
   end

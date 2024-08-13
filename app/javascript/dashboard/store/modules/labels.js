@@ -16,7 +16,7 @@ export const state = {
 
 export const getters = {
   getLabels(_state) {
-    return _state.records;
+    return _state.records.sort((a, b) => a.position - b.position);
   },
   getUIFlags(_state) {
     return _state.uiFlags;
@@ -43,7 +43,7 @@ export const actions = {
   async getAllLabels({ commit }) {
     try {
       const response = await LabelsAPI.get(true);
-      const listLabels = response.data.payload;
+      const listLabels = response.data.payload.sort((a, b) => a.position - b.position);
       commit(types.SET_LABELS, listLabels);
     } catch (error) {
     } finally {
@@ -54,10 +54,8 @@ export const actions = {
   get: async function getLabels({ commit }) {
     commit(types.SET_LABEL_UI_FLAG, { isFetching: true });
     try {
-      const response = await LabelsAPI.get(true);
-      const sortedLabels = response.data.payload.sort((a, b) =>
-        a.title.localeCompare(b.title)
-      );
+      const response = await LabelsAPI.get(false);
+      const sortedLabels = response.data.payload.sort((a, b) => a.position - b.position);
       commit(types.SET_LABELS, sortedLabels);
     } catch (error) {
       // Ignore error
@@ -90,6 +88,21 @@ export const actions = {
       throw new Error(error);
     } finally {
       commit(types.SET_LABEL_UI_FLAG, { isUpdating: false });
+    }
+  },
+
+  updatePosition: async ({ commit }, { labelId, position }) => {
+    commit(types.SET_LABEL_UI_FLAG, { isUpdating: true });
+    try {
+      const response = await LabelsAPI.updatePosition(labelId, position);
+      console.log("UPDATED", response.data);
+      commit(types.EDIT_LABEL, response.data);
+    } catch (error) {
+      // listen to error
+    } finally {
+      commit(types.SET_LABEL_UI_FLAG, {
+        isUpdating: false,
+      });
     }
   },
 
