@@ -52,6 +52,31 @@
         </div>
       </div>
     </woot-modal>
+    <woot-modal :show.sync="showModalRemove" :on-close="hideModalCancelRemove">
+      <woot-modal-header />
+      <div class="bg-white ml-7 mr-7 mt-5">
+        <p class="text-base">
+          Tem certeza que deseja remover a instância
+          <strong>{{ instanceRemove }}</strong
+          >?
+        </p>
+
+        <div class="flex justify-end gap-2 mt-[30px] mb-[30px]">
+          <button
+            @click="hideModalCancelRemove"
+            class="bg-red-400 w-[100px] p-2 text-white font-bold"
+          >
+            Cancelar
+          </button>
+          <button
+            @click="removeInstance"
+            class="bg-woot-400 w-[100px] p-2 text-white font-bold"
+          >
+            {{ this.loadingActions.loadingRemove ? '...' : 'Remover' }}
+          </button>
+        </div>
+      </div>
+    </woot-modal>
   </div>
 </template>
 
@@ -85,6 +110,8 @@ export default {
       },
       nameInstance: '',
       loadingActions: { loadingCreate: false, loadingRemove: false, name: '' },
+      showModalRemove: false,
+      instanceRemove: ''
     };
   },
   computed: {
@@ -180,7 +207,7 @@ export default {
                     width: '150px',
                   }}
                   disabled={this.loadingActions.loadingRemove}
-                  onClick={() => this.removeInstance(row.name)}
+                  onClick={() => this.openModalCancelRemove(row.name)}
                 >
                   {this.loadingActions.loadingRemove &&
                   this.loadingActions.name === row.name
@@ -204,6 +231,14 @@ export default {
     },
     openModal() {
       this.showModal = true;
+    },
+    hideModalCancelRemove() {
+      this.showModalRemove = false;
+      this.instanceRemove = '';
+    },
+    openModalCancelRemove(instanceName) {
+      this.showModalRemove = true;
+      this.instanceRemove = instanceName;
     },
     async createInstance() {
       try {
@@ -282,12 +317,12 @@ export default {
         this.isLoading = false;
       }
     },
-    async removeInstance(instanceName) {
+    async removeInstance() {
       try {
-        this.loadingActions = { loadingRemove: true, name: instanceName };
+        this.loadingActions = { loadingRemove: true, name: this.instanceRemove };
 
         const response = await axios.delete(
-          `https://dev.zapclick.digital:8080/instance/delete/${instanceName}`,
+          `https://dev.zapclick.digital:8080/instance/delete/${this.instanceRemove}`,
           {
             headers: {
               apikey: `B6D711FCDE4D4FD5936544120E713976`,
@@ -295,7 +330,8 @@ export default {
           }
         );
 
-        if (response.data.status === 'SUCCESS') this.remove(instanceName);
+        if (response.data.status === 'SUCCESS') this.remove(this.instanceRemove);
+        this.hideModalCancelRemove()
       } catch (error) {
         console.error(error);
       } finally {
