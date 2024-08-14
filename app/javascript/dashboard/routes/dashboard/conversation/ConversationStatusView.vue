@@ -109,7 +109,9 @@
         </div>
       </div>
       <div />
-
+      <div v-if="loadLabel" class="text-center">
+        <span class="mt-4 mb-4 spinner" />
+      </div>
       <ejs-kanban
         id="kanban"
         ref="KanbanObj"
@@ -276,6 +278,8 @@ export default {
       selectedChat: [],
       showAddLabelModal: false,
       kanbanItem: {},
+      loadLabel: false,
+      originalCard: {},
     };
   },
   watch: {
@@ -414,50 +418,69 @@ export default {
     },
 
     dragStart(event) {
-      if (event?.data[0]?.label_title === 'open') {
-        return;
-      }
-
-      const conv = this.$store.getters['getConversationForKanban'];
-
-      const conversation = conv ? conv : event?.data[0];
-
-      const labelAttributes = conversation.label_attributes;
-      const customAttributes = conversation.custom_attributes;
-      const can_change = this.attributesMissing(
-        labelAttributes,
-        customAttributes
-      );
-      if (!can_change[0]) {
-        this.showAlert(
-          `Campos obrigatórios não preenchidos: <b>${can_change[1].join(', ')}</b>`,
-          conversation.id
-        );
-        event.cancel = true;
-        return;
-      }
-
-      this.statusOnStartDrag = event?.data[0]?.Status;
+      this.originalCard = {
+        data: event.data,
+        keyField: event.data[this.$refs.KanbanObj.keyField],
+      };
     },
     async dragStop(event) {
-      const kanbanInstance = document.getElementById('kanban').ej2_instances[0];
-      const conversation = {
-        id: event?.data[0].id,
-        uuid: event?.data[0].uuid,
-        status: event?.data[0].label_title,
-        can_schedule: event?.data[0].can_schedule,
+      this.loadLabel = true;
+      const conversation = event?.data[0];
+
+      if (conversation.label_title === 'open') {
+        this.loadLabel = false;
+        this.updateCardKanban(conversation);
+        return;
+      }
+
+      this.$store
+        .dispatch('labels/getLabelForKanban', event?.data[0].label_title)
+        .then(nextLabel => {
+          this.loadLabel = false;
+          const labelAttributes = nextLabel.attribules_requireds;
+          const customAttributes = event?.data[0].custom_attributes;
+          const canChange = this.attributesMissing(
+            labelAttributes,
+            customAttributes
+          );
+          if (!canChange[0]) {
+            event.cancel = true;
+            this.$refs.KanbanObj.deleteCard(event.data); // Remove o card da nova posição
+            this.$refs.KanbanObj.addCard(this.originalCard.data);
+            this.onNoChangeCard(canChange[1], event?.data[0].id);
+            this.$refs.KanbanObj.refresh();
+
+            return;
+          } else {
+            this.updateCardKanban(conversation);
+          }
+        });
+    },
+
+    async updateCardKanban(conversation) {
+      const conv = {
+        id: conversation.id,
+        uuid: conversation.uuid,
+        status: conversation.label_title,
+        can_schedule: conversation.can_schedule,
       };
       try {
         await this.$store.dispatch('conversationLabels/updateLabel', {
           conversationId: conversation.id,
-          conversation: conversation,
+          conversation: conv,
         });
       } catch (error) {
         //
       } finally {
-        this.$store.dispatch('fetchConversationForKanban', event?.data[0].id);
-        kanbanInstance.refresh();
+        this.$store.dispatch('fetchConversationForKanban', conversation.id);
       }
+    },
+
+    onNoChangeCard(attributes, conversationId) {
+      this.showAlert(
+        `Campos obrigatórios não preenchidos: <b>${attributes.join(', ')}</b>`,
+        conversationId
+      );
     },
 
     conversationListFormatter(conversationList) {
@@ -472,6 +495,7 @@ export default {
             letter => letter.toUpperCase()
           ),
           label_title: conversation?.label_title,
+          label_id: conversation?.label_id,
           teamId: conversation?.team_id,
           status: conversation?.status,
           agent_name: conversation?.meta.assignee.name,

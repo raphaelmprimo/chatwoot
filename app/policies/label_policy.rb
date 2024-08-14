@@ -11,6 +11,10 @@ class LabelPolicy < ApplicationPolicy
     @account_user.administrator?
   end
 
+  def label_kanban?
+    show?
+  end
+
   def update_position?
     @account_user.administrator?
   end

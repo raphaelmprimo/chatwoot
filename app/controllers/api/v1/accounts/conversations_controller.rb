@@ -42,7 +42,7 @@ class Api::V1::Accounts::ConversationsController < Api::V1::Accounts::BaseContro
 
   def update_label
     @conversation = Conversation.find_by(uuid: params[:conversation][:uuid])
-    label = Label.find_by(title: params[:conversation][:status])
+    label = Current.account.labels.find_by(title: params[:conversation][:status])
     @conversation.label = label
     @conversation.save!
 

@@ -180,6 +180,7 @@ Rails.application.routes.draw do
             end
           end
           resources :labels, only: [:index, :show, :create, :update, :destroy] do
+            get 'label_kanban/:title', to: 'labels#label_kanban', on: :collection
             post   :add_attribute, on: :member
             delete :remove_attribute, on: :member
             patch  'update_position/:position', to: 'labels#update_position', on: :member

@@ -33,6 +33,7 @@ end
 
 json.custom_attributes conversation.custom_attributes
 json.label_attributes conversation.label_attributes
+json.label_id conversation.label.id if conversation.label.present?
 json.color conversation.color
 json.label_title conversation.label_title
 json.can_schedule conversation.can_schedule

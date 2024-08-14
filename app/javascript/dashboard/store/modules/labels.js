@@ -6,6 +6,7 @@ import { LABEL_EVENTS } from '../../helper/AnalyticsHelper/events';
 
 export const state = {
   records: [],
+  labelForKanban: null,
   uiFlags: {
     isFetching: false,
     isFetchingItem: false,
@@ -91,11 +92,22 @@ export const actions = {
     }
   },
 
+  getLabelForKanban: async ({ commit }, labelTitle) => {
+    commit(types.SET_LABEL_UI_FLAG, { isFetching: false });
+    try {
+      const response = await LabelsAPI.getLabelForKanban(labelTitle);
+      commit(types.SET_LABEL_KANBAN, response.data);
+      return response.data
+    } catch (error) {
+    } finally {
+      commit(types.SET_LABEL_UI_FLAG, { isFetching: false });
+    }
+  },
+
   updatePosition: async ({ commit }, { labelId, position }) => {
     commit(types.SET_LABEL_UI_FLAG, { isUpdating: true });
     try {
       const response = await LabelsAPI.updatePosition(labelId, position);
-      console.log("UPDATED", response.data);
       commit(types.EDIT_LABEL, response.data);
     } catch (error) {
       // listen to error
@@ -126,6 +138,10 @@ export const mutations = {
       ..._state.uiFlags,
       ...data,
     };
+  },
+
+  [types.SET_LABEL_KANBAN](_state, label) {
+    _state.labelForKanban = label;
   },
 
   [types.SET_LABELS]: MutationHelpers.set,

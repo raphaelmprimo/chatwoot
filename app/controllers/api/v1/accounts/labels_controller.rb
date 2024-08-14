@@ -1,6 +1,6 @@
 class Api::V1::Accounts::LabelsController < Api::V1::Accounts::BaseController
   before_action :current_account
-  before_action :fetch_label, except: [:index, :create]
+  before_action :fetch_label, except: [:index, :create, :label_kanban]
   before_action :check_authorization
 
   def index
@@ -12,6 +12,10 @@ class Api::V1::Accounts::LabelsController < Api::V1::Accounts::BaseController
   end
 
   def show; end
+
+  def label_kanban
+    @label = Current.account.labels.find_by(title: params[:title])
+  end
 
   def create
     attribute_ids = params[:attribute_ids]

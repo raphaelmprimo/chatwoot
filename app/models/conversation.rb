@@ -184,11 +184,9 @@ class Conversation < ApplicationRecord
   end
 
   def color
-    return '#A1B7BF' if label.present?
-
     label.present? ? label.color : '#A1B7BF'
   end
-  
+
   def label_title
     label.present? ? label.title : 'open'
   end
@@ -198,13 +196,12 @@ class Conversation < ApplicationRecord
   end
 
   def label_attributes
-    return [] if label.blank?
-
-    label.attributes_requireds_keys
+    label.present? ? label.attributes_requireds_keys : {}
   end
 
   def get_team_id
     return 0 if team.blank?
+
     team.id
   end
 

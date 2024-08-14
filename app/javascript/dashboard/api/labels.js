@@ -13,6 +13,10 @@ class LabelsAPI extends CacheEnabledApiClient {
   updatePosition(labelId,position) {
     return axios.patch(`${this.url}/${labelId}/update_position/${position}`);
   }
+
+  getLabelForKanban (labelTitle) {
+    return axios.get(`${this.url}/label_kanban/${labelTitle}`);
+  }
 }
 
 export default new LabelsAPI();
