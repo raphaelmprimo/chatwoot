@@ -123,6 +123,7 @@
         :allow-toggle="allowToggle"
         :drag-start="dragStart"
         :drag-stop="dragStop"
+        :actionComplete="onActionComplete"
       >
         <e-columns>
           <e-column
@@ -178,6 +179,7 @@ import {
   ColumnDirective,
   ColumnsDirective,
   KanbanPlugin,
+  actionComplete,
 } from '@syncfusion/ej2-vue-kanban';
 import { ButtonPlugin } from '@syncfusion/ej2-vue-buttons';
 import { TextBoxPlugin } from '@syncfusion/ej2-vue-inputs';
@@ -410,10 +412,14 @@ export default {
       }
     },
     toggleModalChat(action) {
+      const kanbanInstance = this.$refs.KanbanObj.ej2Instances;
       if (action == 'open') {
         this.showModalChat = true;
       } else {
         this.showModalChat = false;
+        setTimeout(function () {
+          kanbanInstance.refresh();
+        }, 300);
       }
     },
 
@@ -448,12 +454,25 @@ export default {
             this.$refs.KanbanObj.deleteCard(event.data); // Remove o card da nova posição
             this.$refs.KanbanObj.addCard(this.originalCard.data);
             this.onNoChangeCard(canChange[1], event?.data[0].id);
+            this.$refs.KanbanObj.ej2Instances.refresh();
 
             return;
           } else {
             this.updateCardKanban(conversation);
           }
         });
+    },
+
+    onActionComplete(event) {
+      if (
+        event.requestType === 'cardCreated' ||
+        event.requestType === 'cardChanged'
+      ) {
+        var kanbanInstance = this.$refs.KanbanObj.ej2Instances;
+        setTimeout(function () {
+          kanbanInstance.refresh();
+        }, 300);
+      }
     },
 
     async updateCardKanban(conversation) {
