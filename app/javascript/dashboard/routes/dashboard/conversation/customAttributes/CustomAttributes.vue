@@ -128,7 +128,6 @@ export default {
     },
     async onUpdate(key, value) {
       const updatedAttributes = { ...this.customAttributes, [key]: value };
-      const kanbanInstance = document.getElementById('kanban').ej2_instances[0];
       try {
         if (this.attributeType === 'conversation_attribute') {
           await this.$store.dispatch('updateCustomAttributes', {
@@ -141,7 +140,6 @@ export default {
             custom_attributes: updatedAttributes,
           });
         }
-        kanbanInstance.refresh();
         this.showAlert(this.$t('CUSTOM_ATTRIBUTES.FORM.UPDATE.SUCCESS'));
       } catch (error) {
         const errorMessage =
@@ -151,8 +149,6 @@ export default {
       }
     },
     async onDelete(key) {
-      const kanbanInstance = document.getElementById('kanban').ej2_instances[0];
-
       try {
         const { [key]: remove, ...updatedAttributes } = this.customAttributes;
         if (this.attributeType === 'conversation_attribute') {
@@ -160,7 +156,6 @@ export default {
             conversationId: this.conversationId,
             customAttributes: updatedAttributes,
           });
-          kanbanInstance.refresh();
         } else {
           this.$store.dispatch('contacts/deleteCustomAttributes', {
             id: this.contactId,

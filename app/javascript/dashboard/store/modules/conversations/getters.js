@@ -56,6 +56,9 @@ const getters = {
   getAppliedConversationFilters: _state => {
     return _state.appliedFilters;
   },
+  getConversationForKanban: _state => {
+    return _state.conversationForKanban;
+  },
   getUnAssignedChats: _state => activeFilters => {
     return _state.allConversations.filter(conversation => {
       const isUnAssigned = !conversation.meta.assignee;

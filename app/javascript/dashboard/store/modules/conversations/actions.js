@@ -37,6 +37,15 @@ const actions = {
     }
   },
 
+  fetchConversationForKanban: async ({ commit }, conversationId) => {
+    try {
+      const response = await ConversationApi.show(conversationId);
+      commit(types.SET_CONVERSATION_KANBAN, response.data);
+    } catch (error) {
+      // Ignore error
+    }
+  },
+
   fetchAllConversations: async ({ commit, dispatch }, params) => {
     commit(types.SET_LIST_LOADING_STATUS);
     try {

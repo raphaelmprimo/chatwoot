@@ -303,7 +303,10 @@ export default {
     attributesMissing(required_attributes, registered_attributes) {
       if (required_attributes && required_attributes.length > 0) {
         const missingKeys = required_attributes.filter(
-          attribute => !(attribute['attribute_key'] in registered_attributes)
+          attribute =>
+            !Object.keys(registered_attributes)
+              .map(key => key.toLowerCase())
+              .includes(attribute['attribute_key'].toLowerCase())
         );
         const allKeysFound = missingKeys.length === 0;
         const missingKeysNames = missingKeys.map(key => key['attribute_name']);
@@ -312,14 +315,7 @@ export default {
         return [true, []];
       }
     },
-    onActionComplete(args) {
-      var kanbanInstance = this.$refs.KanbanObj.ej2Instances;
-      if (args.requestType === 'cardChanged') {
-        setTimeout(function () {
-          kanbanInstance.refresh();
-        }, 300);
-      }
-    },
+
     async getProcessedListLabels() {
       await this.$store.dispatch('labels/get');
       this.localLabels = this.labels.map(label => ({
@@ -378,7 +374,7 @@ export default {
     initialize() {
       const filtersToFetchAllConversations = {
         assigneeType: 'me',
-        label_tile: 'open',
+        status: 'open',
         sortBy: 'last_activity_at_desc',
         page: 1,
       };
@@ -388,15 +384,14 @@ export default {
       );
     },
     onCardClick: function (_args) {
-      this.kanbanItem = this.$refs.KanbanObj.ej2Instances;
+      const conversationId = _args?.data?.id;
       let filtredSelectedChat = this.selectedChat.filter(
-        chat => _args?.data?.id === chat?.id
+        chat => conversationId === chat?.id
       );
       this.$store.dispatch('setActiveChat', {
         data: filtredSelectedChat[0],
         after: 1,
       });
-      console.log('CARDSSSS', filtredSelectedChat[0]);
       this.toggleModalChat('open');
     },
     redirectToDashboard() {
@@ -418,22 +413,16 @@ export default {
         this.showModalChat = false;
       }
     },
-    rowSelected(e) {
-      console.log(e, this.data[0]);
-    },
-    pushTable() {
-      const hasId = this.data.at(-1)?.id;
-      const newId = hasId >= 0 ? hasId + 1 : 0;
-      this.data.push({
-        id: newId,
-        nomeEtapa: `Etapa ${newId}`,
-        camposObrigatorios: false,
-        campoValor: false,
-        etapaFinal: false,
-      });
-    },
+
     dragStart(event) {
-      const conversation = event?.data[0];
+      if (event?.data[0]?.label_title === 'open') {
+        return;
+      }
+
+      const conv = this.$store.getters['getConversationForKanban'];
+
+      const conversation = conv ? conv : event?.data[0];
+
       const labelAttributes = conversation.label_attributes;
       const customAttributes = conversation.custom_attributes;
       const can_change = this.attributesMissing(
@@ -460,19 +449,23 @@ export default {
         can_schedule: event?.data[0].can_schedule,
       };
       try {
-        await this.$store
-          .dispatch('conversationLabels/updateLabel', {
-            conversationId: conversation.id,
-            conversation: conversation,
-          })
-          .then(() => {
-            this.$store.dispatch('labels/get');
-          });
+        await this.$store.dispatch('conversationLabels/updateLabel', {
+          conversationId: conversation.id,
+          conversation: conversation,
+        });
       } catch (error) {
         //
       } finally {
-        this.conversationList;
+        this.$store.dispatch('fetchConversationForKanban', event?.data[0].id);
         kanbanInstance.refresh();
+      }
+    },
+    onActionComplete(event) {
+      if (event.requestType === 'cardChanged') {
+        this.$store.dispatch(
+          'fetchConversationForKanban',
+          event?.changedRecords[0].id
+        );
       }
     },
     conversationListFormatter(conversationList) {
