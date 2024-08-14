@@ -134,6 +134,10 @@ export default {
             conversationId: this.conversationId,
             customAttributes: updatedAttributes,
           });
+          await this.$store.dispatch(
+            'fetchConversationForKanban',
+            this.conversationId
+          );
         } else {
           this.$store.dispatch('contacts/update', {
             id: this.contactId,
@@ -156,6 +160,10 @@ export default {
             conversationId: this.conversationId,
             customAttributes: updatedAttributes,
           });
+          await this.$store.dispatch(
+            'fetchConversationForKanban',
+            this.conversationId
+          );
         } else {
           this.$store.dispatch('contacts/deleteCustomAttributes', {
             id: this.contactId,

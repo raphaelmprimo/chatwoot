@@ -121,7 +121,6 @@
         :allow-toggle="allowToggle"
         :drag-start="dragStart"
         :drag-stop="dragStop"
-        :actionComplete="onActionComplete"
       >
         <e-columns>
           <e-column
@@ -460,14 +459,7 @@ export default {
         kanbanInstance.refresh();
       }
     },
-    onActionComplete(event) {
-      if (event.requestType === 'cardChanged') {
-        this.$store.dispatch(
-          'fetchConversationForKanban',
-          event?.changedRecords[0].id
-        );
-      }
-    },
+
     conversationListFormatter(conversationList) {
       let formatedConversationList = [];
 
