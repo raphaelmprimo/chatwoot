@@ -448,7 +448,6 @@ export default {
             this.$refs.KanbanObj.deleteCard(event.data); // Remove o card da nova posição
             this.$refs.KanbanObj.addCard(this.originalCard.data);
             this.onNoChangeCard(canChange[1], event?.data[0].id);
-            this.$refs.KanbanObj.refresh();
 
             return;
           } else {
