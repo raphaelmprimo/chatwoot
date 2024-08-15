@@ -44,6 +44,7 @@ class Api::V1::Accounts::ConversationsController < Api::V1::Accounts::BaseContro
     @conversation = Conversation.find_by(uuid: params[:conversation][:uuid])
     label = Current.account.labels.find_by(title: params[:conversation][:status])
     @conversation.label = label
+    @conversation.cached_label_list = label.present? ? label.title : params[:conversation][:status]
     @conversation.save!
 
     head :ok
