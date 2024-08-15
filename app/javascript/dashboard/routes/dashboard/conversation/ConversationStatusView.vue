@@ -138,6 +138,7 @@
             :headerText="label.description"
             :keyField="label.title"
             :allowToggle="allowToggle"
+            :style="{ backgroundColor: label.color }"
           ></e-column>
         </e-columns>
       </ejs-kanban>
@@ -262,7 +263,7 @@ export default {
           };
         },
       },
-      columnsTemplate: function () {
+      columnTemplate: function () {
         return {
           template: {
             parent: this,
@@ -270,6 +271,26 @@ export default {
           },
         };
       },
+      columns: [
+        {
+          headerText: 'To Do',
+          keyField: 'Open',
+          headerColor: '#ffcc00', // Cor de fundo do título da coluna
+          bodyColor: '#fff2cc', // Cor de fundo do corpo da coluna
+        },
+        {
+          headerText: 'In Progress',
+          keyField: 'InProgress',
+          headerColor: '#007bff',
+          bodyColor: '#cce5ff',
+        },
+        {
+          headerText: 'Done',
+          keyField: 'Close',
+          headerColor: '#28a745',
+          bodyColor: '#d4edda',
+        },
+      ],
 
       allowToggle: true,
       showModalFunil: false,
@@ -454,7 +475,6 @@ export default {
             this.$refs.KanbanObj.deleteCard(event.data); // Remove o card da nova posição
             this.$refs.KanbanObj.addCard(this.originalCard.data);
             this.onNoChangeCard(canChange[1], event?.data[0].id);
-            this.$refs.KanbanObj.ej2Instances.refresh();
 
             return;
           } else {
@@ -515,7 +535,8 @@ export default {
           label_title: conversation?.label_title,
           label_id: conversation?.label_id,
           teamId: conversation?.team_id,
-          status: conversation?.status,
+          status: conversation?.label_title,
+          status_conversation: conversation?.status,
           agent_name: conversation?.meta.assignee.name,
           image_agent: conversation?.meta.assignee.thumbnail,
           color: conversation?.color,
@@ -611,16 +632,16 @@ export default {
 };
 </script>
 <style>
-@import '@syncfusion/ej2-base/styles/material3.css';
-@import '@syncfusion/ej2-buttons/styles/material3.css';
-@import '@syncfusion/ej2-layouts/styles/material3.css';
-@import '@syncfusion/ej2-dropdowns/styles/material3.css';
-@import '@syncfusion/ej2-navigations/styles/material3.css';
-@import '@syncfusion/ej2-popups/styles/material3.css';
-@import '@syncfusion/ej2-vue-kanban/styles/tailwind.css';
-@import '@syncfusion/ej2-vue-inputs/styles/bootstrap.css';
-@import '@syncfusion/ej2-vue-grids/styles/tailwind.css';
-@import '@syncfusion/ej2-vue-treegrid/styles/material3.css';
+@import '../../../../../../node_modules/@syncfusion/ej2-base/styles/material3.css';
+@import '../../../../../../node_modules/@syncfusion/ej2-buttons/styles/material3.css';
+@import '../../../../../../node_modules/@syncfusion/ej2-layouts/styles/material3.css';
+@import '../../../../../../node_modules/@syncfusion/ej2-dropdowns/styles/material3.css';
+@import '../../../../../../node_modules/@syncfusion/ej2-navigations/styles/material3.css';
+@import '../../../../../../node_modules/@syncfusion/ej2-popups/styles/material3.css';
+@import '../../../../../../node_modules/@syncfusion/ej2-vue-kanban/styles/tailwind.css';
+@import '../../../../../../node_modules/@syncfusion/ej2-vue-inputs/styles/bootstrap.css';
+@import '../../../../../../node_modules/@syncfusion/ej2-vue-grids/styles/tailwind.css';
+@import '../../../../../../node_modules/@syncfusion/ej2-vue-treegrid/styles/material3.css';
 
 .e-kanban.kanban-card-default .e-card-footer-css {
   align-self: center;
@@ -629,6 +650,17 @@ export default {
   background-position: center;
   height: 16px;
   width: 16px;
+}
+
+.e-kanban
+  .e-kanban-table.e-content-table
+  .e-content-row:not(.e-swimlane-row)
+  td[data-key='open'],
+.e-kanban
+  .e-kanban-table.e-header-table
+  .e-header-row:not(.e-swimlane-row)
+  th[data-key='open'] {
+  background-color: #e5e3e3;
 }
 .e-kanban.kanban-card-default .e-improvement {
   background-image: url(https://syncfusion.atlassian.net/secure/viewavatar?size=medium&avatarId=15507&avatarType=issuetype);

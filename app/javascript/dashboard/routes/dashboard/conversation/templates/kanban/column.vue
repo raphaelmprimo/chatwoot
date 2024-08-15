@@ -1,4 +1,4 @@
-<template v-slot:bodyColumn="{ data }">
+<template v-slot:columnTemplate="{ data }">
   <div class="header-template-wrap">
     <div class="getClassName(data)"></div>
     <div class="header-text bg-[#ccff00]">{{ data.headerText }}</div>

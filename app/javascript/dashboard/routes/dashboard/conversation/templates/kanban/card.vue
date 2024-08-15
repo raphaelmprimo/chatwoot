@@ -1,9 +1,20 @@
 <template v-slot:cardTemplate="{ data }">
   <div class="card-template">
-    <div class="e-card-header">
+    <div
+      class="e-card-header flex justify-center"
+      :style="{
+        backgroundColor: data.color,
+        filter: 'brightness(90%)',
+      }"
+    >
       <div class="e-card-header-caption">
-        <div class="e-card-header-title e-tooltip-text">
-          {{ data.agent_name }}
+        <div
+          class="e-card-header-title e-tooltip-text"
+          :style="{
+            color: `#ffffff !important`,
+          }"
+        >
+          <span class="inline-block align-bottom"> {{ data.agent_name }}</span>
         </div>
       </div>
     </div>
