@@ -111,7 +111,7 @@ export default {
       nameInstance: '',
       loadingActions: { loadingCreate: false, loadingRemove: false, name: '' },
       showModalRemove: false,
-      instanceRemove: ''
+      instanceRemove: '',
     };
   },
   computed: {
@@ -258,7 +258,11 @@ export default {
             },
           }
         );
-
+        console.log(
+          response.data.instance.instanceName,
+          this.nameInstance,
+          '@@@@ instance create'
+        );
         await axios.post(
           `https://dev.zapclick.digital:8080/chatwoot/set/${response.data.instance.instanceName}`,
           {
@@ -274,6 +278,7 @@ export default {
           {
             headers: {
               apikey: `B6D711FCDE4D4FD5936544120E713976`,
+              "content-type": "application/json"
             },
           }
         );
@@ -290,7 +295,20 @@ export default {
           },
         };
         this.update(newInstance);
+        /* await this.$store.dispatch('inboxes/revalidate', { newKey: "1723727121" }); */
+        /* await this.$store.dispatch('inboxes/get') */
+        /* const apiChannel = await this.$store.dispatch('inboxes/createChannel', {
+          name: response.data.instance.instanceName,
+          channel: {
+            type: 'api',
+            webhook_url:
+              `https://dev.zapclick.digital:8080/chatwoot/webhook/${response.data.instance.instanceName}`,
+          },
+        });
+        console.log(apiChannel, '@@@ apiChannel'); */
         this.hideModal();
+        /* await this.$store.dispatch('inboxes/get') */
+        window.location.reload()
       } catch (error) {
         console.error('[InstanceView]', error);
         this.errorMessage =
@@ -320,7 +338,10 @@ export default {
     },
     async removeInstance() {
       try {
-        this.loadingActions = { loadingRemove: true, name: this.instanceRemove };
+        this.loadingActions = {
+          loadingRemove: true,
+          name: this.instanceRemove,
+        };
 
         const response = await axios.delete(
           `https://dev.zapclick.digital:8080/instance/delete/${this.instanceRemove}`,
@@ -331,8 +352,9 @@ export default {
           }
         );
 
-        if (response.data.status === 'SUCCESS') this.remove(this.instanceRemove);
-        this.hideModalCancelRemove()
+        if (response.data.status === 'SUCCESS')
+          this.remove(this.instanceRemove);
+        this.hideModalCancelRemove();
       } catch (error) {
         console.error(error);
       } finally {
