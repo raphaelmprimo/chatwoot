@@ -539,6 +539,7 @@ export default {
           status_conversation: conversation?.status,
           agent_name: conversation?.meta.assignee.name,
           image_agent: conversation?.meta.assignee.thumbnail,
+          contact_avatar: conversation?.meta.sender.thumbnail,
           color: conversation?.color,
           schedule: conversation?.schedule,
           can_schedule: conversation?.can_schedule,

@@ -101,7 +101,7 @@
       <div class="e-card-tag-field e-tooltip-text">{{ data.name }}</div>
       <div class="e-card-avatar">
         <thumbnail
-          :src="data.image_agent"
+          :src="data.contact_avatar"
           size="30px"
           :username="data.name"
           :style="null"
