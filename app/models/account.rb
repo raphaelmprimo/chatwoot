@@ -75,8 +75,8 @@ class Account < ApplicationRecord
   has_many :webhooks, dependent: :destroy_async
   has_many :whatsapp_channels, dependent: :destroy_async, class_name: '::Channel::Whatsapp'
   has_many :working_hours, dependent: :destroy_async
-  has_many :calendars, class_name: 'Calendar', inverse_of: :account, dependent: :destroy_async
-  has_many :schedules, class_name: 'Schedule', through: :calendars
+  has_one  :calendar, class_name: 'Calendar', inverse_of: :account, dependent: :destroy_async
+  has_many :schedules, class_name: 'Schedule', through: :calendar
   has_one  :kanban, dependent: :destroy_async
 
   has_one_attached :contacts_export

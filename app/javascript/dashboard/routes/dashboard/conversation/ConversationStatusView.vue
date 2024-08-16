@@ -632,17 +632,19 @@ export default {
 };
 </script>
 <style>
-@import '../../../../../../node_modules/@syncfusion/ej2-base/styles/material3.css';
-@import '../../../../../../node_modules/@syncfusion/ej2-buttons/styles/material3.css';
-@import '../../../../../../node_modules/@syncfusion/ej2-layouts/styles/material3.css';
-@import '../../../../../../node_modules/@syncfusion/ej2-dropdowns/styles/material3.css';
-@import '../../../../../../node_modules/@syncfusion/ej2-navigations/styles/material3.css';
-@import '../../../../../../node_modules/@syncfusion/ej2-popups/styles/material3.css';
+@import '../../../../../../node_modules/@syncfusion/ej2-base/styles/material.css';
+@import '../../../../../../node_modules/@syncfusion/ej2-buttons/styles/material.css';
+@import '../../../../../../node_modules/@syncfusion/ej2-layouts/styles/material.css';
+@import '../../../../../../node_modules/@syncfusion/ej2-dropdowns/styles/material.css';
+@import '../../../../../../node_modules/@syncfusion/ej2-navigations/styles/material.css';
+@import '../../../../../../node_modules/@syncfusion/ej2-popups/styles/material.css';
 @import '../../../../../../node_modules/@syncfusion/ej2-vue-kanban/styles/tailwind.css';
 @import '../../../../../../node_modules/@syncfusion/ej2-vue-inputs/styles/bootstrap.css';
 @import '../../../../../../node_modules/@syncfusion/ej2-vue-grids/styles/tailwind.css';
-@import '../../../../../../node_modules/@syncfusion/ej2-vue-treegrid/styles/material3.css';
-
+@import '../../../../../../node_modules/@syncfusion/ej2-vue-treegrid/styles/material.css';
+.kanban-card-template .e-card table {
+  table-layout: fixed;
+}
 .e-kanban.kanban-card-default .e-card-footer-css {
   align-self: center;
   background-repeat: no-repeat;
@@ -661,74 +663,6 @@ export default {
   .e-header-row:not(.e-swimlane-row)
   th[data-key='open'] {
   background-color: #e5e3e3;
-}
-.e-kanban.kanban-card-default .e-improvement {
-  background-image: url(https://syncfusion.atlassian.net/secure/viewavatar?size=medium&avatarId=15507&avatarType=issuetype);
-}
-.e-kanban.kanban-card-default .e-story {
-  background-image: url(https://syncfusion.atlassian.net/secure/viewavatar?size=medium&avatarId=15515&avatarType=issuetype);
-}
-.e-kanban.kanban-card-default .e-epic {
-  background-image: url(https://syncfusion.atlassian.net/secure/viewavatar?size=medium&avatarId=15507&avatarType=issuetype);
-}
-.e-kanban.kanban-card-default .e-bug {
-  background-image: url(https://syncfusion.atlassian.net/secure/viewavatar?size=medium&avatarId=15503&avatarType=issuetype);
-}
-.e-kanban.kanban-card-default .e-others {
-  background-image: url(https://syncfusion.atlassian.net/images/icons/issuetypes/documentation.png);
-}
-.e-kanban.kanban-card-default .e-low {
-  margin-right: auto;
-  background-image: url(https://syncfusion.atlassian.net/images/icons/priorities/trivial.svg);
-}
-.e-kanban.kanban-card-default .e-high {
-  margin-right: auto;
-  background-image: url(https://syncfusion.atlassian.net/images/icons/priorities/major.svg);
-}
-.e-kanban.kanban-card-default .e-critical {
-  margin-right: auto;
-  background-image: url(https://syncfusion.atlassian.net/images/icons/priorities/critical.svg);
-}
-.e-kanban.kanban-card-default .e-release {
-  margin-right: auto;
-  background-image: url(https://syncfusion.atlassian.net/images/icons/priorities/critical.svg);
-}
-.e-kanban.kanban-card-default .e-normal {
-  margin-right: auto;
-  background-image: url(https://syncfusion.atlassian.net/images/icons/priorities/minor.svg);
-}
-.e-kanban.kanban-card-default .e-nancy-davloio {
-  background-image: url(https://ej2.syncfusion.com/demos/src/kanban/images/Nancy%20Davloio.png);
-}
-.e-kanban.kanban-card-default .e-andrew-fuller {
-  background-image: url(https://ej2.syncfusion.com/demos/src/kanban/images/Andrew%20Fuller.png);
-}
-.e-kanban.kanban-card-default .e-janet-leverling {
-  background-image: url(https://ej2.syncfusion.com/demos/src/kanban/images/Janet%20Leverling.png);
-}
-.e-kanban.kanban-card-default .e-steven-walker {
-  background-image: url(https://ej2.syncfusion.com/demos/src/kanban/images/Steven%20walker.png);
-}
-.e-kanban.kanban-card-default .e-michael-suyama {
-  background-image: url(https://ej2.syncfusion.com/demos/src/kanban/images/Michael%20Suyama.png);
-}
-.e-kanban.kanban-card-default .e-robert-king {
-  background-image: url(https://ej2.syncfusion.com/demos/src/kanban/images/Robert%20King.png);
-}
-.e-kanban.kanban-card-default .e-margaret-hamilt {
-  background-image: url(https://ej2.syncfusion.com/demos/src/kanban/images/Margaret%20hamilt.png);
-}
-
-.e-kanban.kanban-card-default .e-nancy-davloio,
-.e-kanban.kanban-card-default .e-andrew-fuller,
-.e-kanban.kanban-card-default .e-janet-leverling,
-.e-kanban.kanban-card-default .e-steven-walker,
-.e-kanban.kanban-card-default .e-michael-suyama,
-.e-kanban.kanban-card-default .e-robert-king,
-.e-kanban.kanban-card-default .e-margaret-hamilt {
-  border-radius: 72px;
-  height: 40px;
-  width: 40px;
 }
 
 #container {
@@ -855,5 +789,9 @@ export default {
   background: rgba(0, 0, 0, 0.05) !important;
   padding: 0 10px !important;
   height: 40px !important;
+}
+.kanban-overview.e-kanban.e-rtl .e-card-avatar {
+  left: 12px;
+  right: auto;
 }
 </style>

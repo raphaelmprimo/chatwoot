@@ -1,5 +1,5 @@
 import types from '../../mutation-types';
-import CalendarApi from '../../../api/calendars';
+import ScheduleApi from '../../../api/schedules';
 import { LOCAL_STORAGE_KEYS } from 'dashboard/constants/localStorage';
 import { LocalStorage } from 'shared/helpers/localStorage';
 
@@ -9,7 +9,7 @@ const actions = {
       isFetching: true,
     });
     try {
-      const response = await CalendarApi.get();
+      const response = await ScheduleApi.get();
       commit(types.SET_CALENDARS, response.data.payload);
     } catch (error) {
       commit(types.SET_CALENDARS_UI_FLAG, false);
@@ -20,11 +20,10 @@ const actions = {
       isFetching: true,
     });
     try {
-      const response = await CalendarApi.get();
+      const response = await ScheduleApi.get();
       commit(types.SET_CALENDARS, response.data.payload);
     } catch (error) {
       // Handle error appropriately
-      console.error('Error fetching calendars:', error);
     } finally {
       commit(types.SET_CALENDARS_UI_FLAG, {
         isFetching: false,
@@ -45,22 +44,15 @@ const actions = {
     }
   },
 
-  getDefaultCalendarId: async ({ commit }) => {
+  getDefaultCalendar: async ({ commit }) => {
     commit(types.SET_CALENDARS_UI_FLAG, {
       isFetching: true,
     });
-    const idCal = LocalStorage.get(
-      LOCAL_STORAGE_KEYS.DEFAULT_CALENDAR_ID
-    )
     try {
-      if (idCal !== null) {
-        commit(types.SET_CALENDARS_DEFAULT, parseInt(idCal, 10));
-      } else {
-        const response = await CalendarApi.get();
-        const id = response.data.payload[0].id;
-        commit(types.SET_CALENDARS_DEFAULT, parseInt(idCal, 10));
+        const response = await ScheduleApi.getDefaultCalendar();
+        const id = response.data.payload[0].calendar_id;
+        commit(types.SET_CALENDARS_DEFAULT, response.data.payload);
         LocalStorage.set(LOCAL_STORAGE_KEYS.DEFAULT_CALENDAR_ID, id);
-      }
     } catch (error) {
       // Handle error
     } finally {
@@ -70,13 +62,14 @@ const actions = {
     }
   },
 
-  fetchSchedules: async({ commit }, calendarID) => {
+
+  fetchSchedules: async({ commit }) => {
     commit(types.SET_SCHEDULES_UI_FLAG, {
       isFetching: true,
     });
 
     try {
-      const response = await CalendarApi.getSchedules(calendarID);
+      const response = await ScheduleApi.getSchedules();
       commit(types.SET_SCHEDULES, response.data);
     } catch (error) {
       // Handle error
@@ -87,31 +80,13 @@ const actions = {
     }
   },
 
-  fetchSchedulesLabel: async ({ commit }, { calendarID, labelID }) => {
+  fetchSchedulesLabel: async ({ commit }, labelID ) => {
     commit(types.SET_SCHEDULES_UI_FLAG, {
       isFetching: true,
     });
 
     try {
-      const response = await CalendarApi.getSchedulesLabel(calendarID, labelID);
-      commit(types.SET_SCHEDULES, response.data);
-    } catch (error) {
-      // Handle error
-    } finally {
-      commit(types.SET_SCHEDULES_UI_FLAG, {
-      isFetching: false,
-    });
-    }
-  },
-
-
-    fetchSchedules: async({ commit }, calendarID) => {
-    commit(types.SET_SCHEDULES_UI_FLAG, {
-      isFetching: true,
-    });
-
-    try {
-      const response = await CalendarApi.getSchedules(calendarID);
+      const response = await ScheduleApi.getSchedulesLabel(labelID);
       commit(types.SET_SCHEDULES, response.data);
     } catch (error) {
       // Handle error
@@ -127,7 +102,7 @@ const actions = {
       isCreating: true
     });
     try {
-      const response = await CalendarApi.post(calendar);
+      const response = await ScheduleApi.post(calendar);
       commit(types.SET_CALENDARS, { data: response.data.payload }); // Assuming the response contains the updated list of calendars
     } catch (error) {
       // Handle error
@@ -138,12 +113,12 @@ const actions = {
     }
   },
 
-  async addSchedule({ commit }, { calendarID, schedule }) {
+  async addSchedule({ commit }, schedule) {
     commit(types.SET_SCHEDULES_UI_FLAG, {
       isCreating: true
     });
     try {
-      const response = await CalendarApi.addSchedule(calendarID, schedule);
+      const response = await ScheduleApi.addSchedule(schedule);
       commit(types.ADD_SCHEDULE, schedule);
     } catch (error) {
       // Handle error
@@ -154,12 +129,12 @@ const actions = {
     }
   },
 
-  async updateSchedule({ commit }, { calendarID, schedule }) {
+  async updateSchedule({ commit },  schedule ) {
     commit(types.SET_SCHEDULES_UI_FLAG, {
       isUpdating: true
     });
     try {
-      const response = await CalendarApi.updateSchedule(calendarID, schedule);
+      const response = await ScheduleApi.updateSchedule(schedule);
       commit(types.UPDATE_SCHEDULE, response.data);
     } catch (error) {
       // Handle error
@@ -170,10 +145,10 @@ const actions = {
     }
   },
 
-  async removeSchedule({ commit }, { calendarID, scheduleID }) {
+  async removeSchedule({ commit }, scheduleID ) {
     commit(types.SET_SCHEDULES_UI_FLAG, { flag: 'isDeleting', value: true });
     try {
-      await CalendarApi.removeSchedule(calendarID, scheduleID);
+      await ScheduleApi.removeSchedule(scheduleID);
       commit(types.REMOVE_SCHEDULE, scheduleID);
     } catch (error) {
       // Handle error

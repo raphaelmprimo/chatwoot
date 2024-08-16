@@ -12,7 +12,11 @@ class Api::V1::Accounts::SchedulesController < Api::V1::Accounts::BaseController
   end
 
   def of_conversation
-    schedule = @calendar.schedules.of_conversation(params[:conversation_uuid]).first
+    @schedule = @calendar.schedules.of_conversation(params[:conversation_uuid]).first
+  end
+
+  def default_calendar
+    @calendar = Current.account.calendar
   end
 
   def create
@@ -45,7 +49,7 @@ class Api::V1::Accounts::SchedulesController < Api::V1::Accounts::BaseController
   end
 
   def fetch_calendar
-    @calendar = Current.account.calendars.find(params[:calendar_id])
+    @calendar = Current.account.calendar
   end
 
   def fetch_schedule

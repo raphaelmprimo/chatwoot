@@ -262,13 +262,12 @@ Rails.application.routes.draw do
           resources :upload, only: [:create]
           resources :calendars do
             get :default_calendar, on: :collection
-            resources :schedules do
-              get ':label_id/in_label', on: :collection, action: :in_label
-              get ':conversation_uuid/of_conversation', on: :collection, action: :of_conversation
-              collection do
-                post '$batch', to: 'calendars/schedules#create', as: 'batch'
-              end
-            end
+          end
+
+          resources :schedules do
+            get ':label_id/in_label', on: :collection, action: :in_label
+            get ':conversation_uuid/of_conversation', on: :collection, action: :of_conversation
+            get :default_calendar, on: :collection
           end
 
           resources :kanban do

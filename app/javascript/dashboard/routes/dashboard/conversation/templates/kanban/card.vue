@@ -97,7 +97,17 @@
         v-html="formatText('waiting_since', data.waiting_since)"
       ></div>
     </div>
-    <div class="e-card-custom-footer" v-html="getCardFooter(data)"></div>
+    <div class="e-card-custom-footer">
+      <div class="e-card-tag-field e-tooltip-text">{{ data.name }}</div>
+      <div class="e-card-avatar">
+        <thumbnail
+          :src="data.image_agent"
+          size="30px"
+          :username="data.name"
+          :style="null"
+        />
+      </div>
+    </div>
   </div>
 </template>
 <script>
@@ -107,9 +117,13 @@ const DAY_IN_MILLI_SECONDS = HOUR_IN_MILLI_SECONDS * 24;
 
 import { mapGetters } from 'vuex';
 import timeMixin from 'dashboard/mixins/time';
+import Thumbnail from '../../../../../components/widgets/Thumbnail.vue';
 
 export default {
   mixins: [timeMixin],
+  components: {
+    Thumbnail,
+  },
   data() {
     return {
       data: {},
@@ -129,7 +143,7 @@ export default {
     },
     getCardFooter: function (data) {
       return `<div class='e-card-tag-field e-tooltip-text'> ${data.name} </div>
-        <div><img src="${data.image_agent}" class="e-card-avatar"/></div>`;
+        <div><thumbnail src="${data.image_agent}" username="${data.image_agent}" class="e-card-avatar"/></div>`;
     },
 
     getAvatarAgent: function (url) {
@@ -259,7 +273,7 @@ export default {
   bottom: 10px;
   font-size: 12px;
   font-weight: 400;
-  padding: 10px 0px 0px 1px;
+  padding: 0px 0px 0px px;
 }
 
 .kanban-overview.e-kanban .Open::before {

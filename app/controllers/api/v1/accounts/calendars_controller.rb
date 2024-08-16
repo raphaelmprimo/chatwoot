@@ -4,17 +4,17 @@ class Api::V1::Accounts::CalendarsController < Api::V1::Accounts::BaseController
   before_action :check_authorization
 
   def index
-    @calendars = Current.account.calendars
+    @calendar = Current.account.calendar
   end
 
   def show; end
 
   def default_calendar
-    @calendar = Current.account.calendars.first
+    @calendar = Current.account.calendar
   end
 
   def create
-    @calendar = Current.user.calendars.create!(permitted_params, account: Current.account)
+    @calendar = Current.user.calendar.create!(permitted_params, account: Current.account)
   end
 
   def update
@@ -29,7 +29,7 @@ class Api::V1::Accounts::CalendarsController < Api::V1::Accounts::BaseController
   private
 
   def fetch_calendar
-    @calendar = Current.account.calendars.find(params[:id])
+    @calendar = Current.account.calendar
   end
 
   def permitted_params

@@ -10,6 +10,7 @@ import actions from './actions';
 const state = {
   calendars: [],
   defaultCalendarId: null,
+  defaultCalendar: {},
   schedules: [],
   uiFlags: {
     isFetching: false,
@@ -30,6 +31,9 @@ export const getters = {
   getDefaultCalendarId (_state) {
     return _state.defaultCalendarId;
   },
+  getDefaultCalendar (_state) {
+    return _state.defaultCalendar;
+  },
 };
 export const mutations = {
   [types.SET_CALENDARS_UI_FLAG](_state, data) {
@@ -44,8 +48,9 @@ export const mutations = {
   [types.SET_SCHEDULES](_state, data) {
     _state.schedules = data
   },
-  [types.SET_CALENDARS_DEFAULT](_state, calendarId) {
-    _state.defaultCalendarId = calendarId;
+  [types.SET_CALENDARS_DEFAULT](_state, calendar) {
+    _state.defaultCalendar = calendar;
+    _state.defaultCalendarId = calendar;
   },
 
   [types.SET_SCHEDULES_UI_FLAG](_state, data) {

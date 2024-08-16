@@ -51,7 +51,6 @@
             <option value="Day">Dia</option>
             <option value="WorkWeek" selected>Semana</option>
             <option value="Month">Mês</option>
-            <option value="Year">Ano</option>
             <option value="Agenda">Agenda</option>
           </select>
         </div>
@@ -70,48 +69,6 @@
                 :data-source="names"
                 :placeholder="'Buscar por ṕessoa'"
               />
-              <transition-group>
-                <div
-                  v-for="calendar in calendars"
-                  v-bind:key="calendar.id"
-                  class="bg-white dark:bg-gray-800 w-full"
-                >
-                  <accordion-item
-                    title="Meus Calendários"
-                    :compact="true"
-                    :is-open="open"
-                    @click="value => onPanelToggle(value)"
-                  >
-                    <div class="grid grid-cols-3">
-                      <div class="col-span-2">
-                        <label
-                          :for="'calendar-' + calendar.id"
-                          class="cursor-pointer"
-                        >
-                          <input
-                            type="radio"
-                            :id="'calendar-' + calendar.id"
-                            :name="'calendar-item-' + calendar.id"
-                            @change="setCalendarId(calendar.id)"
-                            checked="calendar.id === this.calendarId"
-                            class="me-2"
-                          />
-                          {{ calendar.description }}
-                        </label>
-                      </div>
-                      <div class="col-span-1">
-                        <ejs-menu
-                          ref="menu"
-                          id="menu"
-                          :items="exportMenuItems"
-                          :select="exportCalendar"
-                          icsIcon="e-icons e-ics-icon"
-                        ></ejs-menu>
-                      </div>
-                    </div>
-                  </accordion-item>
-                </div>
-              </transition-group>
             </div>
           </section>
 
@@ -204,10 +161,7 @@ import {
 } from '@syncfusion/ej2-vue-navigations';
 import uiSettingsMixin from 'dashboard/mixins/uiSettings';
 import { mapGetters, mapActions } from 'vuex';
-import { parse } from 'date-fns';
 import { apiURL, calendarsURL } from '../../../helper/URLHelper';
-import calendars from '../../../api/calendars';
-import { id } from 'date-fns/locale';
 import AccordionItem from 'dashboard/components/Accordion/AccordionItem.vue';
 import Spinner from 'shared/components/Spinner.vue';
 
@@ -314,8 +268,7 @@ export default {
     ...mapGetters({
       accountId: 'getCurrentAccountId',
       currentUser: 'getCurrentUser',
-      calendars: 'calendars/getAllCalendars',
-      calendarId: 'calendars/getDefaultCalendarId',
+      calendar: 'calendars/defaultCalendar',
       agents: 'agents/getVerifiedAgents',
     }),
 
@@ -349,8 +302,8 @@ export default {
 
   beforeMount() {
     this.$store.dispatch('calendars/get');
-    this.$store.dispatch('calendars/getDefaultCalendarId');
     this.$store.dispatch('agents/get');
+    this.$store.dispatch('calendars/getDefaultCalendar');
     this.updateUISettings({
       show_secondary_sidebar: true,
       previously_used_sidebar_view: true,
@@ -362,13 +315,6 @@ export default {
     this.fetchWorkers();
   },
   methods: {
-    ...mapActions([
-      'calendars/fetchCalendars',
-      'calendars/fetchSchedules',
-      'calendars/setCurrentCalendar',
-      'calendars/addSchedule',
-      'calendars/removeSchedule',
-    ]),
     onPanelToggle(value) {
       this.open = !this.open;
     },
@@ -383,19 +329,14 @@ export default {
     },
     createEvent(event) {
       axios
-        .post(
-          apiURL(
-            `accounts/${this.accountId}/calendars/${this.calendarId}/schedules`
-          ),
-          {
-            subject: event.Subject,
-            start_time: event.StartTime,
-            end_time: event.EndTime,
-            description: event.Description,
-            location: event.Location,
-            user_ids: event.WorkerIds,
-          }
-        )
+        .post(apiURL(`accounts/${this.accountId}/schedules`), {
+          subject: event.Subject,
+          start_time: event.StartTime,
+          end_time: event.EndTime,
+          description: event.Description,
+          location: event.Location,
+          user_ids: event.WorkerIds,
+        })
         .then(response => {
           this.fetchEvents();
         })
@@ -405,19 +346,14 @@ export default {
     },
     updateEvent(event) {
       axios
-        .put(
-          apiURL(
-            `accounts/${this.accountId}/calendars/${this.calendarId}/schedules/${event.Id}`
-          ),
-          {
-            subject: event.Subject,
-            start_time: event.StartTime,
-            end_time: event.EndTime,
-            description: event.Description,
-            location: event.Location,
-            user_ids: event.WorkerIds,
-          }
-        )
+        .put(apiURL(`accounts/${this.accountId}/schedules/${event.Id}`), {
+          subject: event.Subject,
+          start_time: event.StartTime,
+          end_time: event.EndTime,
+          description: event.Description,
+          location: event.Location,
+          user_ids: event.WorkerIds,
+        })
         .then(response => {
           this.fetchEvents();
         })
@@ -427,11 +363,7 @@ export default {
     },
     deleteEvent(event) {
       axios
-        .delete(
-          apiURL(
-            `accounts/${this.accountId}/calendars/${this.calendarId}/schedules/${event.Id}`
-          )
-        )
+        .delete(apiURL(`accounts/${this.accountId}/schedules/${event.Id}`))
         .then(response => {
           this.fetchEvents();
         })
@@ -440,10 +372,9 @@ export default {
         });
     },
     fetchEvents() {
-      const calId = this.calendarId;
       const accountId = this.accountId;
       axios
-        .get(apiURL(`accounts/${this.accountId}/calendars/${calId}/schedules`))
+        .get(apiURL(`accounts/${this.accountId}/schedules`))
         .then(response => {
           const mappedData = response.data.map(event => ({
             Id: event.Id,
@@ -460,6 +391,7 @@ export default {
             CalendarId: event.CalendarId,
             WorkerIds: event.WorkerIds,
           }));
+          console.log('M<APED', mappedData);
           this.eventSettings = {
             ...this.eventSettings,
             dataSource: mappedData,

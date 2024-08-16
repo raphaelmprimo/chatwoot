@@ -11,6 +11,10 @@ class SchedulePolicy < ApplicationPolicy
     index?
   end
 
+  def default_calendar?
+    index?
+  end
+
   def show?
     index?
   end
