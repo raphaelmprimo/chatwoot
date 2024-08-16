@@ -224,7 +224,9 @@ export default {
           result = `<b class="text-sm font-semibold">${this.$t('CONVERSATION.PRIORITY.TITLE')}</b>: ${this.$t('CONVERSATION.PRIORITY.OPTIONS.' + value.toUpperCase())}`;
           break;
         case 'waiting_since':
-          result = `<b class="text-sm font-semibold">Esperando desde</b>: ${value}`;
+          result = `<b class="text-sm font-semibold">Esperando desde</b>: ${this.dateFormat(
+            value
+          )}`;
           break;
         default:
           result = `Sem Nome: ${value}`;
