@@ -112,6 +112,7 @@ export default {
       loadingActions: { loadingCreate: false, loadingRemove: false, name: '' },
       showModalRemove: false,
       instanceRemove: '',
+      instanceOwner: '',
     };
   },
   computed: {
@@ -207,7 +208,9 @@ export default {
                     width: '150px',
                   }}
                   disabled={this.loadingActions.loadingRemove}
-                  onClick={() => this.openModalCancelRemove(row.name)}
+                  onClick={() =>
+                    this.openModalCancelRemove(row.name, row.owner)
+                  }
                 >
                   {this.loadingActions.loadingRemove &&
                   this.loadingActions.name === row.name
@@ -235,10 +238,12 @@ export default {
     hideModalCancelRemove() {
       this.showModalRemove = false;
       this.instanceRemove = '';
+      this.instanceOwner = '';
     },
-    openModalCancelRemove(instanceName) {
+    openModalCancelRemove(instanceName, owner) {
       this.showModalRemove = true;
       this.instanceRemove = instanceName;
+      this.instanceOwner = owner;
     },
     async createInstance() {
       try {
@@ -258,11 +263,7 @@ export default {
             },
           }
         );
-        console.log(
-          response.data.instance.instanceName,
-          this.nameInstance,
-          '@@@@ instance create'
-        );
+
         await axios.post(
           `https://dev.zapclick.digital:8080/chatwoot/set/${response.data.instance.instanceName}`,
           {
@@ -278,7 +279,7 @@ export default {
           {
             headers: {
               apikey: `B6D711FCDE4D4FD5936544120E713976`,
-              "content-type": "application/json"
+              'content-type': 'application/json',
             },
           }
         );
@@ -295,20 +296,8 @@ export default {
           },
         };
         this.update(newInstance);
-        /* await this.$store.dispatch('inboxes/revalidate', { newKey: "1723727121" }); */
-        /* await this.$store.dispatch('inboxes/get') */
-        /* const apiChannel = await this.$store.dispatch('inboxes/createChannel', {
-          name: response.data.instance.instanceName,
-          channel: {
-            type: 'api',
-            webhook_url:
-              `https://dev.zapclick.digital:8080/chatwoot/webhook/${response.data.instance.instanceName}`,
-          },
-        });
-        console.log(apiChannel, '@@@ apiChannel'); */
         this.hideModal();
-        /* await this.$store.dispatch('inboxes/get') */
-        window.location.reload()
+        window.location.reload();
       } catch (error) {
         console.error('[InstanceView]', error);
         this.errorMessage =
@@ -342,6 +331,17 @@ export default {
           loadingRemove: true,
           name: this.instanceRemove,
         };
+
+        if (!this.instanceOwner.includes('---')) {
+          await axios.delete(
+            `https://dev.zapclick.digital:8080/instance/logout/${this.instanceRemove}`,
+            {
+              headers: {
+                apikey: `B6D711FCDE4D4FD5936544120E713976`,
+              },
+            }
+          );
+        }
 
         const response = await axios.delete(
           `https://dev.zapclick.digital:8080/instance/delete/${this.instanceRemove}`,

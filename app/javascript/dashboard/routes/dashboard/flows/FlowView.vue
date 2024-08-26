@@ -136,7 +136,7 @@ export default {
           id: item.id || '---',
           isPublished: !!item.publishedTypebotId,
           publicId: item.publicId,
-          instanceName: associate.instanceName,
+          instanceName: !!item.removeInstance ? '---' : associate.instanceName,
           typebotUrl: associate.typebotUrl
             ? `${associate.typebotUrl}${associate.typebot}`
             : '---',
@@ -201,7 +201,7 @@ export default {
                   }}
                   onClick={() =>
                     row.isPublished
-                      ? this.unpublishedBot(row.id)
+                      ? this.unpublishedBot(row.id, row.instanceName)
                       : this.publishedBot(row.id)
                   }
                 >
@@ -331,7 +331,7 @@ export default {
           if (instance.chatwoot)
             return instance.chatwoot.account_id === String(account_id);
         });
-        
+
         const instancesStatusOpen = instancesByAccountId.filter(
           ({ instance }) => instance.status === 'open'
         );
@@ -385,7 +385,7 @@ export default {
         };
       }
     },
-    async unpublishedBot(typebotId) {
+    async unpublishedBot(typebotId, instanceName) {
       try {
         this.loading = {
           loadingPublished: false,
@@ -403,7 +403,16 @@ export default {
           }
         );
 
-        this.updateBots(typebotId, false);
+        axios.delete(
+          `https://dev.zapclick.digital:8080/instance/deleteTypebot/${instanceName}`,
+          {
+            headers: {
+              apikey: `B6D711FCDE4D4FD5936544120E713976`,
+            },
+          }
+        );
+
+        this.updateBots(typebotId, !!instanceName, false);
       } catch (error) {
         console.error(error);
       } finally {
@@ -414,7 +423,7 @@ export default {
         };
       }
     },
-    updateBots(typebotId, publishedBot = true) {
+    updateBots(typebotId, removeInstance = false, publishedBot = true) {
       if (!this.typebots.length) return;
       const bot = this.typebots.find(bot => bot.id === typebotId);
       const index = this.typebots.findIndex(bot => bot.id === typebotId);
@@ -422,6 +431,7 @@ export default {
       const updateBot = {
         ...bot,
         publishedTypebotId: publishedBot ? '123' : '',
+        removeInstance,
       };
       Vue.set(this.typebots, index, updateBot);
     },
@@ -431,10 +441,12 @@ export default {
       );
 
       if (findInstance && !!findInstance.typebot) {
-        this.flowTypebotNameOld = !!this.flowInstanceExists.length && 
-          this.flowInstanceExists.find(
-            int => int.typebot === findInstance.typebot
-          ).name || '';
+        this.flowTypebotNameOld =
+          (!!this.flowInstanceExists.length &&
+            this.flowInstanceExists.find(
+              int => int.typebot === findInstance.typebot
+            ).name) ||
+          '';
 
         this.flowTypebotName = this.typebot.name;
         return this.openModalExists();
