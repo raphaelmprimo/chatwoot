@@ -47,7 +47,11 @@ export const mutations = {
   },
   [types.SET_SCHEDULES](_state, data) {
     _state.schedules = data
-  },
+	},
+	[types.SET_CONVERSATION_SCHEDULES](_state, data) {
+    _state.schedules = data
+	},
+	
   [types.SET_CALENDARS_DEFAULT](_state, calendar) {
     _state.defaultCalendar = calendar;
     _state.defaultCalendarId = calendar;
@@ -70,6 +74,15 @@ export const mutations = {
     if (index !== -1) {
       _state.schedules.splice(index, 1, updatedSchedule);
     }
+	},
+	
+
+	[types.REMOVE_SCHEDULE] (_state, scheduleId) {
+		_state.schedules = _state.schedules.filter(record => record.id !== scheduleId);
+	},
+	
+	[types.REMOVE_CONVERSATION_SCHEDULE] (_state, scheduleId, conversationUuid) {
+		_state.schedules = _state.schedules.filter(record => record.id !== scheduleId && record.conversation_uuid !== conversationUuid);
   },
 
 };

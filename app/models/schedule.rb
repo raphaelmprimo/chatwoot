@@ -7,6 +7,7 @@
 #  conversation_uuid :uuid
 #  description       :string
 #  end_time          :datetime
+#  group_color       :string           default("#0fa7e8")
 #  is_all_day        :boolean          default(FALSE), not null
 #  is_block          :boolean          default(FALSE), not null
 #  is_readonly       :boolean          default(FALSE), not null
@@ -21,15 +22,24 @@
 #  updated_at        :datetime         not null
 #  account_id        :integer          not null
 #  calendar_id       :integer          not null
+#  group_id          :integer
 #  label_id          :integer
+#  owner_id          :integer
 #  resource_id       :integer
 #  room_id           :integer
-#  worker_id         :integer          not null
+#  user_id           :integer          not null
+#
+# Indexes
+#
+#  index_schedules_on_account_id  (account_id)
+#  index_schedules_on_user_id     (user_id)
+#  index_schedules_on_uuid        (uuid)
 #
 class Schedule < ApplicationRecord
   belongs_to :account
-  belongs_to :worker, class_name: 'User', inverse_of: :schedules, optional: true
-  belongs_to :conversation, primary_key: :uuid, foreign_key: :conversation_uuid, inverse_of: :schedule, optional: true
+  belongs_to :user, class_name: 'User', inverse_of: :schedules, optional: true
+	belongs_to :owner, class_name: 'User', inverse_of: :schedules,foreign_key: :owner_id,  optional: true
+	belongs_to :conversation, primary_key: :uuid, foreign_key: :conversation_uuid, inverse_of: :schedule, optional: true
   belongs_to :calendar, class_name: 'Calendar', inverse_of: :schedules
   belongs_to :room, optional: true
   belongs_to :resource, optional: true
@@ -52,11 +62,12 @@ class Schedule < ApplicationRecord
   }
 
   def user_ids
-    guests.map(&:id).push(worker.id)
+    guests.map(&:id).push(user.id) unless owner_id.present?
+		guests.map(&:id).push(owner_id) if owner_id.present?
   end
 
   def add_schedule_guests(user_guests)
-    user_guests -= [worker_id]
+    user_guests -= [user_id]
     if user_guests.blank?
       schedule_guests.destroy_all
       return

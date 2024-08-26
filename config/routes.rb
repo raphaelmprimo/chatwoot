@@ -266,7 +266,7 @@ Rails.application.routes.draw do
 
           resources :schedules do
             get ':label_id/in_label', on: :collection, action: :in_label
-            get ':conversation_uuid/of_conversation', on: :collection, action: :of_conversation
+            get ':conversation_uuid/conversation_schedules', on: :collection, action: :conversation_schedules
             get :default_calendar, on: :collection
           end
 

@@ -80,8 +80,9 @@ class User < ApplicationRecord
   accepts_nested_attributes_for :account_users
 
   has_many :assigned_conversations, foreign_key: 'assignee_id', class_name: 'Conversation', dependent: :nullify, inverse_of: :assignee
-  has_many :calendars, class_name: 'Calendar', foreign_key: :worker_id, inverse_of: :worker, dependent: :nullify
-  has_many :schedules, class_name: 'Schedule', foreign_key: :worker_id, through: :calendars
+  has_many :calendars, class_name: 'Calendar', inverse_of: :owner, dependent: :nullify
+  has_many :schedules, class_name: 'Schedule', inverse_of: :user, dependent: :destroy_async
+	has_many :my_schedules, class_name: 'Schedule', foreign_key: :owner_id, inverse_of: :owner, dependent: :destroy_async
   alias_attribute :conversations, :assigned_conversations
   has_many :csat_survey_responses, foreign_key: 'assigned_agent_id', dependent: :nullify, inverse_of: :assigned_agent
   has_many :conversation_participants, dependent: :destroy_async

@@ -11,6 +11,10 @@ class Api::V1::Accounts::SchedulesController < Api::V1::Accounts::BaseController
     @schedules = @calendar.schedules.in_label(params[:label_id]).all
   end
 
+	def conversation_schedules
+		@schedules = @calendar.schedules.of_conversation(params[:conversation_uuid]).all
+	end
+
   def of_conversation
     @schedule = @calendar.schedules.of_conversation(params[:conversation_uuid]).first
   end
@@ -22,7 +26,7 @@ class Api::V1::Accounts::SchedulesController < Api::V1::Accounts::BaseController
   def create
     @schedule = @calendar.schedules.new(schedule_params)
     @schedule.account = Current.account
-    @schedule.worker = Current.user
+    @schedule.user = Current.user
     @schedule.save!
     @schedule.add_schedule_guests(params[:user_ids]) if schedule_params[:user_ids].present?
     head :no_content
@@ -59,6 +63,6 @@ class Api::V1::Accounts::SchedulesController < Api::V1::Accounts::BaseController
   def schedule_params
     params.require(:schedule).permit(:subject, :start_time, :end_time, :is_all_day, :location,
                                      :description, :status, :priority, :reminder, :user_ids,
-                                     :label_id, :color_for_schedule)
+                                     :label_id, :color_for_schedule,:group_id, :user_id, :conversation_uuid,:owner_id)
   end
 end

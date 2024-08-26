@@ -124,6 +124,8 @@
         :drag-start="dragStart"
         :drag-stop="dragStop"
         :actionComplete="onActionComplete"
+        enableTooltip="false"
+        :tooltipTemplate="tooltipTemplate"
       >
         <e-columns>
           <e-column
@@ -167,6 +169,7 @@
           :is-on-expanded-layout="true"
           class="h-full"
           @contact-panel-toggle="false"
+          :can-schedule="selectedChat.can_schedule"
         />
       </div>
     </Modal>
@@ -174,7 +177,7 @@
 </template>
 <script>
 import Vue from 'vue';
-import { extend } from '@syncfusion/ej2-base';
+import { loadCldr, L10n, extend } from '@syncfusion/ej2-base';
 import {
   KanbanComponent,
   ColumnDirective,
@@ -197,14 +200,24 @@ import AddLabelModal from 'dashboard/routes/dashboard/settings/labels/AddLabel.v
 import ConfigFunnel from './funnel/ConfigFunnel.vue';
 import { actionBegin } from '@syncfusion/ej2-vue-treegrid';
 import cardTemplate from './templates/kanban/card.vue';
+import tooltip from './templates/kanban/tooltip.vue';
 import bodyColumn from './templates/kanban/column.vue';
-
+import localeText from './syncfusion-locale/pt.json';
+L10n.load(localeText);
+loadCldr(
+  require('cldr-data/supplemental/numberingSystems.json'),
+  require('cldr-data/main/pt/ca-gregorian.json'),
+  require('cldr-data/main/pt/numbers.json'),
+  require('cldr-data/main/pt/timeZoneNames.json'),
+  require('cldr-data/supplemental/weekData.json')
+);
 Vue.use(KanbanPlugin);
 Vue.use(TextBoxPlugin);
 Vue.use(ButtonPlugin);
 Vue.use(GridPlugin);
 let CardComponent = Vue.extend(cardTemplate);
 let ColumnComponent = Vue.extend(bodyColumn);
+let TooltipComponent = Vue.extend(tooltip);
 export default {
   components: {
     'ejs-kanban': KanbanComponent,
@@ -268,6 +281,14 @@ export default {
           template: {
             parent: this,
             extends: ColumnComponent,
+          },
+        };
+      },
+      tooltipTemplate: function () {
+        return {
+          template: {
+            parent: this,
+            extends: TooltipComponent,
           },
         };
       },
@@ -545,7 +566,6 @@ export default {
           can_schedule: conversation?.can_schedule,
           custom_attributes: conversation?.custom_attributes,
           label_attributes: conversation?.label_attributes,
-          can_schedule: conversation?.can_schedule,
           agent_last_seen_at: conversation?.agent_last_seen_at,
           assignee_last_seen_at: conversation?.assignee_last_seen_at,
           contact_last_seen_at: conversation?.contact_last_seen_at,
@@ -633,16 +653,28 @@ export default {
 };
 </script>
 <style>
-@import '../../../../../../node_modules/@syncfusion/ej2-base/styles/material.css';
-@import '../../../../../../node_modules/@syncfusion/ej2-buttons/styles/material.css';
-@import '../../../../../../node_modules/@syncfusion/ej2-layouts/styles/material.css';
-@import '../../../../../../node_modules/@syncfusion/ej2-dropdowns/styles/material.css';
-@import '../../../../../../node_modules/@syncfusion/ej2-navigations/styles/material.css';
-@import '../../../../../../node_modules/@syncfusion/ej2-popups/styles/material.css';
+@import '../../../../../../node_modules/@syncfusion/ej2-base/styles/tailwind.css';
+@import '../../../../../../node_modules/@syncfusion/ej2-buttons/styles/tailwind.css';
+@import '../../../../../../node_modules/@syncfusion/ej2-layouts/styles/tailwind.css';
+@import '../../../../../../node_modules/@syncfusion/ej2-dropdowns/styles/tailwind.css';
+@import '../../../../../../node_modules/@syncfusion/ej2-navigations/styles/tailwind.css';
+@import '../../../../../../node_modules/@syncfusion/ej2-popups/styles/tailwind.css';
 @import '../../../../../../node_modules/@syncfusion/ej2-vue-kanban/styles/tailwind.css';
 @import '../../../../../../node_modules/@syncfusion/ej2-vue-inputs/styles/bootstrap.css';
 @import '../../../../../../node_modules/@syncfusion/ej2-vue-grids/styles/tailwind.css';
-@import '../../../../../../node_modules/@syncfusion/ej2-vue-treegrid/styles/material.css';
+@import '../../../../../../node_modules/@syncfusion/ej2-vue-treegrid/styles/tailwind.css';
+.e-kanbantooltiptemp {
+  width: 250px;
+  padding: 3px;
+}
+
+.e-kanbantooltiptemp > table {
+  width: 100%;
+}
+
+.e-kanbantooltiptemp td {
+  vertical-align: top;
+}
 .kanban-card-template .e-card table {
   table-layout: fixed;
 }

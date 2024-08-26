@@ -1,0 +1,13 @@
+{
+  "SCHEDULE": {
+    "DELETE": {
+			"CONFIRM": {
+				"TITLE": "Excluir Agenda"
+			},
+			"API":{
+				"SUCCESS_MESSAGE": "Agendamento excluído com sucesso!",
+				"ERROR_MESSAGE": "Erro ao excluir agendamento!"
+			}
+    }
+  }
+}

@@ -14,7 +14,11 @@
             color: `#ffffff !important`,
           }"
         >
-          <span class="inline-block align-bottom"> {{ data.agent_name }}</span>
+          <span class="inline-block align-bottom">
+            <a v-tooltip.top-end="'Nome do Agente'">
+              {{ data.agent_name }}</a
+            ></span
+          >
         </div>
       </div>
     </div>
@@ -184,10 +188,10 @@ export default {
 
           for (let chave in value) {
             if (value.hasOwnProperty(chave)) {
-              campos += `${chave}: ${value[chave]}, `;
+              campos += `${value[chave]}<br/>`;
             }
           }
-          result = `<b class="text-sm font-semibold">Campos</b>: ${campos.slice(0, -2)}`;
+          result = `${campos.slice(0, -2)}`;
           break;
         case 'muted':
           result = `<b class="text-sm font-semibold">${this.$t('CONTACT_PANEL.MUTED')}</b>: ${value}`;

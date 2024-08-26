@@ -14,7 +14,23 @@ const actions = {
     } catch (error) {
       commit(types.SET_CALENDARS_UI_FLAG, false);
     }
-  },
+	},
+	delete: async ({ commit }, scheduleId) => {
+		commit(types.SET_SCHEDULES_UI_FLAG, {
+			isDeleting: true,
+		});
+		try {
+			await ScheduleApi.removeSchedule(scheduleId);
+			commit(types.REMOVE_SCHEDULE, scheduleId);
+		} catch (error) {
+			// Handle error
+		} finally {
+			commit(types.SET_SCHEDULES_UI_FLAG, {
+				isDeleting: false,
+			});
+		}
+	},
+	
   fetchCalendars: async ({ commit }) => {
     commit(types.SET_CALENDARS_UI_FLAG, {
       isFetching: true,
@@ -71,6 +87,24 @@ const actions = {
     try {
       const response = await ScheduleApi.getSchedules();
       commit(types.SET_SCHEDULES, response.data);
+    } catch (error) {
+      // Handle error
+    } finally {
+      commit(types.SET_SCHEDULES_UI_FLAG, {
+      isFetching: false,
+    });
+    }
+	},
+	
+
+  fetchSchedulesConversation: async({ commit }, conversationUuid) => {
+    commit(types.SET_SCHEDULES_UI_FLAG, {
+      isFetching: true,
+    });
+
+    try {
+      const response = await ScheduleApi.getConversationSchedules(conversationUuid);
+      commit(types.SET_CONVERSATION_SCHEDULES, response.data);
     } catch (error) {
       // Handle error
     } finally {

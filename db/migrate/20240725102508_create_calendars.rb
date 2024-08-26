@@ -3,11 +3,16 @@ class CreateCalendars < ActiveRecord::Migration[7.0]
     create_table :calendars, id: :serial do |t|
       t.integer :display_id, null: false
       t.integer :account_id, null: false
-      t.integer :worker_id, null: true
-      t.uuid :uuid, default: -> { 'gen_random_uuid()' }, null: false
-      t.uuid :conversation_uuid
-      t.string :title
-      t.string :description
+      t.integer :user_id, null: true
+			t.integer :owner_id
+      t.uuid    :uuid, default: -> { 'gen_random_uuid()' }, null: false
+      t.string  :title
+      t.string  :description
+			t.text    :google_client_id
+			t.text    :google_client_secret
+			t.text    :google_refresh_token
+			t.text    :google_access_token
+			t.string  :google_calendar_id
       t.integer :status, default: 0, null: false
       t.boolean :is_default, null: false, default: false
 
@@ -15,8 +20,7 @@ class CreateCalendars < ActiveRecord::Migration[7.0]
     end
 
     add_index :calendars, :account_id, name: 'index_calendars_on_account_id'
-    add_index :calendars, :worker_id, name: 'index_calendars_on_worker_id'
-    add_index :calendars, :conversation_uuid, name: 'index_calendars_on_conversation_uuid'
+    add_index :calendars, :user_id, name: 'index_calendars_on_user_id'
     add_index :calendars, :uuid, unique: true, name: 'index_calendars_on_uuid'
 
     create_trigger('calendars_before_insert_row_tr', generated: true, compatibility: 1)

@@ -1,6 +1,7 @@
 const { environment } = require('@rails/webpacker');
 const { VueLoaderPlugin } = require('vue-loader');
 const resolve = require('./resolve');
+const webpack = require('webpack'); 
 const vue = require('./loaders/vue');
 
 // Implementation reference: https://chwt.app/webpacker-tailwind-jit
@@ -54,6 +55,21 @@ environment.loaders.append('audio', {
 });
 
 const preserveNameFor = ['sdk', 'worker'];
+
+environment.config.merge({ 
+  resolve: {
+    alias: {
+     // '@syncfusion': 'syncfusion',
+      'cldr-data': 'cldr-data',
+      'plugin-json': 'systemjs-plugin-json/json.js'
+    }
+  }
+});
+
+environment.plugins.prepend('Provide', new webpack.ProvidePlugin({
+  System: 'systemjs'
+}));
+
 
 environment.config.merge({ resolve });
 environment.config.set('output.filename', chunkData => {

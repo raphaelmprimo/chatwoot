@@ -15,6 +15,10 @@ class SchedulePolicy < ApplicationPolicy
     index?
   end
 
+	def conversation_schedules?
+		index?
+	end
+		
   def show?
     index?
   end

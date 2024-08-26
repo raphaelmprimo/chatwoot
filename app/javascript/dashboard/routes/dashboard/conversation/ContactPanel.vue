@@ -25,6 +25,25 @@
           class="bg-white dark:bg-gray-800"
         >
           <div
+            v-if="element.name === 'conversation_schedules' && canSchedule"
+            class="conversation--actions"
+          >
+            <accordion-item
+              :title="
+                $t('CONVERSATION_SIDEBAR.ACCORDION.CONVERSATION_SCHEDULES')
+              "
+              :is-open="isContactSidebarItemOpen('is_conv_schedules_open')"
+              @click="
+                value => toggleSidebarUIState('is_conv_schedules_open', value)
+              "
+            >
+              <conversation-schedules
+                :uuid="uuid"
+                :conversation-id="conversationId"
+              />
+            </accordion-item>
+          </div>
+          <div
             v-if="element.name === 'conversation_actions'"
             class="conversation--actions"
           >
@@ -146,6 +165,7 @@ import CustomAttributes from './customAttributes/CustomAttributes.vue';
 import draggable from 'vuedraggable';
 import uiSettingsMixin from 'dashboard/mixins/uiSettings';
 import MacrosList from './Macros/List.vue';
+import ConversationSchedules from './schedules/ConversationSchedules.vue';
 
 export default {
   components: {
@@ -158,6 +178,7 @@ export default {
     ConversationParticipant,
     draggable,
     MacrosList,
+    ConversationSchedules,
   },
   mixins: [alertMixin, uiSettingsMixin],
   props: {
@@ -176,6 +197,10 @@ export default {
     onToggle: {
       type: Function,
       default: () => {},
+    },
+    canSchedule: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {

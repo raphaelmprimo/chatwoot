@@ -2,31 +2,35 @@
 #
 # Table name: calendars
 #
-#  id                :integer          not null, primary key
-#  conversation_uuid :uuid
-#  description       :string
-#  is_default        :boolean          default(FALSE), not null
-#  status            :integer          default(0), not null
-#  title             :string
-#  uuid              :uuid             not null
-#  created_at        :datetime         not null
-#  updated_at        :datetime         not null
-#  account_id        :integer          not null
-#  display_id        :integer          not null
-#  worker_id         :integer
+#  id                   :integer          not null, primary key
+#  description          :string
+#  google_access_token  :text
+#  google_client_secret :text
+#  google_refresh_token :text
+#  is_default           :boolean          default(FALSE), not null
+#  status               :integer          default(0), not null
+#  title                :string
+#  uuid                 :uuid             not null
+#  created_at           :datetime         not null
+#  updated_at           :datetime         not null
+#  account_id           :integer          not null
+#  display_id           :integer          not null
+#  google_calendar_id   :string
+#  google_client_id     :text
+#  owner_id             :integer
+#  user_id              :integer
 #
 # Indexes
 #
-#  index_calendars_on_account_id         (account_id)
-#  index_calendars_on_conversation_uuid  (conversation_uuid)
-#  index_calendars_on_uuid               (uuid) UNIQUE
-#  index_calendars_on_worker_id          (worker_id)
+#  index_calendars_on_account_id  (account_id)
+#  index_calendars_on_user_id     (user_id)
+#  index_calendars_on_uuid        (uuid) UNIQUE
 #
 class Calendar < ApplicationRecord
   default_scope { where(is_default: true) }
 
   belongs_to :account
-  belongs_to :worker, class_name: 'User', inverse_of: :calendarss, optional: true
+  belongs_to :user, inverse_of: :calendarss, optional: true
   belongs_to :conversation, primary_key: :uuid, foreign_key: :conversation_uuid, inverse_of: :calendars, optional: true
 
   has_many :schedules, class_name: 'Schedule', dependent: :destroy_async

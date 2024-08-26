@@ -61,7 +61,7 @@
           <section class="w-[300px] py-4 px-4 flex flex-col items-center gap-8">
             <ejs-menu :items="menuItems" :select="insertActivityOrEvent" />
 
-            <ejs-calendar id="calendar" :change="onDateChange" />
+            <ejs-calendar id="calendar" :change="onDateChange" locale="pt" />
 
             <div id="searchNamesContainer" class="w-full flex flex-col gap-4">
               <ejs-autocomplete
@@ -85,6 +85,7 @@
             :show-header-bar="false"
             :group="group"
             @actionBegin="onActionBegin"
+            :locale="locale"
           >
             <template #resourceHeaderTemplate="{ data }">
               <div class="template-wrap">
@@ -114,7 +115,7 @@
             <e-resources>
               <e-resource
                 field="WorkerIds"
-                title="Attendees"
+                title="Agentes"
                 name="Conferences"
                 :allow-multiple="allowMultiple"
                 :data-source="resourceDataSource"
@@ -153,6 +154,7 @@ import {
 } from '@syncfusion/ej2-vue-schedule';
 import { CalendarComponent } from '@syncfusion/ej2-vue-calendars';
 import { AutoCompleteComponent } from '@syncfusion/ej2-vue-dropdowns';
+import { loadCldr, L10n } from '@syncfusion/ej2-base';
 import {
   MenuComponent,
   AccordionComponent,
@@ -160,10 +162,19 @@ import {
   AccordionItemsDirective,
 } from '@syncfusion/ej2-vue-navigations';
 import uiSettingsMixin from 'dashboard/mixins/uiSettings';
-import { mapGetters, mapActions } from 'vuex';
+import { mapGetters } from 'vuex';
 import { apiURL, calendarsURL } from '../../../helper/URLHelper';
 import AccordionItem from 'dashboard/components/Accordion/AccordionItem.vue';
 import Spinner from 'shared/components/Spinner.vue';
+import localeText from './syncfusion-locale/pt.json';
+L10n.load(localeText);
+loadCldr(
+  require('cldr-data/supplemental/numberingSystems.json'),
+  require('cldr-data/main/pt/ca-gregorian.json'),
+  require('cldr-data/main/pt/numbers.json'),
+  require('cldr-data/main/pt/timeZoneNames.json'),
+  require('cldr-data/supplemental/weekData.json')
+);
 
 export default {
   components: {
@@ -198,6 +209,7 @@ export default {
   data() {
     return {
       readonly: false,
+      locale: 'pt',
       eventSettings: {
         dataSource: [],
       },
@@ -222,7 +234,6 @@ export default {
           colorField: 'Color',
         },
       ],
-      names: ['Guilherme', 'John'],
       menuItems: [
         {
           text: 'Adicionar',
@@ -248,6 +259,10 @@ export default {
       virtualscroll: false,
       open: true,
       googleCalendar: null,
+      names: ['Guilherme', 'John'],
+      eventsSettings: {
+        dataSource: [],
+      },
     };
   },
   provide: {
@@ -391,7 +406,6 @@ export default {
             CalendarId: event.CalendarId,
             WorkerIds: event.WorkerIds,
           }));
-          console.log('M<APED', mappedData);
           this.eventSettings = {
             ...this.eventSettings,
             dataSource: mappedData,
@@ -536,15 +550,15 @@ export default {
 </script>
 
 <style>
-@import '@syncfusion/ej2-base/styles/material3.css';
-@import '@syncfusion/ej2-layouts/styles/material3.css';
-@import '@syncfusion/ej2-buttons/styles/material3.css';
-@import '@syncfusion/ej2-calendars/styles/material3.css';
-@import '@syncfusion/ej2-dropdowns/styles/material3.css';
-@import '@syncfusion/ej2-inputs/styles/material3.css';
-@import '@syncfusion/ej2-navigations/styles/material3.css';
-@import '@syncfusion/ej2-popups/styles/material3.css';
-@import '@syncfusion/ej2-vue-schedule/styles/material3.css';
+@import '@syncfusion/ej2-base/styles/tailwind.css';
+@import '@syncfusion/ej2-layouts/styles/tailwind.css';
+@import '@syncfusion/ej2-buttons/styles/tailwind.css';
+@import '@syncfusion/ej2-calendars/styles/tailwind.css';
+@import '@syncfusion/ej2-dropdowns/styles/tailwind.css';
+@import '@syncfusion/ej2-inputs/styles/tailwind.css';
+@import '@syncfusion/ej2-navigations/styles/tailwind.css';
+@import '@syncfusion/ej2-popups/styles/tailwind.css';
+@import '@syncfusion/ej2-vue-schedule/styles/tailwind.css';
 
 .horizontaldot.e-icons::before {
   content: '\eb04';

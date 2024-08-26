@@ -49,6 +49,7 @@
           :uuid="currentChat.uuid"
           :inbox-id="currentChat.inbox_id"
           :on-toggle="onToggleContactPanel"
+          :can-schedule="currentChat.can_schedule"
         />
       </div>
     </div>
@@ -97,6 +98,10 @@ export default {
     isOnExpandedLayout: {
       type: Boolean,
       default: true,
+    },
+    canSchedule: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {

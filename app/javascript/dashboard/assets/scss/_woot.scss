@@ -33,6 +33,17 @@
 @import 'plugins/dropdown';
 @import '~shared/assets/stylesheets/ionicons';
 
+@import '@syncfusion/ej2-base/styles/tailwind.css';
+@import '@syncfusion/ej2-buttons/styles/tailwind.css';
+@import '@syncfusion/ej2-layouts/styles/tailwind.css';
+@import '@syncfusion/ej2-dropdowns/styles/tailwind.css';
+@import '@syncfusion/ej2-navigations/styles/tailwind.css';
+@import '@syncfusion/ej2-popups/styles/tailwind.css';
+@import '@syncfusion/ej2-vue-kanban/styles/tailwind.css';
+@import '@syncfusion/ej2-vue-inputs/styles/bootstrap.css';
+@import '@syncfusion/ej2-vue-grids/styles/tailwind.css';
+@import '@syncfusion/ej2-vue-treegrid/styles/tailwind.css';
+
 .tooltip {
   @apply bg-slate-900 text-white py-1 px-2 z-40 text-xs rounded-md dark:bg-slate-200 dark:text-slate-900;
 }

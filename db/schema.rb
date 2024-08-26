@@ -203,19 +203,23 @@ ActiveRecord::Schema[7.0].define(version: 2024_08_10_173803) do
   create_table "calendars", id: :serial, force: :cascade do |t|
     t.integer "display_id", null: false
     t.integer "account_id", null: false
-    t.integer "worker_id"
+    t.integer "user_id"
+    t.integer "owner_id"
     t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
-    t.uuid "conversation_uuid"
     t.string "title"
     t.string "description"
+    t.text "google_client_id"
+    t.text "google_client_secret"
+    t.text "google_refresh_token"
+    t.text "google_access_token"
+    t.string "google_calendar_id"
     t.integer "status", default: 0, null: false
     t.boolean "is_default", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["account_id"], name: "index_calendars_on_account_id"
-    t.index ["conversation_uuid"], name: "index_calendars_on_conversation_uuid"
+    t.index ["user_id"], name: "index_calendars_on_user_id"
     t.index ["uuid"], name: "index_calendars_on_uuid", unique: true
-    t.index ["worker_id"], name: "index_calendars_on_worker_id"
   end
 
   create_table "campaigns", force: :cascade do |t|
@@ -899,7 +903,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_08_10_173803) do
 
   create_table "schedules", force: :cascade do |t|
     t.integer "account_id", null: false
-    t.integer "worker_id", null: false
+    t.integer "user_id", null: false
+    t.integer "owner_id"
     t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
     t.uuid "conversation_uuid"
     t.integer "calendar_id", null: false
@@ -916,10 +921,15 @@ ActiveRecord::Schema[7.0].define(version: 2024_08_10_173803) do
     t.integer "status", default: 0, null: false
     t.integer "room_id"
     t.integer "resource_id"
+    t.integer "group_id"
+    t.string "group_color", default: "#0fa7e8"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "label_id"
     t.string "color", default: "#9bbef5"
+    t.index ["account_id"], name: "index_schedules_on_account_id"
+    t.index ["user_id"], name: "index_schedules_on_user_id"
+    t.index ["uuid"], name: "index_schedules_on_uuid"
   end
 
   create_table "sla_events", force: :cascade do |t|

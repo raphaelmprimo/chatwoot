@@ -18,9 +18,7 @@
           'text-woot-500': isActive || isChildMenuActive,
         }"
       />
-      <span class="ml-1">{{
-        $t(`SIDEBAR.${name}`)  
-      }}</span>
+      <span class="ml-1">{{ $t(`SIDEBAR.${name}`) }}</span>
       <span
         v-if="count"
         class="text-black-900 bg-yellow-500 absolute -top-1 -right-1"

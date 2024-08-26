@@ -8,6 +8,10 @@ class ScheduleApi extends ApiClient {
 
   getSchedules() {
     return axios.get(`${this.url}`);
+	}
+	
+	getConversationSchedules(conversationUuid) {
+    return axios.get(`${this.url}/${conversationUuid}/conversation_schedules`);
   }
 
   getSchedulesLabel(labelID) {
@@ -29,7 +33,7 @@ class ScheduleApi extends ApiClient {
     return axios.post(`${this.url}/schedules`, {
       schedule,
     });
-  }
+  } 
 
   removeSchedule(scheduleID) {
     return axios.delete(

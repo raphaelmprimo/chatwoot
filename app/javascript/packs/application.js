@@ -34,7 +34,8 @@ import resizeDirective from '../dashboard/helper/directives/resize.js';
 import { directive as onClickaway } from 'vue-clickaway';
 import VueSweetalert2 from 'vue-sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
-
+import { registerLicense } from '@syncfusion/ej2-base';
+registerLicense('ORg4AjUWIQA/Gnt2U1hhQlJBfV5AQmBIYVp/TGpJfl96cVxMZVVBJAtUQF1hTX5bdEZiXXxfcnVRT2Rb');
 
 Vue.config.env = process.env;
 

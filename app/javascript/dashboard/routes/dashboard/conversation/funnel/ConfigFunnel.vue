@@ -14,6 +14,7 @@
         :rowDeselected="rowDeselected"
         :allowRowDragAndDrop="true"
         :rowDrop="onColumnDrop"
+        locale="pt"
       >
         <e-columns>
           <e-column
@@ -168,12 +169,7 @@
 </template>
 
 <script>
-import {
-  L10n,
-  setCulture,
-  setCurrencyCode,
-  closest,
-} from '@syncfusion/ej2-base';
+import { loadCldr, L10n, setCulture } from '@syncfusion/ej2-base';
 import { mapGetters, mapActions } from 'vuex';
 import {
   TreeGridComponent,
@@ -191,7 +187,16 @@ import alertMixin from 'shared/mixins/alertMixin';
 import EditLabel from 'dashboard/routes/dashboard/settings/labels/EditLabel.vue';
 import { isThisSecond } from 'date-fns';
 import AddSchedule from './AddSchedule.vue';
-setCulture('pt-BR');
+import localeText from '../syncfusion-locale/pt.json';
+setCulture('pt');
+L10n.load(localeText);
+loadCldr(
+  require('cldr-data/supplemental/numberingSystems.json'),
+  require('cldr-data/main/pt/ca-gregorian.json'),
+  require('cldr-data/main/pt/numbers.json'),
+  require('cldr-data/main/pt/timeZoneNames.json'),
+  require('cldr-data/supplemental/weekData.json')
+);
 import {
   GridComponent,
   Toolbar,
@@ -200,16 +205,6 @@ import {
   Edit as GridEdit,
   Page as GridPage,
 } from '@syncfusion/ej2-vue-grids';
-
-setCulture('pt-BR');
-L10n.load({
-  'pt-BR': {
-    grid: {
-      SaveButton: 'Submit',
-      CancelButton: 'Cancelar',
-    },
-  },
-});
 
 export default {
   components: {
@@ -337,7 +332,6 @@ export default {
         labelId: etapaId,
         position: position,
       });
-      console.log('onColumnDrop', event);
     },
     showAddLabelPopup() {
       this.showAddLabelModal = true;
@@ -416,7 +410,6 @@ export default {
       }
     },
     onCompleteActionAttributes(event) {
-      console.log('EVENT', event);
       if (event.requestType === 'batchsave') {
         const dataUpdate = this.preperaDataToUpdate(event.rows);
         this.$store
