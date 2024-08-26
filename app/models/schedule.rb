@@ -61,13 +61,17 @@ class Schedule < ApplicationRecord
     in_progress: 6
   }
 
-  def user_ids
-    guests.map(&:id).push(user.id) unless owner_id.present?
-		guests.map(&:id).push(owner_id) if owner_id.present?
+  def worker_ids
+    guests.map(&:id).push(user.id)
   end
 
+	def user_ids
+    guests.map(&:id)
+  end
+ 
+
   def add_schedule_guests(user_guests)
-    user_guests -= [user_id]
+    #user_guests -= [user_id]
     if user_guests.blank?
       schedule_guests.destroy_all
       return

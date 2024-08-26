@@ -200,7 +200,6 @@ export default {
           end_time: event.EndTime,
           description: event.Description,
           location: event.Location,
-          user_ids: event.AgentIds,
           group_id: event.GroupId,
           conversation_uuid: this.uuid,
         })

@@ -11,7 +11,7 @@ json.array! @schedules do |schedule|
 	json.IsBlock  schedule.is_block
 	json.IsReadonly schedule.is_readonly
 	json.RoomId schedule.conversation_uuid
-	json.WorkerIds schedule.user_ids
+	json.WorkerIds schedule.worker_ids
 	json.CalendarId schedule.calendar_id
 	json.OwnerId schedule.owner_id	
 	json.Owner schedule.owner.name

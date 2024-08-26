@@ -28,7 +28,7 @@ class Api::V1::Accounts::SchedulesController < Api::V1::Accounts::BaseController
     @schedule.account = Current.account
     @schedule.user = Current.user
     @schedule.save!
-    @schedule.add_schedule_guests(params[:user_ids]) if schedule_params[:user_ids].present?
+    @schedule.add_schedule_guests(params[:user_ids]) if  params[:user_ids].present?
     head :no_content
   end
 
@@ -43,7 +43,7 @@ class Api::V1::Accounts::SchedulesController < Api::V1::Accounts::BaseController
 
   def destroy
     @schedule.destroy
-    head :no_content
+    head :ok
   end
 
   private
@@ -62,7 +62,7 @@ class Api::V1::Accounts::SchedulesController < Api::V1::Accounts::BaseController
 
   def schedule_params
     params.require(:schedule).permit(:subject, :start_time, :end_time, :is_all_day, :location,
-                                     :description, :status, :priority, :reminder, :user_ids,
+                                     :description, :status, :priority, :reminder,
                                      :label_id, :color_for_schedule,:group_id, :user_id, :conversation_uuid,:owner_id)
   end
 end
