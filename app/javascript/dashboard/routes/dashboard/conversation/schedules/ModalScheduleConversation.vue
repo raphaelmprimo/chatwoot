@@ -115,7 +115,7 @@ export default {
       locale: 'pt',
       selectedDate: new Date(),
       enableAdaptiveUI: true,
-      allowMultiple: true,
+      allowMultiple: false,
       group: {
         resources: ['Agendas', 'Agentes'],
       },
@@ -148,7 +148,11 @@ export default {
   methods: {
     onActionBegin(args) {
       if (args.requestType === 'eventCreate') {
-        this.createEvent(args.data[0]);
+        if ('Location' in args.data[0]) {
+          return;
+        } else {
+          this.createEvent(args.data[0]);
+        }
       } else if (args.requestType === 'eventChange') {
         this.updateEvent(args.data);
       } else if (args.requestType === 'eventRemove') {
