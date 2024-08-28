@@ -387,7 +387,6 @@ export default {
         });
     },
     fetchEvents() {
-      const accountId = this.accountId;
       axios
         .get(apiURL(`accounts/${this.accountId}/schedules`))
         .then(response => {
@@ -406,6 +405,7 @@ export default {
             CalendarId: event.CalendarId,
             WorkerIds: event.WorkerIds,
           }));
+          console.log('THIS EVENTS', mappedData);
           this.eventSettings = {
             ...this.eventSettings,
             dataSource: mappedData,

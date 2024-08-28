@@ -14,5 +14,4 @@
     json.WorkerIds schedule.user_ids
     json.CalendarId schedule.calendar_id
 		json.Color schedule.color
-
   end

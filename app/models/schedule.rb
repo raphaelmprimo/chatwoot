@@ -66,7 +66,9 @@ class Schedule < ApplicationRecord
   end
 
 	def user_ids
-    guests.map(&:id)
+    ids = guests.map(&:id)
+		ids.push(owner_id) if owner_id.present?
+		ids
   end
  
 

@@ -25,11 +25,10 @@ class Api::V1::Accounts::SchedulesController < Api::V1::Accounts::BaseController
 
   def create
     @schedule = @calendar.schedules.new(schedule_params)
-		puts "------------------------------> #{schedule_params} <---------------------------------"
     @schedule.account = Current.account
     @schedule.user = Current.user
     @schedule.save!
-   # @schedule.add_schedule_guests(params[:user_ids]) if  params[:user_ids].present?
+    @schedule.add_schedule_guests(params[:user_ids]) if  params[:user_ids].present?
     head :no_content
   end
 
