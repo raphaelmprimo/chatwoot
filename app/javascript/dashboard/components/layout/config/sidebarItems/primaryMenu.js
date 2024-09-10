@@ -18,6 +18,22 @@ const primaryMenuItems = accountId => [
     toState: frontendURL(`accounts/${accountId}/dashboard`),
     toStateName: 'home',
     roles: ['administrator', 'agent'],
+	},
+	{
+    icon: 'kanban',
+    key: 'conversations_status',
+		label: 'STATUS_CONVERSATIONS',
+    toState: frontendURL(`accounts/${accountId}/status/conversations`),
+    toStateName: 'conversations_status',
+    roles: ['administrator', 'agent'],
+  },
+	{
+    icon: 'schedule',
+    key: 'schedule',
+    label: 'SCHEDULE',
+    toState: frontendURL(`accounts/${accountId}/schedule`),
+    toStateName: 'schedule',
+    roles: ['administrator', 'agent','worker'],
   },
   {
     icon: 'bot',

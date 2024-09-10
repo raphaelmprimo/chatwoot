@@ -29,13 +29,14 @@ else
     conversation.messages.where(account_id: conversation.account_id)
                 .includes([{ attachments: [{ file_attachment: [:blob] }] }]).last.try(:push_event_data)
   ]
-end
+end 
 
 json.custom_attributes conversation.custom_attributes
 json.label_attributes conversation.label_attributes
 json.label_id conversation.label.id if conversation.label.present?
 json.color conversation.color
 json.label_title conversation.label_title
+json.label_description conversation.label_description
 json.can_schedule conversation.can_schedule
 json.team_id conversation.get_team_id
 json.account_id conversation.account_id

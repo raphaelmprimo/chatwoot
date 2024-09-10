@@ -47,20 +47,20 @@ const conversations = accountId => ({
       toState: frontendURL(`accounts/${accountId}/unattended/conversations`),
       toStateName: 'conversation_unattended',
     },
-    {
-      icon: 'arrow-trending-lines',
-      label: 'STATUS_CONVERSATIONS',
-      key: 'conversations_status',
-      toState: frontendURL(`accounts/${accountId}/status/conversations`),
-      toStateName: 'conversations_status',
-    },
-    {
-      icon: 'arrow-trending-lines',
-      label: 'SCHEDULE',
-      key: 'schedule',
-      toState: frontendURL(`accounts/${accountId}/schedule`),
-      toStateName: 'schedule',
-    },
+    // {
+    //   icon: 'arrow-trending-lines',
+    //   label: 'STATUS_CONVERSATIONS',
+    //   key: 'conversations_status',
+    //   toState: frontendURL(`accounts/${accountId}/status/conversations`),
+    //   toStateName: 'conversations_status',
+    // },
+    // {
+    //   icon: 'arrow-trending-lines',
+    //   label: 'SCHEDULE',
+    //   key: 'schedule',
+    //   toState: frontendURL(`accounts/${accountId}/schedule`),
+    //   toStateName: 'schedule',
+    // },
 
 /*     {
       icon: 'arrow-trending-lines',

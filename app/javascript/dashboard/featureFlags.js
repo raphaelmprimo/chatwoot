@@ -1,4 +1,5 @@
 export const FEATURE_FLAGS = {
+	KANBAN: "kanban",
   AGENT_BOTS: 'agent_bots',
   AGENT_MANAGEMENT: 'agent_management',
   AUTO_RESOLVE_CONVERSATIONS: 'auto_resolve_conversations',

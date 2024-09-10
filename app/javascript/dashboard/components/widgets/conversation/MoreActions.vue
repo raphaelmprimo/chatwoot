@@ -1,5 +1,13 @@
 <template>
   <div class="flex actions--container relative items-center gap-2">
+    <woot-label
+      :title="currentChat.label_title"
+      :description="currentChat.label_description"
+      :show-close="false"
+      :color="currentChat.color"
+      variant="smooth"
+      class="max-w-[calc(100%-0.5rem)]"
+    />
     <woot-button
       v-if="!currentChat.muted"
       v-tooltip="$t('CONTACT_PANEL.MUTE_CONTACT')"

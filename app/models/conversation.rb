@@ -191,6 +191,10 @@ class Conversation < ApplicationRecord
     label.present? ? label.title : 'open'
   end
 
+	def label_description
+    label.present? ? label.description : 'Não Atribuídas'
+  end
+
   def can_schedule
     label.present? ? label.can_add_schedule : false
   end

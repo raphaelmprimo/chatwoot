@@ -207,6 +207,8 @@
     "SWITCH": "Alternar",
     "INBOX_VIEW": "Visualização da Caixa de entrada",
     "CONVERSATIONS": "Conversas",
+		"SCHEDULE": "Schedule",
+		"KANBAN": "Kanban",
     "INBOX": "Caixa de Entrada",
     "ALL_CONVERSATIONS": "Todas as conversas",
     "MENTIONED_CONVERSATIONS": "Menções",
