@@ -115,7 +115,7 @@
             <e-resources>
               <e-resource
                 field="WorkerIds"
-                title="Agentes"
+                title="Colaboradores"
                 name="Conferences"
                 :allow-multiple="allowMultiple"
                 :data-source="resourceDataSource"
