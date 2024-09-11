@@ -25,7 +25,10 @@
           class="bg-white dark:bg-gray-800"
         >
           <div
-            v-if="element.name === 'conversation_schedules' && canSchedule"
+            v-if="
+              element.name === 'conversation_schedules' &&
+              currentChat.canSchedule
+            "
             class="conversation--actions"
           >
             <accordion-item

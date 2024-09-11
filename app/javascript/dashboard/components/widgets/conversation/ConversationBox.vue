@@ -22,6 +22,7 @@
         :key="tab.key"
         :name="tab.name"
         :show-badge="false"
+        :can-schedule="currentChat.canSchedule"
       />
     </woot-tabs>
     <div

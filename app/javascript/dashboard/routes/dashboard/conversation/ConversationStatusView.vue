@@ -324,6 +324,7 @@ export default {
       kanbanItem: {},
       loadLabel: false,
       originalCard: {},
+      newCard: {},
     };
   },
   watch: {
@@ -491,6 +492,18 @@ export default {
             labelAttributes,
             customAttributes
           );
+          conversation.label_title = nextLabel.title;
+          conversation.color = nextLabel.color ? nextLabel.color : '#A1B7BF';
+          conversation.can_schedule = nextLabel.can_add_schedule;
+          conversation.label_id = nextLabel.id;
+          conversation.status = nextLabel.title ? nextLabel.title : 'open';
+          var data2 = event.data;
+          data2[0] = conversation;
+          this.newCard = {
+            data: data2,
+            keyField: 'label_title',
+          };
+
           if (!canChange[0]) {
             event.cancel = true;
             this.$refs.KanbanObj.deleteCard(event.data); // Remove o card da nova posição
@@ -499,6 +512,8 @@ export default {
 
             return;
           } else {
+            this.$refs.KanbanObj.deleteCard(event.data);
+            this.$refs.KanbanObj.addCard(this.newCard.data);
             this.updateCardKanban(conversation);
           }
         });
@@ -521,7 +536,7 @@ export default {
         id: conversation.id,
         uuid: conversation.uuid,
         status: conversation.label_title,
-        can_schedule: conversation.can_schedule,
+        can_schedule: true,
       };
       try {
         await this.$store.dispatch('conversationLabels/updateLabel', {
